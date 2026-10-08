@@ -3,57 +3,73 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>BoomAI</title>
 
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
 :root {
     --bg: #080808;
     --card: #111111;
     --card2: #151515;
     --border: #292929;
     --purple: #8b5cf6;
-    --purple-soft: rgba(139,92,246,.25);
+    --purple-soft: rgba(139,92,246,.18);
     --white: #fff;
     --silver: #a1a1aa;
+    --muted: #71717a;
+    --green: #22c55e;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    font-family: Arial, sans-serif;
+    margin: 0;
     background: var(--bg);
     color: var(--white);
+    font-family: Arial, Helvetica, sans-serif;
     min-height: 100vh;
-    padding-bottom: 82px;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
 }
 
 button {
-    font-family: inherit;
-    color: inherit;
+    cursor: pointer;
+}
+
+.app {
+    max-width: 760px;
+    margin: 0 auto;
+    padding-bottom: 88px;
 }
 
 /* HEADER */
 
 .header {
-    height: 64px;
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #1d1d1d;
     position: sticky;
     top: 0;
     z-index: 20;
-    background: rgba(8,8,8,.95);
-    backdrop-filter: blur(15px);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 17px;
+
+    background: rgba(8,8,8,.94);
+    backdrop-filter: blur(16px);
+
+    border-bottom: 1px solid #171717;
 }
 
 .logo {
-    font-size: 22px;
+    font-size: 21px;
     font-weight: 800;
 }
 
@@ -64,91 +80,107 @@ button {
 .header-right {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
 }
 
 .balance {
-    padding: 8px 12px;
-    border: 1px solid rgba(139,92,246,.45);
-    border-radius: 20px;
-    background: #111;
-    font-size: 13px;
+    padding: 7px 10px;
+
+    border: 1px solid var(--purple);
+    border-radius: 10px;
+
+    background: rgba(139,92,246,.07);
+
+    font-size: 12px;
+    font-weight: 700;
 }
 
 .menu-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 1px solid #292929;
-    background: #111;
-    font-size: 18px;
-    cursor: pointer;
+    width: 34px;
+    height: 34px;
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    background: var(--card);
+    color: white;
+
+    font-size: 16px;
 }
 
 /* MAIN */
 
-.main {
-    padding: 16px;
+main {
+    padding: 17px;
 }
 
-.section {
-    margin-bottom: 25px;
+.screen {
+    display: none;
 }
 
-.section-title {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.section-title h2 {
-    font-size: 18px;
-}
-
-.more {
-    color: var(--silver);
-    font-size: 12px;
+.screen.active {
+    display: block;
 }
 
 /* SEARCH */
 
 .search {
-    height: 48px;
     width: 100%;
-    border-radius: 15px;
-    border: 1px solid #292929;
-    background: #111;
+    height: 44px;
+
+    padding: 0 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 13px;
+
+    outline: none;
+
+    background: var(--card);
+    color: white;
+
+    font-size: 13px;
+}
+
+.search:focus {
+    border-color: var(--purple);
+}
+
+.search::placeholder {
+    color: var(--muted);
+}
+
+/* SECTIONS */
+
+.section {
+    margin-top: 23px;
+}
+
+.section-head {
     display: flex;
     align-items: center;
-    padding: 0 15px;
-    gap: 9px;
-    margin-bottom: 23px;
+    justify-content: space-between;
+
+    margin-bottom: 11px;
 }
 
-.search span {
-    font-size: 18px;
+.section-title {
+    font-size: 17px;
+    font-weight: 800;
 }
 
-.search input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: white;
-    font-size: 14px;
+.section-link {
+    color: var(--silver);
+    font-size: 12px;
 }
 
-.search input::placeholder {
-    color: #777;
-}
-
-/* HORIZONTAL ROW */
+/* HORIZONTAL */
 
 .horizontal {
     display: flex;
-    gap: 10px;
+    gap: 9px;
+
     overflow-x: auto;
+
     scrollbar-width: none;
 }
 
@@ -159,544 +191,1181 @@ button {
 /* TOOLS */
 
 .tool {
-    min-width: 105px;
-    height: 78px;
-    border: 1px solid #292929;
-    border-radius: 16px;
-    background: #111;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 7px;
-    cursor: pointer;
-    transition: .2s;
+    flex: 0 0 105px;
+
+    min-height: 88px;
+
+    padding: 11px;
+
+    border: 1px solid var(--border);
+    border-radius: 15px;
+
+    background: var(--card);
+
+    color: white;
+
+    text-align: left;
 }
 
-.tool:hover {
+.tool:active {
     border-color: var(--purple);
 }
 
 .tool-icon {
-    font-size: 24px;
+    font-size: 20px;
+    margin-bottom: 9px;
 }
 
 .tool-name {
     font-size: 12px;
-    color: #ddd;
-    white-space: nowrap;
+    font-weight: 700;
 }
 
-/* QUICK ACTIONS */
+.tool-desc {
+    margin-top: 4px;
 
-.quick-card {
-    min-width: 190px;
-    height: 125px;
-    border-radius: 17px;
-    border: 1px solid #292929;
-    background: linear-gradient(145deg,#151515,#0e0e0e);
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+/* QUICK */
+
+.quick {
+    flex: 0 0 140px;
+
+    min-height: 100px;
+
+    border: 1px solid var(--border);
+    border-radius: 15px;
+
+    background: var(--card);
+
+    color: white;
+
     overflow: hidden;
-    position: relative;
-    cursor: pointer;
+
+    text-align: left;
 }
 
 .quick-preview {
-    height: 78px;
+    height: 53px;
+
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 42px;
+    justify-content: center;
+
     background:
-        radial-gradient(circle at 50% 30%,rgba(139,92,246,.18),transparent 55%);
+        radial-gradient(
+            circle,
+            rgba(139,92,246,.16),
+            transparent 60%
+        );
+
+    font-size: 21px;
 }
 
 .quick-name {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 9px 11px;
-    background: rgba(0,0,0,.75);
-    font-size: 12px;
+    padding: 7px 9px 2px;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.quick-desc {
+    padding: 0 9px;
+
+    color: var(--muted);
+
+    font-size: 9px;
 }
 
 /* TRENDS */
 
 .filters {
     display: flex;
-    gap: 8px;
+    gap: 7px;
+
     margin-bottom: 12px;
 }
 
 .filter {
-    border: 1px solid #292929;
-    background: #111;
-    color: #aaa;
-    border-radius: 20px;
-    padding: 7px 14px;
-    font-size: 12px;
-    cursor: pointer;
+    padding: 7px 11px;
+
+    border: 1px solid var(--border);
+    border-radius: 9px;
+
+    background: var(--card);
+
+    color: var(--silver);
+
+    font-size: 11px;
 }
 
 .filter.active {
     border-color: var(--purple);
     color: white;
-    background: rgba(139,92,246,.12);
+}
+
+.trend-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 10px;
 }
 
 .trend-card {
-    min-width: 155px;
-    height: 205px;
-    border-radius: 17px;
-    border: 1px solid #292929;
-    background: #111;
+    min-height: 160px;
+
+    border: 1px solid var(--border);
+    border-radius: 16px;
+
+    background: var(--card);
+
     overflow: hidden;
-    position: relative;
-    cursor: pointer;
 }
 
 .trend-image {
-    height: 155px;
+    height: 110px;
+
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 55px;
+    justify-content: center;
+
     background:
-        linear-gradient(145deg,#161616,#0d0d0d);
+        radial-gradient(
+            circle,
+            rgba(139,92,246,.18),
+            transparent 55%
+        );
+
+    font-size: 28px;
 }
 
-.trend-label {
-    padding: 10px;
+.trend-name {
+    padding: 9px 10px 2px;
+
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
 }
 
-/* COLLECTIONS */
+.trend-type {
+    padding: 3px 10px 9px;
 
-.collection-card {
-    min-width: 145px;
-    height: 165px;
-    border-radius: 16px;
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+/* COLLECTION */
+
+.collection {
+    position: relative;
+
+    flex: 0 0 130px;
+    height: 100px;
+
+    border: 1px solid var(--border);
+    border-radius: 15px;
+
+    background: var(--card);
+
     overflow: hidden;
-    border: 1px solid #292929;
-    background: #111;
-    cursor: pointer;
 }
 
-.collection-image {
-    height: 115px;
+.collection-bg {
+    height: 100%;
+
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 48px;
+    justify-content: center;
+
     background:
-        radial-gradient(circle,rgba(139,92,246,.18),transparent 65%);
+        radial-gradient(
+            circle,
+            rgba(139,92,246,.16),
+            transparent 60%
+        );
+
+    font-size: 27px;
 }
 
-.collection-name {
-    padding: 10px;
+.collection-title {
+    position: absolute;
+
+    left: 9px;
+    bottom: 8px;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* ================================================= */
+/* AI CHAT */
+/* ================================================= */
+
+.chat-screen {
+    min-height: calc(100vh - 150px);
+
+    display: flex;
+    flex-direction: column;
+}
+
+/* CHAT HEADER */
+
+.assistant-header {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 8px 2px 17px;
+
+    border-bottom: 1px solid #191919;
+}
+
+.assistant-avatar {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--purple);
+    border-radius: 11px;
+
+    background: rgba(139,92,246,.08);
+
+    font-size: 17px;
+}
+
+.assistant-info {
+    flex: 1;
+}
+
+.assistant-name {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.assistant-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    margin-top: 3px;
+
+    color: var(--silver);
+
+    font-size: 10px;
+}
+
+.online-dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: var(--green);
+    box-shadow: 0 0 7px rgba(34,197,94,.7);
+}
+
+
+/* CHAT BODY */
+
+.chat-body {
+    flex: 1;
+
+    padding: 22px 2px 125px;
+}
+
+.welcome {
+    max-width: 320px;
+
+    margin: 45px auto 0;
+
+    text-align: center;
+}
+
+.welcome-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 13px;
+
+    border: 1px solid var(--purple);
+    border-radius: 12px;
+
+    background: rgba(139,92,246,.07);
+
+    font-size: 18px;
+}
+
+.welcome-title {
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.welcome-text {
+    margin-top: 7px;
+
+    color: var(--silver);
+
     font-size: 12px;
-    font-weight: 600;
+    line-height: 1.5;
 }
 
-/* NAVIGATION */
+
+/* MESSAGE */
+
+.message {
+    max-width: 85%;
+
+    margin: 12px 0;
+    padding: 11px 13px;
+
+    border-radius: 14px;
+
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.message.user {
+    margin-left: auto;
+
+    background: rgba(139,92,246,.14);
+
+    border: 1px solid rgba(139,92,246,.3);
+}
+
+.message.ai {
+    margin-right: auto;
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+}
+
+
+/* CHAT INPUT */
+
+.chat-input-area {
+    position: fixed;
+
+    left: 50%;
+    bottom: 69px;
+
+    transform: translateX(-50%);
+
+    width: min(94%, 700px);
+
+    z-index: 25;
+
+    padding: 8px;
+
+    border: 1px solid #292929;
+    border-radius: 17px;
+
+    background: rgba(14,14,14,.96);
+
+    backdrop-filter: blur(15px);
+}
+
+.chat-input-row {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+}
+
+.chat-input {
+    flex: 1;
+
+    height: 40px;
+
+    padding: 0 12px;
+
+    border: 0;
+    outline: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 12px;
+}
+
+.chat-input::placeholder {
+    color: var(--muted);
+}
+
+.send-btn {
+    width: 38px;
+    height: 38px;
+
+    border: 1px solid var(--purple);
+    border-radius: 11px;
+
+    background: rgba(139,92,246,.1);
+
+    color: white;
+
+    font-size: 15px;
+}
+
+
+/* EMPTY */
+
+.empty {
+    padding: 55px 20px;
+
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 30px;
+
+    margin-bottom: 13px;
+}
+
+.empty-title {
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.empty-text {
+    margin-top: 8px;
+
+    color: var(--silver);
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* BOTTOM NAV */
 
 .bottom-nav {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 70px;
-    background: rgba(8,8,8,.96);
-    backdrop-filter: blur(15px);
-    border-top: 1px solid #242424;
+
+    left: 50%;
+    bottom: 9px;
+
+    transform: translateX(-50%);
+
+    z-index: 30;
+
+    width: min(94%, 620px);
+
     display: grid;
     grid-template-columns: repeat(5,1fr);
-    z-index: 50;
+
+    padding: 6px;
+
+    border: 1px solid #292929;
+    border-radius: 18px;
+
+    background: rgba(14,14,14,.95);
+
+    backdrop-filter: blur(18px);
 }
 
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
-    color: #777;
-    font-size: 10px;
-    cursor: pointer;
+.nav-btn {
+    border: 0;
+
+    padding: 6px 2px;
+
+    border-radius: 12px;
+
+    background: transparent;
+
+    color: var(--muted);
+
+    font-size: 9px;
 }
 
 .nav-icon {
-    font-size: 20px;
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 15px;
 }
 
-.nav-item.active {
+.nav-btn.active {
+    background: rgba(139,92,246,.09);
     color: white;
 }
 
-.nav-item.active .nav-icon {
-    filter: drop-shadow(0 0 7px rgba(139,92,246,.6));
-}
 
 /* MODAL */
 
-.modal {
+.modal-bg {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.75);
-    display: none;
-    align-items: flex-end;
+
     z-index: 100;
+
+    display: none;
+
+    align-items: flex-end;
+    justify-content: center;
+
+    background: rgba(0,0,0,.72);
+
+    backdrop-filter: blur(5px);
 }
 
-.modal.show {
+.modal-bg.show {
     display: flex;
 }
 
-.modal-content {
-    width: 100%;
-    background: #111;
+.modal {
+    width: min(100%, 620px);
+
+    padding: 21px;
+
+    border-radius: 22px 22px 0 0;
+
     border: 1px solid #292929;
-    border-radius: 24px 24px 0 0;
-    padding: 22px;
-    animation: slideUp .25s ease;
+    border-bottom: none;
+
+    background: #111;
 }
 
-@keyframes slideUp {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: translateY(0);
-    }
+.modal-title {
+    font-size: 18px;
+    font-weight: 800;
 }
 
-.modal-content h2 {
-    margin-bottom: 10px;
-}
+.modal-text {
+    margin-top: 8px;
 
-.modal-content p {
     color: var(--silver);
-    font-size: 14px;
+
+    font-size: 12px;
     line-height: 1.5;
-    margin-bottom: 18px;
 }
 
-.close {
+.modal-close {
     width: 100%;
-    height: 46px;
-    border-radius: 14px;
-    background: #171717;
+    height: 43px;
+
+    margin-top: 16px;
+
     border: 1px solid var(--purple);
-    cursor: pointer;
+    border-radius: 12px;
+
+    background: rgba(139,92,246,.08);
+
+    color: white;
+
+    font-size: 12px;
 }
 </style>
 </head>
 
+
 <body>
 
+<div class="app">
+
 <header class="header">
-    <div class="logo">Boom<span>AI</span></div>
+
+    <div class="logo">
+        Boom<span>AI</span>
+    </div>
 
     <div class="header-right">
-        <div class="balance">⚡ 100</div>
-        <button class="menu-btn" onclick="openMenu()">☰</button>
+
+        <div class="balance">
+            ⚡ 100
+        </div>
+
+        <button class="menu-btn" onclick="openMenu()">
+            ☰
+        </button>
+
     </div>
+
 </header>
 
-<main class="main">
 
-    <!-- SEARCH -->
+<main>
 
-    <div class="search">
-        <span>🔎</span>
-        <input
-            id="searchInput"
-            type="text"
-            placeholder="Найти идеи и тренды"
-            oninput="searchIdeas()"
-        >
+
+<!-- ================================================= -->
+<!-- ГЛАВНАЯ -->
+<!-- ================================================= -->
+
+<section id="homeScreen" class="screen active">
+
+    <input
+        id="searchInput"
+        class="search"
+        type="text"
+        placeholder="🔎  Найти идеи и тренды"
+        oninput="searchIdeas()"
+    >
+
+
+    <div class="section">
+
+        <div class="section-head">
+
+            <div class="section-title">
+                Создать / Инструменты
+            </div>
+
+        </div>
+
+
+        <div class="horizontal">
+
+            <button class="tool" onclick="openTool('AI Чат')">
+                <div class="tool-icon">💬</div>
+                <div class="tool-name">AI Чат</div>
+                <div class="tool-desc">Ассистент</div>
+            </button>
+
+            <button class="tool" onclick="openTool('Видео')">
+                <div class="tool-icon">🎬</div>
+                <div class="tool-name">Видео</div>
+                <div class="tool-desc">Создание видео</div>
+            </button>
+
+            <button class="tool" onclick="openTool('Картинка')">
+                <div class="tool-icon">🖼</div>
+                <div class="tool-name">Картинка</div>
+                <div class="tool-desc">Генерация фото</div>
+            </button>
+
+            <button class="tool" onclick="openTool('Nano Banana')">
+                <div class="tool-icon">🍌</div>
+                <div class="tool-name">Nano Banana</div>
+                <div class="tool-desc">AI фото</div>
+            </button>
+
+            <button class="tool" onclick="openTool('Инструменты')">
+                <div class="tool-icon">🛠</div>
+                <div class="tool-name">Инструменты</div>
+                <div class="tool-desc">AI tools</div>
+            </button>
+
+            <button class="tool" onclick="openTool('Kling / Veo')">
+                <div class="tool-icon">🎥</div>
+                <div class="tool-name">Kling / Veo</div>
+                <div class="tool-desc">AI видео</div>
+            </button>
+
+        </div>
+
     </div>
 
 
-    <!-- TOOLS -->
+    <div class="section">
 
-    <section class="section">
+        <div class="section-head">
 
-        <div class="section-title">
-            <h2>Создать</h2>
-            <span class="more">Свайп →</span>
+            <div class="section-title">
+                Быстрые инструменты
+            </div>
+
         </div>
+
 
         <div class="horizontal">
 
-            <div class="tool" onclick="openTool('AI Чат')">
-                <div class="tool-icon">💬</div>
-                <div class="tool-name">AI Чат</div>
-            </div>
-
-            <div class="tool" onclick="openTool('Видео')">
-                <div class="tool-icon">🎬</div>
-                <div class="tool-name">Видео</div>
-            </div>
-
-            <div class="tool" onclick="openTool('Картинка')">
-                <div class="tool-icon">🖼️</div>
-                <div class="tool-name">Картинка</div>
-            </div>
-
-            <div class="tool" onclick="openTool('Nano Banana')">
-                <div class="tool-icon">🍌</div>
-                <div class="tool-name">Nano Banana</div>
-            </div>
-
-            <div class="tool" onclick="openTool('Инструменты')">
-                <div class="tool-icon">🛠️</div>
-                <div class="tool-name">Инструменты</div>
-            </div>
-
-            <div class="tool" onclick="openTool('Kling Veo')">
-                <div class="tool-icon">🎥</div>
-                <div class="tool-name">Kling Veo</div>
-            </div>
-
-        </div>
-
-    </section>
-
-
-    <!-- QUICK ACTIONS -->
-
-    <section class="section">
-
-        <div class="section-title">
-            <h2>Быстрые действия</h2>
-            <span class="more">Свайп →</span>
-        </div>
-
-        <div class="horizontal">
-
-            <div class="quick-card" onclick="openTool('Убрать фон')">
+            <button class="quick" onclick="openTool('Убрать фон')">
                 <div class="quick-preview">🪄</div>
                 <div class="quick-name">Убрать фон</div>
-            </div>
+                <div class="quick-desc">Фото → PNG</div>
+            </button>
 
-            <div class="quick-card" onclick="openTool('Реставрация')">
+            <button class="quick" onclick="openTool('Реставрация')">
                 <div class="quick-preview">🖼️</div>
                 <div class="quick-name">Реставрация</div>
-            </div>
+                <div class="quick-desc">Восстановить фото</div>
+            </button>
 
-            <div class="quick-card" onclick="openTool('На документы')">
+            <button class="quick" onclick="openTool('На документы')">
                 <div class="quick-preview">🪪</div>
                 <div class="quick-name">На документы</div>
-            </div>
+                <div class="quick-desc">Подготовить фото</div>
+            </button>
 
-            <div class="quick-card" onclick="openTool('Презентации')">
+            <button class="quick" onclick="openTool('Презентации')">
                 <div class="quick-preview">📊</div>
                 <div class="quick-name">Презентации</div>
+                <div class="quick-desc">AI презентации</div>
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <div class="section-head">
+
+            <div class="section-title">
+                🔥 Тренды
+            </div>
+
+            <div class="section-link">
+                Посмотреть все →
             </div>
 
         </div>
 
-    </section>
-
-
-    <!-- TRENDS -->
-
-    <section class="section">
-
-        <div class="section-title">
-            <h2>🔥 Тренды</h2>
-            <span class="more">Посмотреть все →</span>
-        </div>
 
         <div class="filters">
+
             <button
                 class="filter active"
-                onclick="filterTrends('photo',this)"
+                onclick="filterTrends('photo', this)"
             >
                 📷 Фото
             </button>
 
             <button
                 class="filter"
-                onclick="filterTrends('video',this)"
+                onclick="filterTrends('video', this)"
             >
                 🎬 Видео
             </button>
+
         </div>
 
-        <div class="horizontal" id="trends">
 
-            <div class="trend-card" data-type="photo">
+        <div class="trend-grid" id="trendGrid">
+
+            <div
+                class="trend-card"
+                data-type="photo"
+                data-name="AI Портрет"
+            >
                 <div class="trend-image">👤</div>
-                <div class="trend-label">AI Портрет</div>
+                <div class="trend-name">AI Портрет</div>
+                <div class="trend-type">Фото</div>
             </div>
 
-            <div class="trend-card" data-type="photo">
-                <div class="trend-image">👔</div>
-                <div class="trend-label">Новый стиль</div>
+
+            <div
+                class="trend-card"
+                data-type="photo"
+                data-name="Новый стиль"
+            >
+                <div class="trend-image">✨</div>
+                <div class="trend-name">Новый стиль</div>
+                <div class="trend-type">Фото</div>
             </div>
 
-            <div class="trend-card" data-type="photo">
+
+            <div
+                class="trend-card"
+                data-type="photo"
+                data-name="Luxury Auto"
+            >
                 <div class="trend-image">🚗</div>
-                <div class="trend-label">Luxury Auto</div>
+                <div class="trend-name">Luxury Auto</div>
+                <div class="trend-type">Фото</div>
             </div>
 
-            <div class="trend-card" data-type="video">
+
+            <div
+                class="trend-card"
+                data-type="video"
+                data-name="Cinematic"
+            >
                 <div class="trend-image">🎬</div>
-                <div class="trend-label">Cinematic</div>
+                <div class="trend-name">Cinematic</div>
+                <div class="trend-type">Видео</div>
             </div>
 
-            <div class="trend-card" data-type="video">
+
+            <div
+                class="trend-card"
+                data-type="video"
+                data-name="AI Dance"
+            >
                 <div class="trend-image">💃</div>
-                <div class="trend-label">AI Dance</div>
+                <div class="trend-name">AI Dance</div>
+                <div class="trend-type">Видео</div>
+            </div>
+
+
+            <div
+                class="trend-card"
+                data-type="video"
+                data-name="Music Video"
+            >
+                <div class="trend-image">🎵</div>
+                <div class="trend-name">Music Video</div>
+                <div class="trend-type">Видео</div>
             </div>
 
         </div>
 
-    </section>
+    </div>
 
 
-    <!-- PHOTO COLLECTIONS -->
+    <div class="section">
 
-    <section class="section">
-
-        <div class="section-title">
-            <h2>🖼️ Фото</h2>
-            <span class="more">Все →</span>
+        <div class="section-head">
+            <div class="section-title">📷 Фото</div>
+            <div class="section-link">Все →</div>
         </div>
+
 
         <div class="horizontal">
 
-            <div class="collection-card">
-                <div class="collection-image">🔥</div>
-                <div class="collection-name">Популярное</div>
-            </div>
+            <button class="collection">
+                <div class="collection-bg">🔥</div>
+                <div class="collection-title">Популярное</div>
+            </button>
 
-            <div class="collection-card">
-                <div class="collection-image">👤</div>
-                <div class="collection-name">Портреты</div>
-            </div>
+            <button class="collection">
+                <div class="collection-bg">👤</div>
+                <div class="collection-title">Портреты</div>
+            </button>
 
-            <div class="collection-card">
-                <div class="collection-image">👔</div>
-                <div class="collection-name">Стиль</div>
-            </div>
+            <button class="collection">
+                <div class="collection-bg">👔</div>
+                <div class="collection-title">Стиль</div>
+            </button>
 
-            <div class="collection-card">
-                <div class="collection-image">🚗</div>
-                <div class="collection-name">Авто</div>
-            </div>
+            <button class="collection">
+                <div class="collection-bg">🚗</div>
+                <div class="collection-title">Авто</div>
+            </button>
 
-            <div class="collection-card">
-                <div class="collection-image">🎨</div>
-                <div class="collection-name">Арт</div>
-            </div>
+            <button class="collection">
+                <div class="collection-bg">🎨</div>
+                <div class="collection-title">Арт</div>
+            </button>
 
-            <div class="collection-card">
-                <div class="collection-image">😂</div>
-                <div class="collection-name">Мемы</div>
-            </div>
+            <button class="collection">
+                <div class="collection-bg">😂</div>
+                <div class="collection-title">Мемы</div>
+            </button>
 
         </div>
 
-    </section>
+    </div>
 
 
-    <!-- VIDEO COLLECTIONS -->
+    <div class="section">
 
-    <section class="section">
-
-        <div class="section-title">
-            <h2>🎬 Видео</h2>
-            <span class="more">Все →</span>
+        <div class="section-head">
+            <div class="section-title">🎬 Видео</div>
+            <div class="section-link">Все →</div>
         </div>
+
 
         <div class="horizontal">
 
-            <div class="collection-card">
-                <div class="collection-image">🔥</div>
-                <div class="collection-name">Популярное</div>
+            <button class="collection">
+                <div class="collection-bg">🔥</div>
+                <div class="collection-title">Популярное</div>
+            </button>
+
+            <button class="collection">
+                <div class="collection-bg">✨</div>
+                <div class="collection-title">Эффекты</div>
+            </button>
+
+            <button class="collection">
+                <div class="collection-bg">🎬</div>
+                <div class="collection-title">Cinematic</div>
+            </button>
+
+            <button class="collection">
+                <div class="collection-bg">😂</div>
+                <div class="collection-title">Мемы</div>
+            </button>
+
+            <button class="collection">
+                <div class="collection-bg">🎵</div>
+                <div class="collection-title">Музыка</div>
+            </button>
+
+            <button class="collection">
+                <div class="collection-bg">📱</div>
+                <div class="collection-title">TikTok / Reels</div>
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- AI ЧАТ / СОЗДАТЬ -->
+<!-- ================================================= -->
+
+<section id="createScreen" class="screen">
+
+    <div class="chat-screen">
+
+
+        <!-- ASSISTANT -->
+
+        <div class="assistant-header">
+
+            <div class="assistant-avatar">
+                ✦
             </div>
 
-            <div class="collection-card">
-                <div class="collection-image">✨</div>
-                <div class="collection-name">Эффекты</div>
-            </div>
+            <div class="assistant-info">
 
-            <div class="collection-card">
-                <div class="collection-image">🎬</div>
-                <div class="collection-name">Cinematic</div>
-            </div>
+                <div class="assistant-name">
+                    Ассистент
+                </div>
 
-            <div class="collection-card">
-                <div class="collection-image">😂</div>
-                <div class="collection-name">Мемы</div>
-            </div>
+                <div class="assistant-status">
+                    <span class="online-dot"></span>
+                    Онлайн
+                </div>
 
-            <div class="collection-card">
-                <div class="collection-image">🎵</div>
-                <div class="collection-name">Музыка</div>
-            </div>
-
-            <div class="collection-card">
-                <div class="collection-image">📱</div>
-                <div class="collection-name">TikTok / Reels</div>
             </div>
 
         </div>
 
-    </section>
+
+        <!-- CHAT -->
+
+        <div class="chat-body" id="chatBody">
+
+            <div class="welcome">
+
+                <div class="welcome-icon">
+                    ✦
+                </div>
+
+                <div class="welcome-title">
+                    Чем займёмся?
+                </div>
+
+                <div class="welcome-text">
+                    Напиши, что хочешь создать,
+                    а я помогу подобрать подходящий
+                    способ и инструмент.
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- ИДЕИ -->
+<!-- ================================================= -->
+
+<section id="ideasScreen" class="screen">
+
+    <div class="empty">
+
+        <div class="empty-icon">
+            💡
+        </div>
+
+        <div class="empty-title">
+            Идеи
+        </div>
+
+        <div class="empty-text">
+            Здесь будет библиотека трендов,
+            эффектов, шаблонов и готовых идей
+            для фото и видео.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- ИСТОРИЯ -->
+<!-- ================================================= -->
+
+<section id="historyScreen" class="screen">
+
+    <div class="empty">
+
+        <div class="empty-icon">
+            🕘
+        </div>
+
+        <div class="empty-title">
+            История
+        </div>
+
+        <div class="empty-text">
+            Здесь будут храниться твои
+            изображения, видео и другие результаты.
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================================================= -->
+<!-- ПРОФИЛЬ -->
+<!-- ================================================= -->
+
+<section id="profileScreen" class="screen">
+
+    <div class="empty">
+
+        <div class="empty-icon">
+            👤
+        </div>
+
+        <div class="empty-title">
+            Профиль
+        </div>
+
+        <div class="empty-text">
+            Баланс, платежи, рефералы
+            и настройки аккаунта.
+        </div>
+
+    </div>
+
+</section>
 
 </main>
 
 
+<!-- ================================================= -->
+<!-- CHAT INPUT -->
+<!-- ================================================= -->
+
+<div class="chat-input-area">
+
+    <div class="chat-input-row">
+
+        <input
+            id="chatInput"
+            class="chat-input"
+            type="text"
+            placeholder="🔎  Напиши мне, что создадим"
+            onkeydown="handleEnter(event)"
+        >
+
+        <button
+            class="send-btn"
+            onclick="sendMessage()"
+        >
+            ↑
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================================================= -->
 <!-- BOTTOM NAV -->
+<!-- ================================================= -->
 
 <nav class="bottom-nav">
 
-    <div class="nav-item active" onclick="navigate('Главная',this)">
-        <div class="nav-icon">🏠</div>
-        <div>Главная</div>
-    </div>
+    <button
+        class="nav-btn active"
+        onclick="navigate('home', this)"
+    >
+        <span class="nav-icon">⌂</span>
+        Главная
+    </button>
 
-    <div class="nav-item" onclick="navigate('Идеи',this)">
-        <div class="nav-icon">💡</div>
-        <div>Идеи</div>
-    </div>
 
-    <div class="nav-item" onclick="navigate('Создать',this)">
-        <div class="nav-icon">＋</div>
-        <div>Создать</div>
-    </div>
+    <button
+        class="nav-btn"
+        onclick="navigate('ideas', this)"
+    >
+        <span class="nav-icon">✦</span>
+        Идеи
+    </button>
 
-    <div class="nav-item" onclick="navigate('История',this)">
-        <div class="nav-icon">🕘</div>
-        <div>История</div>
-    </div>
 
-    <div class="nav-item" onclick="navigate('Профиль',this)">
-        <div class="nav-icon">👤</div>
-        <div>Профиль</div>
-    </div>
+    <button
+        class="nav-btn"
+        onclick="navigate('create', this)"
+    >
+        <span class="nav-icon">＋</span>
+        Создать
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="navigate('history', this)"
+    >
+        <span class="nav-icon">◷</span>
+        История
+    </button>
+
+
+    <button
+        class="nav-btn"
+        onclick="navigate('profile', this)"
+    >
+        <span class="nav-icon">○</span>
+        Профиль
+    </button>
 
 </nav>
 
 
+<!-- ================================================= -->
 <!-- MODAL -->
+<!-- ================================================= -->
 
-<div class="modal" id="modal" onclick="closeModal(event)">
+<div
+    id="modalBg"
+    class="modal-bg"
+    onclick="closeModal(event)"
+>
 
-    <div class="modal-content">
+    <div
+        class="modal"
+        onclick="event.stopPropagation()"
+    >
 
-        <h2 id="modalTitle">BoomAI</h2>
+        <div
+            id="modalTitle"
+            class="modal-title"
+        >
+            BoomAI
+        </div>
 
-        <p id="modalText">
-            Здесь появится функционал BoomAI.
-        </p>
+        <div
+            id="modalText"
+            class="modal-text"
+        >
+            Функция будет подключена позже.
+        </div>
 
-        <button class="close" onclick="closeModal()">
+        <button
+            class="modal-close"
+            onclick="closeModal()"
+        >
             Закрыть
         </button>
 
@@ -707,115 +1376,306 @@ button {
 
 <script>
 
-/* TOOL */
+/* ================================================= */
+/* НАВИГАЦИЯ */
+/* ================================================= */
+
+function navigate(screen, element) {
+
+    document
+        .querySelectorAll('.screen')
+        .forEach(function(item) {
+
+            item.classList.remove('active');
+
+        });
+
+
+    document
+        .querySelectorAll('.nav-btn')
+        .forEach(function(item) {
+
+            item.classList.remove('active');
+
+        });
+
+
+    if (screen === 'home') {
+
+        document
+            .getElementById('homeScreen')
+            .classList.add('active');
+
+    }
+
+
+    if (screen === 'ideas') {
+
+        document
+            .getElementById('ideasScreen')
+            .classList.add('active');
+
+    }
+
+
+    if (screen === 'create') {
+
+        document
+            .getElementById('createScreen')
+            .classList.add('active');
+
+    }
+
+
+    if (screen === 'history') {
+
+        document
+            .getElementById('historyScreen')
+            .classList.add('active');
+
+    }
+
+
+    if (screen === 'profile') {
+
+        document
+            .getElementById('profileScreen')
+            .classList.add('active');
+
+    }
+
+
+    element.classList.add('active');
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+
+}
+
+
+/* ================================================= */
+/* AI CHAT */
+/* ================================================= */
+
+function sendMessage() {
+
+    const input =
+        document.getElementById('chatInput');
+
+    const text =
+        input.value.trim();
+
+
+    if (!text) {
+        return;
+    }
+
+
+    const chat =
+        document.getElementById('chatBody');
+
+
+    const welcome =
+        chat.querySelector('.welcome');
+
+
+    if (welcome) {
+        welcome.remove();
+    }
+
+
+    const userMessage =
+        document.createElement('div');
+
+    userMessage.className =
+        'message user';
+
+    userMessage.textContent =
+        text;
+
+
+    chat.appendChild(userMessage);
+
+
+    input.value = '';
+
+
+    setTimeout(function() {
+
+        const aiMessage =
+            document.createElement('div');
+
+        aiMessage.className =
+            'message ai';
+
+        aiMessage.textContent =
+            'Понял 👌 Сейчас я ещё не подключён к AI, но следующим этапом мы подключим настоящего ассистента.';
+
+        chat.appendChild(aiMessage);
+
+
+        window.scrollTo({
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+        });
+
+    }, 500);
+
+}
+
+
+/* ENTER */
+
+function handleEnter(event) {
+
+    if (event.key === 'Enter') {
+
+        sendMessage();
+
+    }
+
+}
+
+
+/* ================================================= */
+/* ИНСТРУМЕНТЫ */
+/* ================================================= */
 
 function openTool(name) {
 
-    document.getElementById("modalTitle").textContent = name;
+    document.getElementById('modalTitle').textContent =
+        name;
 
-    document.getElementById("modalText").textContent =
-        "Функционал «" + name +
-        "» подключим следующим этапом.";
 
-    document.getElementById("modal").classList.add("show");
+    document.getElementById('modalText').textContent =
+        'Инструмент «' +
+        name +
+        '» подключим следующим этапом.';
+
+
+    document
+        .getElementById('modalBg')
+        .classList.add('show');
+
 }
 
 
-/* MENU */
+/* ================================================= */
+/* МЕНЮ */
+/* ================================================= */
 
 function openMenu() {
 
-    document.getElementById("modalTitle").textContent =
-        "Меню BoomAI";
+    document.getElementById('modalTitle').textContent =
+        'Меню BoomAI';
 
-    document.getElementById("modalText").textContent =
-        "Здесь позже появятся настройки, помощь и дополнительные функции.";
 
-    document.getElementById("modal").classList.add("show");
+    document.getElementById('modalText').textContent =
+        'Здесь позже появятся настройки, поддержка и другие функции.';
+
+
+    document
+        .getElementById('modalBg')
+        .classList.add('show');
+
 }
 
 
-/* CLOSE MODAL */
+/* ================================================= */
+/* MODAL */
+/* ================================================= */
 
 function closeModal(event) {
 
-    if (!event || event.target.id === "modal") {
-        document.getElementById("modal").classList.remove("show");
+    if (
+        !event ||
+        event.target ===
+        document.getElementById('modalBg')
+    ) {
+
+        document
+            .getElementById('modalBg')
+            .classList.remove('show');
+
     }
+
 }
 
 
-/* NAVIGATION */
-
-function navigate(name, element) {
-
-    document
-        .querySelectorAll(".nav-item")
-        .forEach(item => item.classList.remove("active"));
-
-    element.classList.add("active");
-
-    if (name !== "Главная") {
-
-        document.getElementById("modalTitle").textContent =
-            name;
-
-        document.getElementById("modalText").textContent =
-            "Раздел «" + name +
-            "» сейчас находится в разработке.";
-
-        document.getElementById("modal").classList.add("show");
-    }
-}
-
-
-/* TREND FILTER */
+/* ================================================= */
+/* ФИЛЬТР ТРЕНДОВ */
+/* ================================================= */
 
 function filterTrends(type, button) {
 
     document
-        .querySelectorAll(".filter")
-        .forEach(btn => btn.classList.remove("active"));
+        .querySelectorAll('.filter')
+        .forEach(function(item) {
 
-    button.classList.add("active");
+            item.classList.remove('active');
+
+        });
+
+
+    button.classList.add('active');
+
 
     document
-        .querySelectorAll(".trend-card")
-        .forEach(card => {
+        .querySelectorAll('.trend-card')
+        .forEach(function(card) {
 
             if (card.dataset.type === type) {
-                card.style.display = "block";
+
+                card.style.display = 'block';
+
             } else {
-                card.style.display = "none";
+
+                card.style.display = 'none';
+
             }
 
         });
+
 }
 
 
-/* SEARCH */
+/* ================================================= */
+/* ПОИСК */
+/* ================================================= */
 
 function searchIdeas() {
 
-    const value =
-        document.getElementById("searchInput")
-        .value
-        .toLowerCase();
+    const query =
+        document
+            .getElementById('searchInput')
+            .value
+            .toLowerCase()
+            .trim();
+
 
     document
-        .querySelectorAll(".trend-card")
-        .forEach(card => {
+        .querySelectorAll('.trend-card')
+        .forEach(function(card) {
 
-            const text =
-                card.textContent.toLowerCase();
+            const name =
+                card.dataset.name.toLowerCase();
 
-            if (text.includes(value)) {
-                card.style.display = "block";
+
+            if (name.includes(query)) {
+
+                card.style.display = 'block';
+
             } else {
-                card.style.display = "none";
+
+                card.style.display = 'none';
+
             }
 
         });
+
 }
 
 </script>
