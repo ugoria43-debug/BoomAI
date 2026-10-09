@@ -1,1684 +1,629 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>BoomAI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#09090D">
+<title>BoomAI — AI Studio</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 :root {
-    --bg: #080808;
-    --card: #111111;
-    --card2: #151515;
-    --border: #292929;
-    --purple: #8b5cf6;
-    --purple-soft: rgba(139,92,246,.18);
-    --white: #fff;
-    --silver: #a1a1aa;
-    --muted: #71717a;
-    --green: #22c55e;
-}
-
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--white);
-    font-family: Arial, Helvetica, sans-serif;
-    min-height: 100vh;
-}
-
-button,
-input,
-textarea {
-    font: inherit;
-}
-
-button {
-    cursor: pointer;
-}
-
-.app {
-    max-width: 760px;
-    margin: 0 auto;
-    padding-bottom: 88px;
-}
-
-/* HEADER */
-
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 20;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 14px 17px;
-
-    background: rgba(8,8,8,.94);
-    backdrop-filter: blur(16px);
-
-    border-bottom: 1px solid #171717;
-}
-
-.logo {
-    font-size: 21px;
-    font-weight: 800;
-}
-
-.logo span {
-    color: var(--purple);
-}
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.balance {
-    padding: 7px 10px;
-
-    border: 1px solid var(--purple);
-    border-radius: 10px;
-
-    background: rgba(139,92,246,.07);
-
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.menu-btn {
-    width: 34px;
-    height: 34px;
-
-    border: 1px solid var(--border);
-    border-radius: 10px;
-
-    background: var(--card);
-    color: white;
-
-    font-size: 16px;
-}
-
-/* MAIN */
-
-main {
-    padding: 17px;
-}
-
-.screen {
-    display: none;
-}
-
-.screen.active {
-    display: block;
-}
-
-/* SEARCH */
-
-.search {
-    width: 100%;
-    height: 44px;
-
-    padding: 0 14px;
-
-    border: 1px solid var(--border);
-    border-radius: 13px;
-
-    outline: none;
-
-    background: var(--card);
-    color: white;
-
-    font-size: 13px;
-}
-
-.search:focus {
-    border-color: var(--purple);
-}
-
-.search::placeholder {
-    color: var(--muted);
-}
-
-/* SECTIONS */
-
-.section {
-    margin-top: 23px;
-}
-
-.section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    margin-bottom: 11px;
-}
-
-.section-title {
-    font-size: 17px;
-    font-weight: 800;
-}
-
-.section-link {
-    color: var(--silver);
-    font-size: 12px;
-}
-
-/* HORIZONTAL */
-
-.horizontal {
-    display: flex;
-    gap: 9px;
-
-    overflow-x: auto;
-
-    scrollbar-width: none;
-}
-
-.horizontal::-webkit-scrollbar {
-    display: none;
-}
-
-/* TOOLS */
-
-.tool {
-    flex: 0 0 105px;
-
-    min-height: 88px;
-
-    padding: 11px;
-
-    border: 1px solid var(--border);
-    border-radius: 15px;
-
-    background: var(--card);
-
-    color: white;
-
-    text-align: left;
-}
-
-.tool:active {
-    border-color: var(--purple);
-}
-
-.tool-icon {
-    font-size: 20px;
-    margin-bottom: 9px;
-}
-
-.tool-name {
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.tool-desc {
-    margin-top: 4px;
-
-    color: var(--muted);
-
-    font-size: 9px;
-}
-
-/* QUICK */
-
-.quick {
-    flex: 0 0 140px;
-
-    min-height: 100px;
-
-    border: 1px solid var(--border);
-    border-radius: 15px;
-
-    background: var(--card);
-
-    color: white;
-
-    overflow: hidden;
-
-    text-align: left;
-}
-
-.quick-preview {
-    height: 53px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(139,92,246,.16),
-            transparent 60%
-        );
-
-    font-size: 21px;
-}
-
-.quick-name {
-    padding: 7px 9px 2px;
-
-    font-size: 11px;
-    font-weight: 700;
-}
-
-.quick-desc {
-    padding: 0 9px;
-
-    color: var(--muted);
-
-    font-size: 9px;
-}
-
-/* TRENDS */
-
-.filters {
-    display: flex;
-    gap: 7px;
-
-    margin-bottom: 12px;
-}
-
-.filter {
-    padding: 7px 11px;
-
-    border: 1px solid var(--border);
-    border-radius: 9px;
-
-    background: var(--card);
-
-    color: var(--silver);
-
-    font-size: 11px;
-}
-
-.filter.active {
-    border-color: var(--purple);
-    color: white;
-}
-
-.trend-grid {
-    display: grid;
-    grid-template-columns: repeat(2,1fr);
-    gap: 10px;
-}
-
-.trend-card {
-    min-height: 160px;
-
-    border: 1px solid var(--border);
-    border-radius: 16px;
-
-    background: var(--card);
-
-    overflow: hidden;
-}
-
-.trend-image {
-    height: 110px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(139,92,246,.18),
-            transparent 55%
-        );
-
-    font-size: 28px;
-}
-
-.trend-name {
-    padding: 9px 10px 2px;
-
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.trend-type {
-    padding: 3px 10px 9px;
-
-    color: var(--muted);
-
-    font-size: 9px;
-}
-
-/* COLLECTION */
-
-.collection {
-    position: relative;
-
-    flex: 0 0 130px;
-    height: 100px;
-
-    border: 1px solid var(--border);
-    border-radius: 15px;
-
-    background: var(--card);
-
-    overflow: hidden;
-}
-
-.collection-bg {
-    height: 100%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        radial-gradient(
-            circle,
-            rgba(139,92,246,.16),
-            transparent 60%
-        );
-
-    font-size: 27px;
-}
-
-.collection-title {
-    position: absolute;
-
-    left: 9px;
-    bottom: 8px;
-
-    font-size: 10px;
-    font-weight: 700;
-}
-
-
-/* ================================================= */
-/* AI CHAT */
-/* ================================================= */
-
-.chat-screen {
-    min-height: calc(100vh - 150px);
-
-    display: flex;
-    flex-direction: column;
-}
-
-/* CHAT HEADER */
-
-.assistant-header {
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 8px 2px 17px;
-
-    border-bottom: 1px solid #191919;
-}
-
-.assistant-avatar {
-    width: 34px;
-    height: 34px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border: 1px solid var(--purple);
-    border-radius: 11px;
-
-    background: rgba(139,92,246,.08);
-
-    font-size: 17px;
-}
-
-.assistant-info {
-    flex: 1;
-}
-
-.assistant-name {
-    font-size: 14px;
-    font-weight: 800;
-}
-
-.assistant-status {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-
-    margin-top: 3px;
-
-    color: var(--silver);
-
-    font-size: 10px;
-}
-
-.online-dot {
-    width: 6px;
-    height: 6px;
-
-    border-radius: 50%;
-
-    background: var(--green);
-    box-shadow: 0 0 7px rgba(34,197,94,.7);
-}
-
-
-/* CHAT BODY */
-
-.chat-body {
-    flex: 1;
-
-    padding: 22px 2px 125px;
-}
-
-.welcome {
-    max-width: 320px;
-
-    margin: 45px auto 0;
-
-    text-align: center;
-}
-
-.welcome-icon {
-    width: 38px;
-    height: 38px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    margin: 0 auto 13px;
-
-    border: 1px solid var(--purple);
-    border-radius: 12px;
-
-    background: rgba(139,92,246,.07);
-
-    font-size: 18px;
-}
-
-.welcome-title {
-    font-size: 18px;
-    font-weight: 800;
-}
-
-.welcome-text {
-    margin-top: 7px;
-
-    color: var(--silver);
-
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-
-/* MESSAGE */
-
-.message {
-    max-width: 85%;
-
-    margin: 12px 0;
-    padding: 11px 13px;
-
-    border-radius: 14px;
-
-    font-size: 13px;
-    line-height: 1.45;
-}
-
-.message.user {
-    margin-left: auto;
-
-    background: rgba(139,92,246,.14);
-
-    border: 1px solid rgba(139,92,246,.3);
-}
-
-.message.ai {
-    margin-right: auto;
-
-    background: var(--card);
-
-    border: 1px solid var(--border);
-}
-
-
-/* CHAT INPUT */
-
-.chat-input-area {
-    position: fixed;
-
-    left: 50%;
-    bottom: 69px;
-
-    transform: translateX(-50%);
-
-    width: min(94%, 700px);
-
-    z-index: 25;
-
-    padding: 8px;
-
-    border: 1px solid #292929;
-    border-radius: 17px;
-
-    background: rgba(14,14,14,.96);
-
-    backdrop-filter: blur(15px);
-}
-
-.chat-input-row {
-    display: flex;
-    align-items: center;
-
-    gap: 7px;
-}
-
-.chat-input {
-    flex: 1;
-
-    height: 40px;
-
-    padding: 0 12px;
-
-    border: 0;
-    outline: none;
-
-    background: transparent;
-
-    color: white;
-
-    font-size: 12px;
-}
-
-.chat-input::placeholder {
-    color: var(--muted);
-}
-
-.send-btn {
-    width: 38px;
-    height: 38px;
-
-    border: 1px solid var(--purple);
-    border-radius: 11px;
-
-    background: rgba(139,92,246,.1);
-
-    color: white;
-
-    font-size: 15px;
-}
-
-
-/* EMPTY */
-
-.empty {
-    padding: 55px 20px;
-
-    text-align: center;
-}
-
-.empty-icon {
-    font-size: 30px;
-
-    margin-bottom: 13px;
-}
-
-.empty-title {
-    font-size: 19px;
-    font-weight: 800;
-}
-
-.empty-text {
-    margin-top: 8px;
-
-    color: var(--silver);
-
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-
-/* BOTTOM NAV */
-
-.bottom-nav {
-    position: fixed;
-
-    left: 50%;
-    bottom: 9px;
-
-    transform: translateX(-50%);
-
-    z-index: 30;
-
-    width: min(94%, 620px);
-
-    display: grid;
-    grid-template-columns: repeat(5,1fr);
-
-    padding: 6px;
-
-    border: 1px solid #292929;
-    border-radius: 18px;
-
-    background: rgba(14,14,14,.95);
-
-    backdrop-filter: blur(18px);
-}
-
-.nav-btn {
-    border: 0;
-
-    padding: 6px 2px;
-
-    border-radius: 12px;
-
-    background: transparent;
-
-    color: var(--muted);
-
-    font-size: 9px;
-}
-
-.nav-icon {
-    display: block;
-
-    margin-bottom: 3px;
-
-    font-size: 15px;
-}
-
-.nav-btn.active {
-    background: rgba(139,92,246,.09);
-    color: white;
-}
-
-
-/* MODAL */
-
-.modal-bg {
-    position: fixed;
-    inset: 0;
-
-    z-index: 100;
-
-    display: none;
-
-    align-items: flex-end;
-    justify-content: center;
-
-    background: rgba(0,0,0,.72);
-
-    backdrop-filter: blur(5px);
-}
-
-.modal-bg.show {
-    display: flex;
-}
-
-.modal {
-    width: min(100%, 620px);
-
-    padding: 21px;
-
-    border-radius: 22px 22px 0 0;
-
-    border: 1px solid #292929;
-    border-bottom: none;
-
-    background: #111;
-}
-
-.modal-title {
-    font-size: 18px;
-    font-weight: 800;
-}
-
-.modal-text {
-    margin-top: 8px;
-
-    color: var(--silver);
-
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-.modal-close {
-    width: 100%;
-    height: 43px;
-
-    margin-top: 16px;
-
-    border: 1px solid var(--purple);
-    border-radius: 12px;
-
-    background: rgba(139,92,246,.08);
-
-    color: white;
-
-    font-size: 12px;
+  --bg: #09090D;
+  --panel: #111117;
+  --panel2: #171720;
+  --border: #292832;
+  --purple: #8264D8;
+  --purple2: #6846B5;
+  --text: #F3F2F8;
+  --muted: #9693A2;
+  --glow: rgba(130, 100, 216, 0.09);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}
+button{color:inherit;cursor:pointer;transition:transform .15s ease,border-color .2s ease}
+button:active{transform:scale(.97)}
+
+.app{max-width:760px;margin:auto;padding-bottom:110px}
+.header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px;background:rgba(9,9,13,.91);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}
+.logo{font-size:22px;font-weight:900;letter-spacing:-.8px;white-space:nowrap}
+.logo span{color:var(--purple);text-shadow:0 0 10px rgba(130,100,216,.16)}
+.header-right{display:flex;align-items:center;gap:8px}
+.balance{padding:8px 11px;background:linear-gradient(135deg,#191720,#111117);border:1px solid rgba(130,100,216,.18);border-radius:12px;font-size:12px;font-weight:800;white-space:nowrap}
+.mode-btn{display:flex;align-items:center;gap:5px;padding:8px 10px;border:1px solid rgba(130,100,216,.24);border-radius:12px;background:linear-gradient(135deg,#211b2d,#15141c);font-size:11px;font-weight:800;white-space:nowrap;color:#d5cbed}
+.menu-btn{width:38px;height:38px;border:1px solid var(--border);border-radius:12px;background:var(--panel);font-size:17px}
+main{padding:18px}
+.screen{display:none;animation:fadeIn .25s ease-in-out}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.search{width:100%;height:46px;padding:0 16px;border:1px solid var(--border);border-radius:14px;background:var(--panel);color:white;outline:none;font-size:13px;transition:all .2s}
+.search:focus{border-color:var(--purple);box-shadow:0 0 12px var(--glow)}
+.section{margin-top:26px}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
+.section-title{font-size:17px;font-weight:850;letter-spacing:-.3px}
+.section-link{border:0;background:none;color:#aa9acb;font-size:11px;font-weight:700}
+.horizontal{display:flex;gap:11px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.horizontal::-webkit-scrollbar{display:none}
+
+.tool{flex:0 0 102px;height:90px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(145deg,#15141b,#0e0e13);text-align:left;transition:all .2s}
+.tool:hover,.tool:active{border-color:var(--purple);box-shadow:0 4px 16px var(--glow)}
+.tool-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(130,100,216,.22);border-radius:10px;background:linear-gradient(135deg,#25202f,#191720);color:#d0c4eb;font-size:14px}
+.tool-name{font-size:11px;font-weight:800;white-space:nowrap}
+
+.quick{flex:0 0 128px;height:112px;padding:0;border:1px solid var(--border);border-radius:16px;background:var(--panel);overflow:hidden;text-align:left;transition:all .2s}
+.quick:hover,.quick:active{border-color:var(--purple);box-shadow:0 4px 16px var(--glow)}
+.quick-image{height:70px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#25202f,#17151d);font-size:22px;color:#d0c4eb}
+.quick-name{padding:10px 12px;font-size:11px;font-weight:800}
+
+.filters{display:flex;gap:8px;margin-bottom:13px}
+.filter{padding:8px 14px;border:1px solid var(--border);border-radius:11px;background:var(--panel);color:#aaa7b5;font-size:11px;font-weight:750;transition:all .2s}
+.filter.active{background:linear-gradient(135deg,#282332,#1b1922);border-color:#65538a;color:#eee8fa;box-shadow:0 0 8px rgba(130,100,216,.08)}
+
+.trend-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.trend-card{border:1px solid var(--border);border-radius:18px;background:var(--panel);overflow:hidden;cursor:pointer;transition:all .25s}
+.trend-card:hover{transform:translateY(-2px);border-color:rgba(130,100,216,.25);box-shadow:0 8px 22px rgba(0,0,0,.35)}
+.trend-image{height:160px;background:#17151c;overflow:hidden}
+.trend-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
+.trend-card:hover .trend-image img{transform:scale(1.06)}
+.trend-name{padding:12px 12px 13px;font-size:12px;font-weight:800}
+
+.collection{position:relative;flex:0 0 134px;height:108px;border:1px solid var(--border);border-radius:16px;background:var(--panel);overflow:hidden;transition:all .2s}
+.collection:hover{border-color:rgba(130,100,216,.28)}
+.collection img{width:100%;height:100%;object-fit:cover;opacity:.82;transition:transform .4s}
+.collection:hover img{transform:scale(1.05)}
+.collection:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.85),transparent 70%)}
+.collection-title{position:absolute;z-index:1;left:11px;bottom:11px;font-size:11px;font-weight:800}
+
+.bottom-nav{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:30;width:min(94%,600px);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:6px;border:1px solid rgba(255,255,255,.07);border-radius:20px;background:rgba(17,17,23,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 10px 30px rgba(0,0,0,.48)}
+.nav-btn{min-width:0;border:0;padding:8px 2px;border-radius:14px;background:transparent;color:#85818f;font-size:9px;font-weight:700;transition:all .2s}
+.nav-icon{display:block;margin-bottom:4px;font-size:17px}
+.nav-btn.active{background:linear-gradient(135deg,#292332,#1c1924);color:#f3effb;box-shadow:0 0 8px rgba(130,100,216,.07)}
+
+.chat-screen{min-height:calc(100vh - 180px);display:flex;flex-direction:column}
+.assistant-header{display:flex;align-items:center;gap:11px;padding:8px 0 16px;border-bottom:1px solid var(--border)}
+.assistant-avatar{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(130,100,216,.25);border-radius:13px;background:linear-gradient(135deg,#25202f,#17151e);font-size:19px;color:#d0c4eb}
+.assistant-name{font-size:14px;font-weight:850}
+.assistant-status{margin-top:3px;color:#9693a2;font-size:10px;font-weight:600}
+.chat-body{padding:20px 2px 130px}
+.welcome{max-width:320px;margin:45px auto;text-align:center}
+.welcome-icon{width:50px;height:50px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:1px solid rgba(130,100,216,.25);border-radius:16px;background:linear-gradient(135deg,#25202f,#17151e);font-size:22px;color:#d0c4eb;box-shadow:0 0 12px var(--glow)}
+.welcome-title{font-size:20px;font-weight:850}
+.welcome-text{margin-top:8px;color:#a6a2b1;font-size:12px;line-height:1.6}
+.message{max-width:88%;margin:12px 0;padding:13px 15px;border-radius:15px;font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.message.user{margin-left:auto;background:linear-gradient(135deg,#30283d,#231e2d);border:1px solid rgba(130,100,216,.22);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.message.ai{margin-right:auto;background:var(--panel);border:1px solid var(--border)}
+
+.chat-input-area{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);width:min(94%,680px);z-index:25;padding:8px;border:1px solid rgba(130,100,216,.18);border-radius:18px;background:rgba(17,17,23,.96);backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.chat-input-row{display:flex;align-items:center;gap:8px}
+.chat-input{flex:1;min-width:0;height:41px;padding:0 12px;border:0;outline:none;background:transparent;color:white;font-size:13px}
+.chat-input::placeholder{color:#777381}
+.send-btn{width:40px;height:40px;border:1px solid rgba(130,100,216,.28);border-radius:13px;background:linear-gradient(135deg,#30283d,#211d2b);font-size:18px;color:#f5f1ff;transition:all .2s}
+.send-btn:hover{box-shadow:0 0 10px var(--glow)}
+
+.empty{padding:40px 15px;text-align:center}
+.empty-icon{font-size:32px;margin-bottom:12px}
+.empty-title{font-size:20px;font-weight:850}
+.empty-text{margin-top:9px;color:#a6a2b1;font-size:12px;line-height:1.6}
+
+.modal-bg{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.modal-bg.show{display:flex;animation:fadeInModal .2s ease}
+@keyframes fadeInModal{from{opacity:0}to{opacity:1}}
+.modal{width:min(100%,600px);max-height:85vh;overflow:auto;padding:22px;border:1px solid rgba(255,255,255,.08);border-bottom:0;border-radius:24px 24px 0 0;background:#14141a;box-shadow:0 -10px 40px rgba(0,0,0,.65)}
+.modal-title{font-size:19px;font-weight:850}
+.modal-text{margin-top:9px;color:#aaa6b5;font-size:12px;line-height:1.6}
+.modal-close{width:100%;height:44px;margin-top:18px;border:1px solid rgba(130,100,216,.25);border-radius:13px;background:linear-gradient(135deg,#282231,#191720);font-size:12px;font-weight:800;color:#fff}
+
+.mode-option{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:16px;border:1px solid var(--border);border-radius:15px;background:var(--panel);text-align:left;font-size:13px;font-weight:750;transition:all .2s}
+.mode-option:hover{border-color:rgba(130,100,216,.3)}
+.mode-option.selected{border-color:var(--purple);background:linear-gradient(135deg,#292332,#1b1922);box-shadow:0 0 10px var(--glow)}
+.mode-option small{display:block;margin-top:4px;color:#aaa6b5;font-size:11px;line-height:1.5;font-weight:normal}
+
+.profile-card{margin-top:14px;padding:18px;border:1px solid var(--border);border-radius:18px;background:var(--panel)}
+.profile-row{display:flex;align-items:center;gap:13px}
+.profile-avatar{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(130,100,216,.25);border-radius:16px;background:linear-gradient(135deg,#25202f,#17151e);font-size:22px;color:#d0c4eb;overflow:hidden}
+.profile-name{font-weight:850;font-size:15px}
+.profile-sub{margin-top:4px;color:#aaa6b5;font-size:11px;font-weight:600}
+.profile-action{width:100%;margin-top:10px;padding:14px;border:1px solid var(--border);border-radius:13px;background:var(--panel);text-align:left;font-size:12px;font-weight:750;transition:all .2s}
+.profile-action:hover{border-color:rgba(130,100,216,.3);background:var(--panel2)}
+
+.pro-banner{margin-bottom:20px;padding:22px;border:1px solid rgba(130,100,216,.23);border-radius:20px;background:radial-gradient(ellipse at top right,#292332,#111117 72%);box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.pro-label{color:#c7b9e5;font-size:10px;font-weight:900;letter-spacing:1.5px}
+.pro-title{margin-top:8px;font-size:24px;font-weight:900;letter-spacing:-.5px}
+.pro-description{margin-top:8px;color:#b8b2c5;font-size:12px;line-height:1.6}
+.pro-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.pro-card{min-height:110px;padding:15px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(145deg,#15141b,#0e0e13);text-align:left;transition:all .2s}
+.pro-card:hover{border-color:var(--purple);box-shadow:0 4px 16px var(--glow);transform:translateY(-2px)}
+.pro-card-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:1px solid rgba(130,100,216,.22);border-radius:11px;background:linear-gradient(135deg,#25202f,#17151e);font-size:15px;color:#d0c4eb}
+.pro-card-title{font-size:12px;font-weight:850}
+.pro-note{margin-top:16px;color:#898593;font-size:10px;line-height:1.6;font-weight:600}
+.hidden{display:none!important}
+
+@media(min-width:600px){
+  main{padding:24px}
+  .trend-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .pro-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+@keyframes shimmer{
+  0%{background-position:-200% 0}
+  100%{background-position:200% 0}
+}
+.skeleton{
+  background:linear-gradient(90deg,#131219 25%,#211e29 50%,#131219 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.5s infinite linear;
 }
 </style>
 </head>
 
-
 <body>
-
 <div class="app">
 
 <header class="header">
-
-    <div class="logo">
-        Boom<span>AI</span>
-    </div>
-
-    <div class="header-right">
-
-        <div class="balance">
-            ⚡ 100
-        </div>
-
-        <button class="menu-btn" onclick="openMenu()">
-            ☰
-        </button>
-
-    </div>
-
+  <div class="logo">Boom<span>AI</span></div>
+  <div class="header-right">
+    <div class="balance">⚡ <span id="balanceValue">100</span></div>
+    <button class="mode-btn" onclick="openModeMenu()">
+      <span id="modeIcon">⚡</span><span id="modeName">Быстрый</span><span>⌄</span>
+    </button>
+    <button class="menu-btn" onclick="openMenu()">☰</button>
+  </div>
 </header>
-
 
 <main>
 
-
-<!-- ================================================= -->
-<!-- ГЛАВНАЯ -->
-<!-- ================================================= -->
-
 <section id="homeScreen" class="screen active">
+  <input id="searchInput" class="search" placeholder="⌕  Найти идеи и тренды" oninput="searchIdeas()">
 
-    <input
-        id="searchInput"
-        class="search"
-        type="text"
-        placeholder="🔎  Найти идеи и тренды"
-        oninput="searchIdeas()"
-    >
-
-
-    <div class="section">
-
-        <div class="section-head">
-
-            <div class="section-title">
-                Создать / Инструменты
-            </div>
-
-        </div>
-
-
-        <div class="horizontal">
-
-            <button class="tool" onclick="openTool('AI Чат')">
-                <div class="tool-icon">💬</div>
-                <div class="tool-name">AI Чат</div>
-                <div class="tool-desc">Ассистент</div>
-            </button>
-
-            <button class="tool" onclick="openTool('Видео')">
-                <div class="tool-icon">🎬</div>
-                <div class="tool-name">Видео</div>
-                <div class="tool-desc">Создание видео</div>
-            </button>
-
-            <button class="tool" onclick="openTool('Картинка')">
-                <div class="tool-icon">🖼</div>
-                <div class="tool-name">Картинка</div>
-                <div class="tool-desc">Генерация фото</div>
-            </button>
-
-            <button class="tool" onclick="openTool('Nano Banana')">
-                <div class="tool-icon">🍌</div>
-                <div class="tool-name">Nano Banana</div>
-                <div class="tool-desc">AI фото</div>
-            </button>
-
-            <button class="tool" onclick="openTool('Инструменты')">
-                <div class="tool-icon">🛠</div>
-                <div class="tool-name">Инструменты</div>
-                <div class="tool-desc">AI tools</div>
-            </button>
-
-            <button class="tool" onclick="openTool('Kling / Veo')">
-                <div class="tool-icon">🎥</div>
-                <div class="tool-name">Kling / Veo</div>
-                <div class="tool-desc">AI видео</div>
-            </button>
-
-        </div>
-
+  <div class="section">
+    <div class="section-head"><div class="section-title">Создать / Инструменты</div></div>
+    <div class="horizontal">
+      <button class="tool" onclick="openChat()"><span class="tool-icon">✦</span><span class="tool-name">AI Чат</span></button>
+      <button class="tool" onclick="openTool('Видео')"><span class="tool-icon">▷</span><span class="tool-name">Видео</span></button>
+      <button class="tool" onclick="openTool('Картинка')"><span class="tool-icon">▧</span><span class="tool-name">Картинка</span></button>
+      <button class="tool" onclick="openTool('Nano Banana')"><span class="tool-icon">◉</span><span class="tool-name">Nano Banana</span></button>
+      <button class="tool" onclick="openTool('Инструменты')"><span class="tool-icon">✳</span><span class="tool-name">Инструменты</span></button>
+      <button class="tool" onclick="openTool('Kling / Veo')"><span class="tool-icon">◈</span><span class="tool-name">Kling / Veo</span></button>
     </div>
+  </div>
 
-
-    <div class="section">
-
-        <div class="section-head">
-
-            <div class="section-title">
-                Быстрые инструменты
-            </div>
-
-        </div>
-
-
-        <div class="horizontal">
-
-            <button class="quick" onclick="openTool('Убрать фон')">
-                <div class="quick-preview">🪄</div>
-                <div class="quick-name">Убрать фон</div>
-                <div class="quick-desc">Фото → PNG</div>
-            </button>
-
-            <button class="quick" onclick="openTool('Реставрация')">
-                <div class="quick-preview">🖼️</div>
-                <div class="quick-name">Реставрация</div>
-                <div class="quick-desc">Восстановить фото</div>
-            </button>
-
-            <button class="quick" onclick="openTool('На документы')">
-                <div class="quick-preview">🪪</div>
-                <div class="quick-name">На документы</div>
-                <div class="quick-desc">Подготовить фото</div>
-            </button>
-
-            <button class="quick" onclick="openTool('Презентации')">
-                <div class="quick-preview">📊</div>
-                <div class="quick-name">Презентации</div>
-                <div class="quick-desc">AI презентации</div>
-            </button>
-
-        </div>
-
+  <div class="section">
+    <div class="section-head"><div class="section-title">Быстрые инструменты</div></div>
+    <div class="horizontal">
+      <button class="quick" onclick="openTool('Убрать фон')"><div class="quick-image">✂</div><div class="quick-name">Убрать фон</div></button>
+      <button class="quick" onclick="openTool('Реставрация')"><div class="quick-image">▧</div><div class="quick-name">Реставрация</div></button>
+      <button class="quick" onclick="openTool('На документы')"><div class="quick-image">▣</div><div class="quick-name">На документы</div></button>
+      <button class="quick" onclick="openTool('Презентации')"><div class="quick-image">▤</div><div class="quick-name">Презентации</div></button>
     </div>
+  </div>
 
-
-    <div class="section">
-
-        <div class="section-head">
-
-            <div class="section-title">
-                🔥 Тренды
-            </div>
-
-            <div class="section-link">
-                Посмотреть все →
-            </div>
-
-        </div>
-
-
-        <div class="filters">
-
-            <button
-                class="filter active"
-                onclick="filterTrends('photo', this)"
-            >
-                📷 Фото
-            </button>
-
-            <button
-                class="filter"
-                onclick="filterTrends('video', this)"
-            >
-                🎬 Видео
-            </button>
-
-        </div>
-
-
-        <div class="trend-grid" id="trendGrid">
-
-            <div
-                class="trend-card"
-                data-type="photo"
-                data-name="AI Портрет"
-            >
-                <div class="trend-image">👤</div>
-                <div class="trend-name">AI Портрет</div>
-                <div class="trend-type">Фото</div>
-            </div>
-
-
-            <div
-                class="trend-card"
-                data-type="photo"
-                data-name="Новый стиль"
-            >
-                <div class="trend-image">✨</div>
-                <div class="trend-name">Новый стиль</div>
-                <div class="trend-type">Фото</div>
-            </div>
-
-
-            <div
-                class="trend-card"
-                data-type="photo"
-                data-name="Luxury Auto"
-            >
-                <div class="trend-image">🚗</div>
-                <div class="trend-name">Luxury Auto</div>
-                <div class="trend-type">Фото</div>
-            </div>
-
-
-            <div
-                class="trend-card"
-                data-type="video"
-                data-name="Cinematic"
-            >
-                <div class="trend-image">🎬</div>
-                <div class="trend-name">Cinematic</div>
-                <div class="trend-type">Видео</div>
-            </div>
-
-
-            <div
-                class="trend-card"
-                data-type="video"
-                data-name="AI Dance"
-            >
-                <div class="trend-image">💃</div>
-                <div class="trend-name">AI Dance</div>
-                <div class="trend-type">Видео</div>
-            </div>
-
-
-            <div
-                class="trend-card"
-                data-type="video"
-                data-name="Music Video"
-            >
-                <div class="trend-image">🎵</div>
-                <div class="trend-name">Music Video</div>
-                <div class="trend-type">Видео</div>
-            </div>
-
-        </div>
-
+  <div class="section">
+    <div class="section-head"><div class="section-title">🔥 Тренды</div></div>
+    <div class="filters">
+      <button class="filter active" onclick="filterTrends('photo',this)">Фото</button>
+      <button class="filter" onclick="filterTrends('video',this)">Видео</button>
     </div>
-
-
-    <div class="section">
-
-        <div class="section-head">
-            <div class="section-title">📷 Фото</div>
-            <div class="section-link">Все →</div>
-        </div>
-
-
-        <div class="horizontal">
-
-            <button class="collection">
-                <div class="collection-bg">🔥</div>
-                <div class="collection-title">Популярное</div>
-            </button>
-
-            <button class="collection">
-                <div class="collection-bg">👤</div>
-                <div class="collection-title">Портреты</div>
-            </button>
-
-            <button class="collection">
-                <div class="collection-bg">👔</div>
-                <div class="collection-title">Стиль</div>
-            </button>
-
-            <button class="collection">
-                <div class="collection-bg">🚗</div>
-                <div class="collection-title">Авто</div>
-            </button>
-
-            <button class="collection">
-                <div class="collection-bg">🎨</div>
-                <div class="collection-title">Арт</div>
-            </button>
-
-            <button class="collection">
-                <div class="collection-bg">😂</div>
-                <div class="collection-title">Мемы</div>
-            </button>
-
-        </div>
-
+    <div class="trend-grid" id="trendGrid">
+      <div class="trend-card" data-type="photo" data-name="AI Портрет" onclick="openTool('AI Портрет')">
+        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" alt="Портрет"></div>
+        <div class="trend-name">AI Портрет</div>
+      </div>
+      <div class="trend-card" data-type="photo" data-name="Новый стиль" onclick="openTool('Новый стиль')">
+        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=600&q=80" alt="Мода"></div>
+        <div class="trend-name">Новый стиль</div>
+      </div>
+      <div class="trend-card" data-type="photo" data-name="Luxury Auto" onclick="openTool('Luxury Auto')">
+        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80" alt="Автомобиль"></div>
+        <div class="trend-name">Luxury Auto</div>
+      </div>
+      <div class="trend-card" data-type="photo" data-name="Архитектура" onclick="openTool('Архитектура')">
+        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=600&q=80" alt="Архитектура"></div>
+        <div class="trend-name">Архитектура</div>
+      </div>
+      <div class="trend-card" data-type="video" data-name="Cinematic" onclick="openTool('Cinematic')">
+        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=600&q=80" alt="Кино"></div>
+        <div class="trend-name">Cinematic</div>
+      </div>
+      <div class="trend-card" data-type="video" data-name="Ночной город" onclick="openTool('Ночной город')">
+        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=600&q=80" alt="Ночной город"></div>
+        <div class="trend-name">Ночной город</div>
+      </div>
     </div>
+  </div>
 
-
-    <div class="section">
-
-        <div class="section-head">
-            <div class="section-title">🎬 Видео</div>
-            <div class="section-link">Все →</div>
-        </div>
-
-
-        <div class="horizontal">
-
-            <button class="collection">
-                <div class="collection-bg">🔥</div>
-                <div class="collection-title">Популярное</div>
-            </button>
-
-            <button class="collection">
-                <div class="collection-bg">✨</div>
-                <div class="collection-title">Эффекты</div>
-            </button>
-
-            <button class="collection">
-                <div class="collection-bg">🎬</div>
-                <div class="collection-title">Cinematic</div>
-            </button>
-
-            <button class="collection">
-                <div class="collection-bg">😂</div>
-                <div class="collection-title">Мемы</div>
-            </button>
-
-            <button class="collection">
-                <div class="collection-bg">🎵</div>
-                <div class="collection-title">Музыка</div>
-            </button>
-
-            <button class="collection">
-                <div class="collection-bg">📱</div>
-                <div class="collection-title">TikTok / Reels</div>
-            </button>
-
-        </div>
-
+  <div class="section">
+    <div class="section-head"><div class="section-title">📷 Фото</div><button class="section-link" onclick="openTool('Все категории фото')">Все →</button></div>
+    <div class="horizontal">
+      <button class="collection" onclick="openTool('Портреты')"><img loading="lazy" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Портреты</span></button>
+      <button class="collection" onclick="openTool('Стиль')"><img loading="lazy" src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Стиль</span></button>
+      <button class="collection" onclick="openTool('Авто')"><img loading="lazy" src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Авто</span></button>
+      <button class="collection" onclick="openTool('Природа')"><img loading="lazy" src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Природа</span></button>
     </div>
+  </div>
 
+  <div class="section">
+    <div class="section-head"><div class="section-title">🎬 Видео</div><button class="section-link" onclick="openTool('Все категории видео')">Все →</button></div>
+    <div class="horizontal">
+      <button class="collection" onclick="openTool('Cinematic')"><img loading="lazy" src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Cinematic</span></button>
+      <button class="collection" onclick="openTool('Город')"><img loading="lazy" src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Город</span></button>
+      <button class="collection" onclick="openTool('Путешествия')"><img loading="lazy" src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Путешествия</span></button>
+      <button class="collection" onclick="openTool('Авто видео')"><img loading="lazy" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Авто</span></button>
+    </div>
+  </div>
 </section>
 
+<section id="proScreen" class="screen">
+  <div class="pro-banner">
+    <div class="pro-label">BOOMAI · PRO WORKSPACE</div>
+    <div class="pro-title">Твоя AI-студия</div>
+    <div class="pro-description">Расширенные инструменты для творчества, работы и контента.</div>
+    <button class="mode-option" onclick="openModeMenu()">👑 PRO-режим · Переключить режим <span>⌄</span></button>
+  </div>
 
-<!-- ================================================= -->
-<!-- AI ЧАТ / СОЗДАТЬ -->
-<!-- ================================================= -->
+  <div class="section-head"><div class="section-title">Интеллект</div></div>
+  <div class="pro-grid">
+    <button class="pro-card" onclick="openChat(true)"><div class="pro-card-icon">✦</div><div class="pro-card-title">AI Chat PRO</div></button>
+    <button class="pro-card" onclick="openTool('Документы')"><div class="pro-card-icon">▤</div><div class="pro-card-title">Документы</div></button>
+    <button class="pro-card" onclick="openTool('Код и разработка')"><div class="pro-card-icon">⌘</div><div class="pro-card-title">Код и разработка</div></button>
+  </div>
+
+  <div class="section-head" style="margin-top:24px"><div class="section-title">Фото и дизайн</div></div>
+  <div class="pro-grid">
+    <button class="pro-card" onclick="openTool('Фото PRO')"><div class="pro-card-icon">▧</div><div class="pro-card-title">Фото PRO</div></button>
+    <button class="pro-card" onclick="openTool('AI-редактор')"><div class="pro-card-icon">✧</div><div class="pro-card-title">AI-редактор</div></button>
+    <button class="pro-card" onclick="openTool('Дизайн')"><div class="pro-card-icon">◈</div><div class="pro-card-title">Дизайн</div></button>
+  </div>
+
+  <div class="section-head" style="margin-top:24px"><div class="section-title">Видео, музыка и голос</div></div>
+  <div class="pro-grid">
+    <button class="pro-card" onclick="openTool('Видео PRO')"><div class="pro-card-icon">▷</div><div class="pro-card-title">Видео PRO</div></button>
+    <button class="pro-card" onclick="openTool('Музыка PRO')"><div class="pro-card-icon">♫</div><div class="pro-card-title">Музыка</div></button>
+    <button class="pro-card" onclick="openTool('Голос и озвучка')"><div class="pro-card-icon">◖</div><div class="pro-card-title">Голос</div></button>
+  </div>
+
+  <div class="section-head" style="margin-top:24px"><div class="section-title">Библиотека</div></div>
+  <div class="pro-grid">
+    <button class="pro-card" onclick="navigate('ideas')"><div class="pro-card-icon">✧</div><div class="pro-card-title">Prompt Hub</div></button>
+    <button class="pro-card" onclick="navigate('history')"><div class="pro-card-icon">◷</div><div class="pro-card-title">История</div></button>
+  </div>
+  <div class="pro-note">Для реальной генерации потребуется подключить AI-модели и API.</div>
+</section>
 
 <section id="createScreen" class="screen">
-
-    <div class="chat-screen">
-
-
-        <!-- ASSISTANT -->
-
-        <div class="assistant-header">
-
-            <div class="assistant-avatar">
-                ✦
-            </div>
-
-            <div class="assistant-info">
-
-                <div class="assistant-name">
-                    Ассистент
-                </div>
-
-                <div class="assistant-status">
-                    <span class="online-dot"></span>
-                    Онлайн
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- CHAT -->
-
-        <div class="chat-body" id="chatBody">
-
-            <div class="welcome">
-
-                <div class="welcome-icon">
-                    ✦
-                </div>
-
-                <div class="welcome-title">
-                    Чем займёмся?
-                </div>
-
-                <div class="welcome-text">
-                    Напиши, что хочешь создать,
-                    а я помогу подобрать подходящий
-                    способ и инструмент.
-                </div>
-
-            </div>
-
-        </div>
-
-
+  <div class="chat-screen">
+    <div class="assistant-header">
+      <div class="assistant-avatar">✦</div>
+      <div>
+        <div class="assistant-name" id="assistantName">Ассистент BoomAI</div>
+        <div class="assistant-status">AI-ассистент</div>
+      </div>
     </div>
-
+    <div class="chat-body" id="chatBody">
+      <div class="welcome">
+        <div class="welcome-icon">✦</div>
+        <div class="welcome-title">Чем займёмся?</div>
+        <div class="welcome-text">Напиши, что хочешь создать, и начнём с идеи.</div>
+      </div>
+    </div>
+  </div>
 </section>
-
-
-<!-- ================================================= -->
-<!-- ИДЕИ -->
-<!-- ================================================= -->
 
 <section id="ideasScreen" class="screen">
-
-    <div class="empty">
-
-        <div class="empty-icon">
-            💡
-        </div>
-
-        <div class="empty-title">
-            Идеи
-        </div>
-
-        <div class="empty-text">
-            Здесь будет библиотека трендов,
-            эффектов, шаблонов и готовых идей
-            для фото и видео.
-        </div>
-
-    </div>
-
+  <div class="empty">
+    <div class="empty-icon">✧</div>
+    <div class="empty-title">Идеи и Prompt Hub</div>
+    <div class="empty-text">Подборки промптов и шаблонов для фото, видео, музыки, голоса и AI-инструментов.</div>
+  </div>
+  <div class="pro-grid">
+    <button class="pro-card" onclick="openTool('Промпты для фото')"><div class="pro-card-icon">▧</div><div class="pro-card-title">Промпты для фото</div></button>
+    <button class="pro-card" onclick="openTool('Промпты для видео')"><div class="pro-card-icon">▷</div><div class="pro-card-title">Промпты для видео</div></button>
+    <button class="pro-card" onclick="openTool('Тренды')"><div class="pro-card-icon">✧</div><div class="pro-card-title">Тренды</div></button>
+    <button class="pro-card" onclick="openTool('Музыка и голос')"><div class="pro-card-icon">♫</div><div class="pro-card-title">Музыка и голос</div></button>
+  </div>
 </section>
-
-
-<!-- ================================================= -->
-<!-- ИСТОРИЯ -->
-<!-- ================================================= -->
 
 <section id="historyScreen" class="screen">
-
-    <div class="empty">
-
-        <div class="empty-icon">
-            🕘
-        </div>
-
-        <div class="empty-title">
-            История
-        </div>
-
-        <div class="empty-text">
-            Здесь будут храниться твои
-            изображения, видео и другие результаты.
-        </div>
-
-    </div>
-
+  <div class="empty">
+    <div class="empty-icon">◷</div>
+    <div class="empty-title">История</div>
+    <div class="empty-text">Здесь будут храниться твои чаты и результаты генераций. Сохранение генераций подключим отдельно.</div>
+  </div>
+  <div id="historyList"></div>
 </section>
 
-
-<!-- ================================================= -->
-<!-- ПРОФИЛЬ -->
-<!-- ================================================= -->
-
 <section id="profileScreen" class="screen">
-
-    <div class="empty">
-
-        <div class="empty-icon">
-            👤
-        </div>
-
-        <div class="empty-title">
-            Профиль
-        </div>
-
-        <div class="empty-text">
-            Баланс, платежи, рефералы
-            и настройки аккаунта.
-        </div>
-
+  <div class="profile-card">
+    <div class="profile-row">
+      <div class="profile-avatar" id="profileAvatarIcon">◉</div>
+      <div>
+        <div class="profile-name" id="profileName">Мой профиль</div>
+        <div class="profile-sub" id="profileSub">Аккаунт BoomAI</div>
+      </div>
     </div>
+  </div>
 
+  <div class="section">
+    <div class="section-head"><div class="section-title">Режим приложения</div></div>
+    <button class="mode-option" id="profileFastOption" onclick="setMode('fast')"><span>⚡ Быстрый режим</span><span id="profileFastCheck">✓</span></button>
+    <button class="mode-option" id="profileProOption" onclick="setMode('pro')"><span>👑 PRO-режим</span><span id="profileProCheck"></span></button>
+  </div>
+
+  <div class="section">
+    <div class="section-head"><div class="section-title">Аккаунт</div></div>
+    <button class="profile-action" onclick="openTool('Баланс и кредиты')">⚡ Баланс и кредиты — <span id="profileBalance">100</span></button>
+    <button class="profile-action" onclick="openTool('Платежи и тарифы')">▣ Платежи и тарифы</button>
+    <button class="profile-action" onclick="openTool('Пригласить друга')">♧ Пригласить друга</button>
+    <button class="profile-action" onclick="openTool('Поддержка')">? Поддержка</button>
+    <button class="profile-action" onclick="openTool('Настройки')">⚙ Настройки</button>
+  </div>
 </section>
 
 </main>
 
-
-<!-- ================================================= -->
-<!-- CHAT INPUT -->
-<!-- ================================================= -->
-
-<div class="chat-input-area">
-
-    <div class="chat-input-row">
-
-        <input
-            id="chatInput"
-            class="chat-input"
-            type="text"
-            placeholder="🔎  Напиши мне, что создадим"
-            onkeydown="handleEnter(event)"
-        >
-
-        <button
-            class="send-btn"
-            onclick="sendMessage()"
-        >
-            ↑
-        </button>
-
-    </div>
-
+<div class="chat-input-area hidden" id="chatInputArea">
+  <div class="chat-input-row">
+    <input id="chatInput" class="chat-input" placeholder="Напиши сообщение..." onkeydown="handleEnter(event)">
+    <button class="send-btn" onclick="sendMessage()">↑</button>
+  </div>
 </div>
-
-
-<!-- ================================================= -->
-<!-- BOTTOM NAV -->
-<!-- ================================================= -->
 
 <nav class="bottom-nav">
-
-    <button
-        class="nav-btn active"
-        onclick="navigate('home', this)"
-    >
-        <span class="nav-icon">⌂</span>
-        Главная
-    </button>
-
-
-    <button
-        class="nav-btn"
-        onclick="navigate('ideas', this)"
-    >
-        <span class="nav-icon">✦</span>
-        Идеи
-    </button>
-
-
-    <button
-        class="nav-btn"
-        onclick="navigate('create', this)"
-    >
-        <span class="nav-icon">＋</span>
-        Создать
-    </button>
-
-
-    <button
-        class="nav-btn"
-        onclick="navigate('history', this)"
-    >
-        <span class="nav-icon">◷</span>
-        История
-    </button>
-
-
-    <button
-        class="nav-btn"
-        onclick="navigate('profile', this)"
-    >
-        <span class="nav-icon">○</span>
-        Профиль
-    </button>
-
+  <button class="nav-btn active" data-screen="home" onclick="navigate('home')"><span class="nav-icon">⌂</span>Главная</button>
+  <button class="nav-btn" data-screen="ideas" onclick="navigate('ideas')"><span class="nav-icon">✧</span>Идеи</button>
+  <button class="nav-btn" data-screen="create" onclick="openChat()"><span class="nav-icon">＋</span>Создать</button>
+  <button class="nav-btn" data-screen="history" onclick="navigate('history')"><span class="nav-icon">◷</span>История</button>
+  <button class="nav-btn" data-screen="profile" onclick="navigate('profile')"><span class="nav-icon">◉</span>Профиль</button>
 </nav>
 
-
-<!-- ================================================= -->
-<!-- MODAL -->
-<!-- ================================================= -->
-
-<div
-    id="modalBg"
-    class="modal-bg"
-    onclick="closeModal(event)"
->
-
-    <div
-        class="modal"
-        onclick="event.stopPropagation()"
-    >
-
-        <div
-            id="modalTitle"
-            class="modal-title"
-        >
-            BoomAI
-        </div>
-
-        <div
-            id="modalText"
-            class="modal-text"
-        >
-            Функция будет подключена позже.
-        </div>
-
-        <button
-            class="modal-close"
-            onclick="closeModal()"
-        >
-            Закрыть
-        </button>
-
-    </div>
-
+<div id="modeModal" class="modal-bg" onclick="closeModeMenu(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">Выбери режим</div>
+    <div class="modal-text">Можно переключать режим в любой момент.</div>
+    <button class="mode-option" id="fastOption" onclick="setMode('fast')"><span>⚡ Быстрый режим<small>Основные инструменты и простой интерфейс</small></span><span id="fastCheck">✓</span></button>
+    <button class="mode-option" id="proOption" onclick="setMode('pro')"><span>👑 PRO-режим<small>Отдельная AI-студия с расширенными инструментами</small></span><span id="proCheck"></span></button>
+    <button class="modal-close" onclick="closeModeMenu()">Закрыть</button>
+  </div>
 </div>
 
+<div id="modalBg" class="modal-bg" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div id="modalTitle" class="modal-title">BoomAI</div>
+    <div id="modalText" class="modal-text"></div>
+    <button class="modal-close" onclick="closeModal()">Закрыть</button>
+  </div>
+</div>
 
 <script>
+let currentMode = 'fast';
+let currentScreen = 'home';
+let currentTrendType = 'photo';
+let chatHistory = [];
 
-/* ================================================= */
-/* НАВИГАЦИЯ */
-/* ================================================= */
-
-function navigate(screen, element) {
-
-    document
-        .querySelectorAll('.screen')
-        .forEach(function(item) {
-
-            item.classList.remove('active');
-
-        });
-
-
-    document
-        .querySelectorAll('.nav-btn')
-        .forEach(function(item) {
-
-            item.classList.remove('active');
-
-        });
-
-
-    if (screen === 'home') {
-
-        document
-            .getElementById('homeScreen')
-            .classList.add('active');
-
-    }
-
-
-    if (screen === 'ideas') {
-
-        document
-            .getElementById('ideasScreen')
-            .classList.add('active');
-
-    }
-
-
-    if (screen === 'create') {
-
-        document
-            .getElementById('createScreen')
-            .classList.add('active');
-
-    }
-
-
-    if (screen === 'history') {
-
-        document
-            .getElementById('historyScreen')
-            .classList.add('active');
-
-    }
-
-
-    if (screen === 'profile') {
-
-        document
-            .getElementById('profileScreen')
-            .classList.add('active');
-
-    }
-
-
-    element.classList.add('active');
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-
+function getSaved(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : value;
+  } catch (e) {
+    return fallback;
+  }
 }
 
+function saveValue(key, value) {
+  try { localStorage.setItem(key, value); } catch (e) {}
+}
 
-/* ================================================= */
-/* AI CHAT */
-/* ================================================= */
+function openModeMenu() {
+  document.getElementById('modeModal').classList.add('show');
+}
+
+function closeModeMenu(event) {
+  if (!event || event.target === document.getElementById('modeModal')) {
+    document.getElementById('modeModal').classList.remove('show');
+  }
+}
+
+function setMode(mode) {
+  currentMode = mode === 'pro' ? 'pro' : 'fast';
+  saveValue('boomai_mode', currentMode);
+
+  const pro = currentMode === 'pro';
+  document.getElementById('modeIcon').textContent = pro ? '👑' : '⚡';
+  document.getElementById('modeName').textContent = pro ? 'PRO' : 'Быстрый';
+
+  document.getElementById('fastOption').classList.toggle('selected', !pro);
+  document.getElementById('proOption').classList.toggle('selected', pro);
+  document.getElementById('fastCheck').textContent = pro ? '' : '✓';
+  document.getElementById('proCheck').textContent = pro ? '✓' : '';
+
+  document.getElementById('profileFastOption').classList.toggle('selected', !pro);
+  document.getElementById('profileProOption').classList.toggle('selected', pro);
+  document.getElementById('profileFastCheck').textContent = pro ? '' : '✓';
+  document.getElementById('profileProCheck').textContent = pro ? '✓' : '';
+
+  document.getElementById('assistantName').textContent = pro ? 'AI Chat PRO' : 'Ассистент BoomAI';
+  closeModeMenu();
+  navigate('home');
+}
+
+function navigate(screen) {
+  currentScreen = screen;
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => {
+    el.classList.toggle('active', el.dataset.screen === screen);
+  });
+
+  if (screen === 'home') {
+    document.getElementById(currentMode === 'pro' ? 'proScreen' : 'homeScreen').classList.add('active');
+  } else {
+    const target = document.getElementById(screen + 'Screen');
+    if (target) target.classList.add('active');
+  }
+
+  document.getElementById('chatInputArea').classList.toggle('hidden', screen !== 'create');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function openChat(proChat) {
+  navigate('create');
+  if (proChat) document.getElementById('assistantName').textContent = 'AI Chat PRO';
+  else document.getElementById('assistantName').textContent = currentMode === 'pro' ? 'AI Chat PRO' : 'Ассистент BoomAI';
+  setTimeout(() => document.getElementById('chatInput').focus(), 100);
+}
 
 function sendMessage() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
 
-    const input =
-        document.getElementById('chatInput');
+  const body = document.getElementById('chatBody');
+  const welcome = body.querySelector('.welcome');
+  if (welcome) welcome.remove();
 
-    const text =
-        input.value.trim();
+  addMessage(text, 'user');
+  chatHistory.push({role:'user',text});
+  input.value = '';
 
-
-    if (!text) {
-        return;
-    }
-
-
-    const chat =
-        document.getElementById('chatBody');
-
-
-    const welcome =
-        chat.querySelector('.welcome');
-
-
-    if (welcome) {
-        welcome.remove();
-    }
-
-
-    const userMessage =
-        document.createElement('div');
-
-    userMessage.className =
-        'message user';
-
-    userMessage.textContent =
-        text;
-
-
-    chat.appendChild(userMessage);
-
-
-    input.value = '';
-
-
-    setTimeout(function() {
-
-        const aiMessage =
-            document.createElement('div');
-
-        aiMessage.className =
-            'message ai';
-
-        aiMessage.textContent =
-            'Понял 👌 Сейчас я ещё не подключён к AI, но следующим этапом мы подключим настоящего ассистента.';
-
-        chat.appendChild(aiMessage);
-
-
-        window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth'
-        });
-
-    }, 500);
-
+  setTimeout(() => {
+    const reply = 'Сообщение принято. Сейчас в BoomAI отображается демонстрационный ответ. Чтобы ассистент отвечал по-настоящему, подключим AI API на сервере.';
+    addMessage(reply, 'ai');
+    chatHistory.push({role:'ai',text:reply});
+  }, 350);
 }
 
-
-/* ENTER */
+function addMessage(text, type) {
+  const el = document.createElement('div');
+  el.className = 'message ' + type;
+  el.textContent = text;
+  document.getElementById('chatBody').appendChild(el);
+}
 
 function handleEnter(event) {
-
-    if (event.key === 'Enter') {
-
-        sendMessage();
-
-    }
-
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    sendMessage();
+  }
 }
-
-
-/* ================================================= */
-/* ИНСТРУМЕНТЫ */
-/* ================================================= */
 
 function openTool(name) {
-
-    document.getElementById('modalTitle').textContent =
-        name;
-
-
-    document.getElementById('modalText').textContent =
-        'Инструмент «' +
-        name +
-        '» подключим следующим этапом.';
-
-
-    document
-        .getElementById('modalBg')
-        .classList.add('show');
-
+  document.getElementById('modalTitle').textContent = name;
+  document.getElementById('modalText').textContent =
+    'Раздел «' + name + '» пока подготовлен как интерфейс. Реальную генерацию подключим к нужной AI-модели или API.';
+  document.getElementById('modalBg').classList.add('show');
 }
-
-
-/* ================================================= */
-/* МЕНЮ */
-/* ================================================= */
 
 function openMenu() {
-
-    document.getElementById('modalTitle').textContent =
-        'Меню BoomAI';
-
-
-    document.getElementById('modalText').textContent =
-        'Здесь позже появятся настройки, поддержка и другие функции.';
-
-
-    document
-        .getElementById('modalBg')
-        .classList.add('show');
-
+  document.getElementById('modalTitle').textContent = 'Меню BoomAI';
+  document.getElementById('modalText').textContent =
+    'Выбери нужный раздел в нижнем меню. Режим переключается кнопкой в верхней панели или в профиле.';
+  document.getElementById('modalBg').classList.add('show');
 }
-
-
-/* ================================================= */
-/* MODAL */
-/* ================================================= */
 
 function closeModal(event) {
-
-    if (
-        !event ||
-        event.target ===
-        document.getElementById('modalBg')
-    ) {
-
-        document
-            .getElementById('modalBg')
-            .classList.remove('show');
-
-    }
-
+  if (!event || event.target === document.getElementById('modalBg')) {
+    document.getElementById('modalBg').classList.remove('show');
+  }
 }
-
-
-/* ================================================= */
-/* ФИЛЬТР ТРЕНДОВ */
-/* ================================================= */
 
 function filterTrends(type, button) {
-
-    document
-        .querySelectorAll('.filter')
-        .forEach(function(item) {
-
-            item.classList.remove('active');
-
-        });
-
-
-    button.classList.add('active');
-
-
-    document
-        .querySelectorAll('.trend-card')
-        .forEach(function(card) {
-
-            if (card.dataset.type === type) {
-
-                card.style.display = 'block';
-
-            } else {
-
-                card.style.display = 'none';
-
-            }
-
-        });
-
+  currentTrendType = type;
+  document.querySelectorAll('.filter').forEach(el => el.classList.remove('active'));
+  button.classList.add('active');
+  searchIdeas();
 }
-
-
-/* ================================================= */
-/* ПОИСК */
-/* ================================================= */
 
 function searchIdeas() {
-
-    const query =
-        document
-            .getElementById('searchInput')
-            .value
-            .toLowerCase()
-            .trim();
-
-
-    document
-        .querySelectorAll('.trend-card')
-        .forEach(function(card) {
-
-            const name =
-                card.dataset.name.toLowerCase();
-
-
-            if (name.includes(query)) {
-
-                card.style.display = 'block';
-
-            } else {
-
-                card.style.display = 'none';
-
-            }
-
-        });
-
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  document.querySelectorAll('.trend-card').forEach(card => {
+    const matchesType = card.dataset.type === currentTrendType;
+    const matchesText = card.dataset.name.toLowerCase().includes(query);
+    card.style.display = matchesType && matchesText ? '' : 'none';
+  });
 }
 
-</script>
+function initTelegramUser() {
+  if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+    if (user) {
+      const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || 'Пользователь';
+      const nameEl = document.getElementById('profileName');
+      if (nameEl) nameEl.textContent = fullName;
+      const subEl = document.getElementById('profileSub');
+      if (subEl) subEl.textContent = user.username ? '@' + user.username : 'Аккаунт BoomAI';
+      if (user.photo_url) {
+        const avatarEl = document.getElementById('profileAvatarIcon');
+        if (avatarEl) {
+          const img = document.createElement('img');
+          img.src = user.photo_url;
+          img.alt = 'Аватар пользователя';
+          img.style.cssText = 'width:100%;height:100%;border-radius:inherit;object-fit:cover;';
+          avatarEl.replaceChildren(img);
+        }
+      }
+    }
+  }
+}
 
+function initImageSkeletons() {
+  const images = document.querySelectorAll('.trend-image img, .collection img');
+  images.forEach(img => {
+    const parent = img.parentElement;
+    parent.classList.add('skeleton');
+    img.style.opacity = '0';
+    img.style.transition = 'opacity .4s ease, transform .4s ease';
+
+    const showImage = () => {
+      parent.classList.remove('skeleton');
+      img.style.opacity = '1';
+    };
+
+    const hideBrokenImage = () => {
+      parent.classList.remove('skeleton');
+      img.style.opacity = '0';
+    };
+
+    if (img.complete) {
+      if (img.naturalWidth > 0) showImage();
+      else hideBrokenImage();
+    } else {
+      img.addEventListener('load', showImage, {once:true});
+      img.addEventListener('error', hideBrokenImage, {once:true});
+    }
+  });
+}
+
+(function init() {
+  currentMode = getSaved('boomai_mode','fast') === 'pro' ? 'pro' : 'fast';
+  const balance = getSaved('boomai_balance','100');
+  document.getElementById('balanceValue').textContent = balance;
+  document.getElementById('profileBalance').textContent = balance;
+
+  const pro = currentMode === 'pro';
+  document.getElementById('modeIcon').textContent = pro ? '👑' : '⚡';
+  document.getElementById('modeName').textContent = pro ? 'PRO' : 'Быстрый';
+  document.getElementById('assistantName').textContent = pro ? 'AI Chat PRO' : 'Ассистент BoomAI';
+
+  document.getElementById('fastOption').classList.toggle('selected', !pro);
+  document.getElementById('proOption').classList.toggle('selected', pro);
+  document.getElementById('fastCheck').textContent = pro ? '' : '✓';
+  document.getElementById('proCheck').textContent = pro ? '✓' : '';
+
+  document.getElementById('profileFastOption').classList.toggle('selected', !pro);
+  document.getElementById('profileProOption').classList.toggle('selected', pro);
+  document.getElementById('profileFastCheck').textContent = pro ? '' : '✓';
+  document.getElementById('profileProCheck').textContent = pro ? '✓' : '';
+
+  initTelegramUser();
+  initImageSkeletons();
+  navigate('home');
+})();
+</script>
+</div>
 </body>
 </html>
