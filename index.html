@@ -2,641 +2,727 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#09090D">
-<title>BoomAI — AI Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#F7F8FA" id="themeColorMeta">
+<title>BoomAI — Создать фото, видео</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
+/* ========================================================
+   1. ПАЛИТРА BOOMAI (+10% ФИОЛЕТОВОГО НА ВСЕХ ЭКРАНАХ)
+   ======================================================== */
 :root {
-  --bg: #09090D;
-  --panel: #111117;
-  --panel2: #171720;
-  --border: #292832;
-  --purple: #8264D8;
-  --purple2: #6846B5;
-  --text: #F3F2F8;
-  --muted: #9693A2;
-  --glow: rgba(130, 100, 216, 0.09);
+  /* Дневной режим */
+  --bg: #F7F8FA;
+  --header-bg: rgba(247, 248, 250, 0.95);
+  --card-bg: #FFFFFF;
+  --card-border: #ECEEF2;
+  --text-main: #1C1A24;
+  --text-sub: #8E92A0;
+  --search-bg: #FFFFFF;
+  --search-border: #ECEEF2;
+  --chip-bg: #FFFFFF;
+  --chip-border: #ECEEF2;
+  --chip-color: #6C7280;
+  --chip-active-bg: #CBB4FD;
+  --chip-active-color: #2F0E63;
+  --accent-purple: #6B25E6;
+  --accent-purple-light: #F2EBFF;
+  --accent-lavender: #CBB4FD;
+  --accent-dark: #2F0E63;
+  --nav-bg: rgba(255, 255, 255, 0.98);
+  --nav-border: #ECEEF2;
+  --nav-color: #8E92A0;
+  --nav-active: #2F0E63;
+}
+
+[data-theme="dark"] {
+  /* Ночной режим */
+  --bg: #0C0B10;
+  --header-bg: rgba(12, 11, 16, 0.94);
+  --card-bg: #15141C;
+  --card-border: #22202C;
+  --text-main: #F4F3F7;
+  --text-sub: #8B8798;
+  --search-bg: #15141C;
+  --search-border: #252332;
+  --chip-bg: #15141C;
+  --chip-border: #252332;
+  --chip-color: #9E9AA9;
+  --chip-active-bg: #6B25E6;
+  --chip-active-color: #FFFFFF;
+  --accent-purple: #813CFC;
+  --accent-purple-light: #231A38;
+  --accent-lavender: #6B25E6;
+  --accent-dark: #FFFFFF;
+  --nav-bg: rgba(17, 16, 23, 0.97);
+  --nav-border: #23212F;
+  --nav-color: #7E7A8C;
+  --nav-active: #CBB4FD;
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Inter',Arial,sans-serif;-webkit-font-smoothing:antialiased}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text-main);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  transition:background-color .22s ease, color .22s ease;
+}
 button,input{font:inherit}
-button{color:inherit;cursor:pointer;transition:transform .15s ease,border-color .2s ease}
-button:active{transform:scale(.97)}
+button{color:inherit;cursor:pointer;border:none;background:none;transition:transform .15s ease}
+button:active{transform:scale(.96)}
 
-.app{max-width:760px;margin:auto;padding-bottom:110px}
-.header{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px;background:rgba(9,9,13,.91);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.05)}
-.logo{font-size:22px;font-weight:900;letter-spacing:-.8px;white-space:nowrap}
-.logo span{color:var(--purple);text-shadow:0 0 10px rgba(130,100,216,.16)}
+.app{max-width:540px;margin:auto;padding-bottom:110px}
+
+/* Шапка */
+.header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 18px;
+  background:var(--header-bg);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  transition:background-color .22s ease;
+}
+.header-left{display:flex;align-items:center;gap:8px}
+.header-logo{
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#6B25E6,#A57BFC);
+  display:grid;place-items:center;color:#fff;font-size:15px;font-weight:900;
+  box-shadow:0 2px 8px rgba(107,37,230,.35);
+}
+.header-title{font-size:16px;font-weight:900;letter-spacing:-.3px}
+.header-title span{color:var(--accent-purple)}
 .header-right{display:flex;align-items:center;gap:8px}
-.balance{padding:8px 11px;background:linear-gradient(135deg,#191720,#111117);border:1px solid rgba(130,100,216,.18);border-radius:12px;font-size:12px;font-weight:800;white-space:nowrap}
-.mode-btn{display:flex;align-items:center;gap:5px;padding:8px 10px;border:1px solid rgba(130,100,216,.24);border-radius:12px;background:linear-gradient(135deg,#211b2d,#15141c);font-size:11px;font-weight:800;white-space:nowrap;color:#d5cbed}
-.menu-btn{width:38px;height:38px;border:1px solid var(--border);border-radius:12px;background:var(--panel);font-size:17px}
-main{padding:18px}
-.screen{display:none;animation:fadeIn .25s ease-in-out}
+
+.theme-toggle{
+  width:34px;height:34px;border-radius:10px;
+  background:var(--card-bg);border:1px solid var(--card-border);
+  display:grid;place-items:center;font-size:15px;color:var(--text-main);
+  box-shadow:0 2px 6px rgba(0,0,0,.02);
+}
+
+.balance-chip{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 12px;background:var(--card-bg);
+  border:1px solid var(--card-border);border-radius:9999px;
+  font-size:12px;font-weight:800;
+}
+.balance-chip .bolt{color:#F59E0B}
+
+/* Контейнер экранов */
+main{padding:8px 16px}
+.screen{display:none;animation:fadeIn .2s ease-in-out}
 .screen.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-.search{width:100%;height:46px;padding:0 16px;border:1px solid var(--border);border-radius:14px;background:var(--panel);color:white;outline:none;font-size:13px;transition:all .2s}
-.search:focus{border-color:var(--purple);box-shadow:0 0 12px var(--glow)}
-.section{margin-top:26px}
-.section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
-.section-title{font-size:17px;font-weight:850;letter-spacing:-.3px}
-.section-link{border:0;background:none;color:#aa9acb;font-size:11px;font-weight:700}
-.horizontal{display:flex;gap:11px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
-.horizontal::-webkit-scrollbar{display:none}
+/* ========================================================
+   ЭКРАН 1: ТРЕНДЫ (ГЛАВНАЯ)
+   ======================================================== */
+.trends-head{margin-bottom:14px}
+.trends-title{font-size:24px;font-weight:900;letter-spacing:-.4px;margin:0 0 4px}
+.trends-sub{font-size:12px;color:var(--text-sub);margin:0;line-height:1.45}
 
-.tool{flex:0 0 102px;height:90px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:12px;padding:12px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(145deg,#15141b,#0e0e13);text-align:left;transition:all .2s}
-.tool:hover,.tool:active{border-color:var(--purple);box-shadow:0 4px 16px var(--glow)}
-.tool-icon {
-  width: 28px;
-  height: 28px;
+.search-box{
+  position:relative;
+  margin-bottom:14px;
+}
+.search-box svg{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  width:16px;height:16px;stroke:var(--text-sub);fill:none;
+}
+.search-input{
+  width:100%;height:44px;
+  padding:0 16px 0 40px;
+  background:var(--search-bg);
+  border:1px solid var(--search-border);
+  border-radius:13px;
+  color:var(--text-main);
+  outline:none;
+  font-size:13px;
+  box-shadow:0 2px 8px rgba(0,0,0,.02);
+  transition:border-color .2s, background-color .22s;
+}
+.search-input::placeholder{color:var(--text-sub)}
+.search-input:focus{border-color:var(--accent-purple)}
+
+.chips-row{
+  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
+  padding-bottom:14px;
+}
+.chips-row::-webkit-scrollbar{display:none}
+
+.chip-btn{
+  flex-shrink:0;
+  padding:7px 18px;
+  border-radius:9999px;
+  background:var(--chip-bg);
+  border:1px solid var(--chip-border);
+  color:var(--chip-color);
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+  transition:all .2s;
+}
+.chip-btn.active{
+  background:var(--chip-active-bg);
+  border-color:transparent;
+  color:var(--chip-active-color);
+}
+
+.trends-grid{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
+}
+.trend-card{
+  position:relative;
+  border-radius:18px;
+  overflow:hidden;
+  aspect-ratio:3/4.4;
+  background:#201F2B;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.06);
+}
+.trend-card img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .3s ease;
+}
+.trend-card:hover img{transform:scale(1.03)}
+
+.badge-time{
+  position:absolute;top:10px;left:10px;z-index:2;
+  display:flex;align-items:center;gap:4px;
+  padding:4px 8px;
+  background:rgba(0,0,0,.5);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border-radius:8px;
+  color:#FFFFFF;
+  font-size:10px;
+  font-weight:700;
+}
+.badge-time svg{width:10px;height:10px;fill:currentColor}
+
+.trend-info{
+  position:absolute;left:0;right:0;bottom:0;z-index:2;
+  padding:26px 12px 10px 12px;
+  background:linear-gradient(0deg,rgba(0,0,0,.85) 0%, rgba(0,0,0,.45) 55%, transparent 100%);
+  display:flex;align-items:flex-end;justify-content:space-between;
+  color:#FFFFFF;
+}
+.trend-name{font-size:12px;font-weight:800;line-height:1.2}
+.trend-likes{display:flex;align-items:center;gap:3px;font-size:10px;opacity:.9}
+.trend-likes svg{width:11px;height:11px;fill:currentColor}
+
+/* ========================================================
+   ЭКРАН 2: «СОЗДАТЬ СВОЁ» (КНОПКА СОЗДАТЬ ИЗ МЕНЮ)
+   ======================================================== */
+.creator-container{
+  margin-top:4px;
+}
+.creator-head{margin-bottom:16px}
+.creator-head h1{font-size:24px;font-weight:900;letter-spacing:-.4px;margin:0 0 5px}
+.creator-head p{font-size:12px;color:var(--text-sub);margin:0;line-height:1.45}
+
+.creator-items{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.c-card{
+  background:var(--card-bg);
+  border:1px solid var(--card-border);
+  border-radius:18px;
+  overflow:hidden;
+  transition:border-color .2s ease, box-shadow .2s ease;
+  box-shadow:0 2px 8px rgba(0,0,0,.02);
+}
+.c-card:hover{border-color:var(--accent-lavender)}
+
+.c-card-btn{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:14px 16px;
+  text-align:left;
+}
+
+.c-icon-wrap{
+  width:40px;
+  height:40px;
+  border-radius:13px;
+  background:var(--accent-purple-light);
+  color:var(--accent-purple);
+  display:grid;
+  place-items:center;
+  flex-shrink:0;
+}
+.c-icon-wrap svg{
+  width:21px;height:21px;stroke:currentColor;fill:none;
+  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;
+}
+
+.c-card-text{flex:1;min-width:0}
+.c-title{display:block;font-size:14px;font-weight:850;color:var(--text-main);margin-bottom:2px}
+.c-desc{display:block;font-size:11px;color:var(--text-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.c-arrow{
+  width:16px;height:16px;stroke:var(--text-sub);fill:none;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  transition:transform .2s ease;
+  flex-shrink:0;
+}
+.c-card.open .c-arrow{transform:rotate(180deg);stroke:var(--accent-purple)}
+
+/* Раскрывающийся блок опций */
+.c-card-sub{
+  display:none;
+  padding:6px 16px 14px 69px;
+  flex-direction:column;
+  gap:7px;
+  border-top:1px solid var(--card-border);
+  background:rgba(0,0,0,.01);
+}
+.c-card.open .c-card-sub{display:flex}
+
+.c-sub-btn{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:9px 12px;
+  border-radius:11px;
+  background:var(--bg);
+  border:1px solid var(--card-border);
+  font-size:12px;
+  font-weight:750;
+  color:var(--text-main);
+  text-align:left;
+  transition:all .15s ease;
+}
+.c-sub-btn:hover{
+  background:var(--accent-purple-light);
+  border-color:var(--accent-lavender);
+  color:var(--accent-purple);
+}
+
+/* ========================================================
+   НИЖНЕЕ МЕНЮ
+   ======================================================== */
+.bottom-nav {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 50;
   display: flex;
   align-items: center;
+  justify-content: space-around;
+  padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 0px)) 12px;
+  background: var(--nav-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--nav-border);
+  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.03);
+  transition: background-color .22s ease, border-color .22s ease;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  border: 1px solid rgba(231, 190, 105, 0.75);
-  border-radius: 10px;
-  background: linear-gradient(135deg, #39244f 0%, #24182f 48%, #44301d 100%);
-  color: #f2d18b;
-  font-size: 14px;
-  box-shadow:
-    inset 0 0 10px rgba(194, 143, 66, 0.12),
-    0 0 9px rgba(177, 124, 55, 0.08);
+  gap: 3px;
+  color: var(--nav-color);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 5px 12px;
+  min-width: 62px;
+  border-radius: 9999px;
+  user-select: none;
+  transition: all .2s ease;
 }
-.tool-name{font-size:11px;font-weight:800;white-space:nowrap}
-
-.quick{flex:0 0 128px;height:112px;padding:0;border:1px solid var(--border);border-radius:16px;background:var(--panel);overflow:hidden;text-align:left;transition:all .2s}
-.quick:hover,.quick:active{border-color:var(--purple);box-shadow:0 4px 16px var(--glow)}
-.quick-image{height:70px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#25202f,#17151d);font-size:22px;color:#d0c4eb}
-.quick-name{padding:10px 12px;font-size:11px;font-weight:800}
-
-.filters{display:flex;gap:8px;margin-bottom:13px}
-.filter{padding:8px 14px;border:1px solid var(--border);border-radius:11px;background:var(--panel);color:#aaa7b5;font-size:11px;font-weight:750;transition:all .2s}
-.filter.active{background:linear-gradient(135deg,#282332,#1b1922);border-color:#65538a;color:#eee8fa;box-shadow:0 0 8px rgba(130,100,216,.08)}
-
-.trend-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.trend-card{border:1px solid var(--border);border-radius:18px;background:var(--panel);overflow:hidden;cursor:pointer;transition:all .25s}
-.trend-card:hover{transform:translateY(-2px);border-color:rgba(130,100,216,.25);box-shadow:0 8px 22px rgba(0,0,0,.35)}
-.trend-image{height:160px;background:#17151c;overflow:hidden}
-.trend-image img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
-.trend-card:hover .trend-image img{transform:scale(1.06)}
-.trend-name{padding:12px 12px 13px;font-size:12px;font-weight:800}
-
-.collection{position:relative;flex:0 0 134px;height:108px;border:1px solid var(--border);border-radius:16px;background:var(--panel);overflow:hidden;transition:all .2s}
-.collection:hover{border-color:rgba(130,100,216,.28)}
-.collection img{width:100%;height:100%;object-fit:cover;opacity:.82;transition:transform .4s}
-.collection:hover img{transform:scale(1.05)}
-.collection:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.85),transparent 70%)}
-.collection-title{position:absolute;z-index:1;left:11px;bottom:11px;font-size:11px;font-weight:800}
-
-.bottom-nav{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:30;width:min(94%,600px);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:6px;border:1px solid rgba(255,255,255,.07);border-radius:20px;background:rgba(17,17,23,.94);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 10px 30px rgba(0,0,0,.48)}
-.nav-btn{min-width:0;border:0;padding:8px 2px;border-radius:14px;background:transparent;color:#85818f;font-size:9px;font-weight:700;transition:all .2s}
-.nav-icon{display:block;margin-bottom:4px;font-size:17px}
-.nav-btn.active{background:linear-gradient(135deg,#292332,#1c1924);color:#f3effb;box-shadow:0 0 8px rgba(130,100,216,.07)}
-
-.chat-screen{min-height:calc(100vh - 180px);display:flex;flex-direction:column}
-.assistant-header{display:flex;align-items:center;gap:11px;padding:8px 0 16px;border-bottom:1px solid var(--border)}
-.assistant-avatar{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(130,100,216,.25);border-radius:13px;background:linear-gradient(135deg,#25202f,#17151e);font-size:19px;color:#d0c4eb}
-.assistant-name{font-size:14px;font-weight:850}
-.assistant-status{margin-top:3px;color:#9693a2;font-size:10px;font-weight:600}
-.chat-body{padding:20px 2px 130px}
-.welcome{max-width:320px;margin:45px auto;text-align:center}
-.welcome-icon{width:50px;height:50px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:1px solid rgba(130,100,216,.25);border-radius:16px;background:linear-gradient(135deg,#25202f,#17151e);font-size:22px;color:#d0c4eb;box-shadow:0 0 12px var(--glow)}
-.welcome-title{font-size:20px;font-weight:850}
-.welcome-text{margin-top:8px;color:#a6a2b1;font-size:12px;line-height:1.6}
-.message{max-width:88%;margin:12px 0;padding:13px 15px;border-radius:15px;font-size:13px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
-.message.user{margin-left:auto;background:linear-gradient(135deg,#30283d,#231e2d);border:1px solid rgba(130,100,216,.22);box-shadow:0 4px 12px rgba(0,0,0,.15)}
-.message.ai{margin-right:auto;background:var(--panel);border:1px solid var(--border)}
-
-.chat-input-area{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);width:min(94%,680px);z-index:25;padding:8px;border:1px solid rgba(130,100,216,.18);border-radius:18px;background:rgba(17,17,23,.96);backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
-.chat-input-row{display:flex;align-items:center;gap:8px}
-.chat-input{flex:1;min-width:0;height:41px;padding:0 12px;border:0;outline:none;background:transparent;color:white;font-size:13px}
-.chat-input::placeholder{color:#777381}
-.send-btn{width:40px;height:40px;border:1px solid rgba(130,100,216,.28);border-radius:13px;background:linear-gradient(135deg,#30283d,#211d2b);font-size:18px;color:#f5f1ff;transition:all .2s}
-.send-btn:hover{box-shadow:0 0 10px var(--glow)}
-
-.empty{padding:40px 15px;text-align:center}
-.empty-icon{font-size:32px;margin-bottom:12px}
-.empty-title{font-size:20px;font-weight:850}
-.empty-text{margin-top:9px;color:#a6a2b1;font-size:12px;line-height:1.6}
-
-.modal-bg{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.modal-bg.show{display:flex;animation:fadeInModal .2s ease}
-@keyframes fadeInModal{from{opacity:0}to{opacity:1}}
-.modal{width:min(100%,600px);max-height:85vh;overflow:auto;padding:22px;border:1px solid rgba(255,255,255,.08);border-bottom:0;border-radius:24px 24px 0 0;background:#14141a;box-shadow:0 -10px 40px rgba(0,0,0,.65)}
-.modal-title{font-size:19px;font-weight:850}
-.modal-text{margin-top:9px;color:#aaa6b5;font-size:12px;line-height:1.6}
-.modal-close{width:100%;height:44px;margin-top:18px;border:1px solid rgba(130,100,216,.25);border-radius:13px;background:linear-gradient(135deg,#282231,#191720);font-size:12px;font-weight:800;color:#fff}
-
-.mode-option{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:16px;border:1px solid var(--border);border-radius:15px;background:var(--panel);text-align:left;font-size:13px;font-weight:750;transition:all .2s}
-.mode-option:hover{border-color:rgba(130,100,216,.3)}
-.mode-option.selected{border-color:var(--purple);background:linear-gradient(135deg,#292332,#1b1922);box-shadow:0 0 10px var(--glow)}
-.mode-option small{display:block;margin-top:4px;color:#aaa6b5;font-size:11px;line-height:1.5;font-weight:normal}
-
-.profile-card{margin-top:14px;padding:18px;border:1px solid var(--border);border-radius:18px;background:var(--panel)}
-.profile-row{display:flex;align-items:center;gap:13px}
-.profile-avatar{width:48px;height:48px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(130,100,216,.25);border-radius:16px;background:linear-gradient(135deg,#25202f,#17151e);font-size:22px;color:#d0c4eb;overflow:hidden}
-.profile-name{font-weight:850;font-size:15px}
-.profile-sub{margin-top:4px;color:#aaa6b5;font-size:11px;font-weight:600}
-.profile-action{width:100%;margin-top:10px;padding:14px;border:1px solid var(--border);border-radius:13px;background:var(--panel);text-align:left;font-size:12px;font-weight:750;transition:all .2s}
-.profile-action:hover{border-color:rgba(130,100,216,.3);background:var(--panel2)}
-
-.pro-banner{margin-bottom:20px;padding:22px;border:1px solid rgba(130,100,216,.23);border-radius:20px;background:radial-gradient(ellipse at top right,#292332,#111117 72%);box-shadow:0 8px 24px rgba(0,0,0,.18)}
-.pro-label{color:#c7b9e5;font-size:10px;font-weight:900;letter-spacing:1.5px}
-.pro-title{margin-top:8px;font-size:24px;font-weight:900;letter-spacing:-.5px}
-.pro-description{margin-top:8px;color:#b8b2c5;font-size:12px;line-height:1.6}
-.pro-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
-.pro-card{min-height:110px;padding:15px;border:1px solid var(--border);border-radius:16px;background:linear-gradient(145deg,#15141b,#0e0e13);text-align:left;transition:all .2s}
-.pro-card:hover{border-color:var(--purple);box-shadow:0 4px 16px var(--glow);transform:translateY(-2px)}
-.pro-card-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:1px solid rgba(130,100,216,.22);border-radius:11px;background:linear-gradient(135deg,#25202f,#17151e);font-size:15px;color:#d0c4eb}
-.pro-card-title{font-size:12px;font-weight:850}
-.pro-note{margin-top:16px;color:#898593;font-size:10px;line-height:1.6;font-weight:600}
-.hidden{display:none!important}
-
-@media(min-width:600px){
-  main{padding:24px}
-  .trend-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .pro-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.nav-item svg {
+  width: 21px;height: 21px;
+  stroke: currentColor;fill: none;stroke-width: 1.8;
+  stroke-linecap: round;stroke-linejoin: round;
 }
 
-@keyframes shimmer{
-  0%{background-position:-200% 0}
-  100%{background-position:200% 0}
+/* Активное состояние кнопки */
+.nav-item.active {
+  background: var(--accent-lavender);
+  color: var(--accent-dark);
+  font-weight: 800;
 }
-.skeleton{
-  background:linear-gradient(90deg,#131219 25%,#211e29 50%,#131219 75%);
-  background-size:200% 100%;
-  animation:shimmer 1.5s infinite linear;
-}
+.nav-item.active svg {stroke: var(--accent-dark)}
+
+/* Модальное окно */
+.modal-bg{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+.modal-bg.show{display:flex}
+.modal{width:min(100%,480px);padding:22px;border-radius:24px 24px 0 0;background:var(--card-bg);border:1px solid var(--card-border)}
+.modal-title{font-size:18px;font-weight:850;margin-bottom:6px}
+.modal-text{font-size:13px;color:var(--text-sub);line-height:1.5}
+.modal-btn{width:100%;height:46px;margin-top:16px;border-radius:14px;background:var(--accent-purple);color:#FFF;font-size:13px;font-weight:800;box-shadow:0 3px 12px rgba(107,37,230,.35)}
 </style>
 </head>
 
 <body>
+
 <div class="app">
 
+<!-- ШАПКА BOOMAI -->
 <header class="header">
-  <div class="logo">Boom<span>AI</span></div>
+  <div class="header-left">
+    <div class="header-logo">✦</div>
+    <div class="header-title">Boom<span>AI</span></div>
+  </div>
   <div class="header-right">
-    <div class="balance">⚡ <span id="balanceValue">100</span></div>
-    <button class="mode-btn" onclick="openModeMenu()">
-      <span id="modeIcon">⚡</span><span id="modeName">Быстрый</span><span>⌄</span>
+    <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" aria-label="Сменить тему">
+      <span id="themeIcon">🌙</span>
     </button>
-    <button class="menu-btn" onclick="openMenu()">☰</button>
+    <div class="balance-chip">
+      <span class="bolt">⚡</span>
+      <span id="balanceVal">100</span>
+    </div>
   </div>
 </header>
 
 <main>
 
-<section id="homeScreen" class="screen active">
-  <input id="searchInput" class="search" placeholder="⌕  Найти идеи и тренды" oninput="searchIdeas()">
-
-  <div class="section">
-    <div class="section-head"><div class="section-title">Создать</div></div>
-    <div class="horizontal">
-      <button class="tool" onclick="openChat()"><span class="tool-icon">✦</span><span class="tool-name">AI Чат</span></button>
-      <button class="tool" onclick="openTool('Видео')"><span class="tool-icon">▷</span><span class="tool-name">Видео</span></button>
-      <button class="tool" onclick="openTool('Картинка')"><span class="tool-icon">▧</span><span class="tool-name">Картинка</span></button>
-      <button class="tool" onclick="openTool('Nano Banana')"><span class="tool-icon">◉</span><span class="tool-name">Nano Banana</span></button>
-      <button class="tool" onclick="openTool('Инструменты')"><span class="tool-icon">✳</span><span class="tool-name">Инструменты</span></button>
-      <button class="tool" onclick="openTool('Kling / Veo')"><span class="tool-icon">◈</span><span class="tool-name">Kling / Veo</span></button>
-    </div>
+<!-- ЭКРАН 1: ТРЕНДЫ (ГЛАВНАЯ) -->
+<section id="trendsScreen" class="screen active">
+  <div class="trends-head">
+    <h1 class="trends-title">Тренды</h1>
+    <p class="trends-sub">Выберите стиль и загрузите своё фото — получите себя в этом образе</p>
   </div>
 
-  <div class="section">
-    <div class="section-head"><div class="section-title">Быстрые инструменты</div></div>
-    <div class="horizontal">
-      <button class="quick" onclick="openTool('Убрать фон')"><div class="quick-image">✂</div><div class="quick-name">Убрать фон</div></button>
-      <button class="quick" onclick="openTool('Реставрация')"><div class="quick-image">▧</div><div class="quick-name">Реставрация</div></button>
-      <button class="quick" onclick="openTool('На документы')"><div class="quick-image">▣</div><div class="quick-name">На документы</div></button>
-      <button class="quick" onclick="openTool('Презентации')"><div class="quick-image">▤</div><div class="quick-name">Презентации</div></button>
-    </div>
+  <div class="search-box">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="trendSearch" class="search-input" placeholder="Найти тренд" oninput="filterSearch()">
   </div>
 
-  <div class="section">
-    <div class="section-head"><div class="section-title">🔥 Тренды</div></div>
-    <div class="filters">
-      <button class="filter active" onclick="filterTrends('photo',this)">Фото</button>
-      <button class="filter" onclick="filterTrends('video',this)">Видео</button>
-    </div>
-    <div class="trend-grid" id="trendGrid">
-      <div class="trend-card" data-type="photo" data-name="AI Портрет" onclick="openTool('AI Портрет')">
-        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" alt="Портрет"></div>
-        <div class="trend-name">AI Портрет</div>
+  <div class="chips-row">
+    <button class="chip-btn" onclick="setChip('all', this)">Все</button>
+    <button class="chip-btn active" onclick="setChip('video', this)">Видео</button>
+    <button class="chip-btn" onclick="setChip('female', this)">Женское</button>
+    <button class="chip-btn" onclick="setChip('male', this)">Мужское</button>
+    <button class="chip-btn" onclick="setChip('pair', this)">Парное</button>
+  </div>
+
+  <div class="trends-grid" id="trendsContainer">
+    <div class="trend-card" data-cat="video" data-name="Фигурка в руке" onclick="openTrend('Фигурка в руке')">
+      <div class="badge-time">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        10 с
       </div>
-      <div class="trend-card" data-type="photo" data-name="Новый стиль" onclick="openTool('Новый стиль')">
-        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=600&q=80" alt="Мода"></div>
-        <div class="trend-name">Новый стиль</div>
-      </div>
-      <div class="trend-card" data-type="photo" data-name="Luxury Auto" onclick="openTool('Luxury Auto')">
-        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80" alt="Автомобиль"></div>
-        <div class="trend-name">Luxury Auto</div>
-      </div>
-      <div class="trend-card" data-type="photo" data-name="Архитектура" onclick="openTool('Архитектура')">
-        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=600&q=80" alt="Архитектура"></div>
-        <div class="trend-name">Архитектура</div>
-      </div>
-      <div class="trend-card" data-type="video" data-name="Cinematic" onclick="openTool('Cinematic')">
-        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=600&q=80" alt="Кино"></div>
-        <div class="trend-name">Cinematic</div>
-      </div>
-      <div class="trend-card" data-type="video" data-name="Ночной город" onclick="openTool('Ночной город')">
-        <div class="trend-image"><img loading="lazy" src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=600&q=80" alt="Ночной город"></div>
-        <div class="trend-name">Ночной город</div>
+      <img loading="lazy" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" alt="Фигурка в руке">
+      <div class="trend-info">
+        <span class="trend-name">Фигурка в руке</span>
+        <span class="trend-likes"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 1.2k</span>
       </div>
     </div>
-  </div>
 
-  <div class="section">
-    <div class="section-head"><div class="section-title">📷 Фото</div><button class="section-link" onclick="openTool('Все категории фото')">Все →</button></div>
-    <div class="horizontal">
-      <button class="collection" onclick="openTool('Портреты')"><img loading="lazy" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Портреты</span></button>
-      <button class="collection" onclick="openTool('Стиль')"><img loading="lazy" src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Стиль</span></button>
-      <button class="collection" onclick="openTool('Авто')"><img loading="lazy" src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Авто</span></button>
-      <button class="collection" onclick="openTool('Природа')"><img loading="lazy" src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Природа</span></button>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-head"><div class="section-title">🎬 Видео</div><button class="section-link" onclick="openTool('Все категории видео')">Все →</button></div>
-    <div class="horizontal">
-      <button class="collection" onclick="openTool('Cinematic')"><img loading="lazy" src="https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Cinematic</span></button>
-      <button class="collection" onclick="openTool('Город')"><img loading="lazy" src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Город</span></button>
-      <button class="collection" onclick="openTool('Путешествия')"><img loading="lazy" src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Путешествия</span></button>
-      <button class="collection" onclick="openTool('Авто видео')"><img loading="lazy" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=400&q=80" alt=""><span class="collection-title">Авто</span></button>
-    </div>
-  </div>
-</section>
-
-<section id="proScreen" class="screen">
-  <div class="pro-banner">
-    <div class="pro-label">BOOMAI · PRO WORKSPACE</div>
-    <div class="pro-title">Твоя AI-студия</div>
-    <div class="pro-description">Расширенные инструменты для творчества, работы и контента.</div>
-    <button class="mode-option" onclick="openModeMenu()">👑 PRO-режим · Переключить режим <span>⌄</span></button>
-  </div>
-
-  <div class="section-head"><div class="section-title">Интеллект</div></div>
-  <div class="pro-grid">
-    <button class="pro-card" onclick="openChat(true)"><div class="pro-card-icon">✦</div><div class="pro-card-title">AI Chat PRO</div></button>
-    <button class="pro-card" onclick="openTool('Документы')"><div class="pro-card-icon">▤</div><div class="pro-card-title">Документы</div></button>
-    <button class="pro-card" onclick="openTool('Код и разработка')"><div class="pro-card-icon">⌘</div><div class="pro-card-title">Код и разработка</div></button>
-  </div>
-
-  <div class="section-head" style="margin-top:24px"><div class="section-title">Фото и дизайн</div></div>
-  <div class="pro-grid">
-    <button class="pro-card" onclick="openTool('Фото PRO')"><div class="pro-card-icon">▧</div><div class="pro-card-title">Фото PRO</div></button>
-    <button class="pro-card" onclick="openTool('AI-редактор')"><div class="pro-card-icon">✧</div><div class="pro-card-title">AI-редактор</div></button>
-    <button class="pro-card" onclick="openTool('Дизайн')"><div class="pro-card-icon">◈</div><div class="pro-card-title">Дизайн</div></button>
-  </div>
-
-  <div class="section-head" style="margin-top:24px"><div class="section-title">Видео, музыка и голос</div></div>
-  <div class="pro-grid">
-    <button class="pro-card" onclick="openTool('Видео PRO')"><div class="pro-card-icon">▷</div><div class="pro-card-title">Видео PRO</div></button>
-    <button class="pro-card" onclick="openTool('Музыка PRO')"><div class="pro-card-icon">♫</div><div class="pro-card-title">Музыка</div></button>
-    <button class="pro-card" onclick="openTool('Голос и озвучка')"><div class="pro-card-icon">◖</div><div class="pro-card-title">Голос</div></button>
-  </div>
-
-  <div class="section-head" style="margin-top:24px"><div class="section-title">Библиотека</div></div>
-  <div class="pro-grid">
-    <button class="pro-card" onclick="navigate('ideas')"><div class="pro-card-icon">✧</div><div class="pro-card-title">Prompt Hub</div></button>
-    <button class="pro-card" onclick="navigate('history')"><div class="pro-card-icon">◷</div><div class="pro-card-title">История</div></button>
-  </div>
-  <div class="pro-note">Для реальной генерации потребуется подключить AI-модели и API.</div>
-</section>
-
-<section id="createScreen" class="screen">
-  <div class="chat-screen">
-    <div class="assistant-header">
-      <div class="assistant-avatar">✦</div>
-      <div>
-        <div class="assistant-name" id="assistantName">Ассистент BoomAI</div>
-        <div class="assistant-status">AI-ассистент</div>
+    <div class="trend-card" data-cat="video" data-name="Наклейка" onclick="openTrend('Наклейка')">
+      <div class="badge-time">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        10 с
+      </div>
+      <img loading="lazy" src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=600&q=80" alt="Наклейка">
+      <div class="trend-info">
+        <span class="trend-name">Наклейка</span>
+        <span class="trend-likes"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 42</span>
       </div>
     </div>
-    <div class="chat-body" id="chatBody">
-      <div class="welcome">
-        <div class="welcome-icon">✦</div>
-        <div class="welcome-title">Чем займёмся?</div>
-        <div class="welcome-text">Напиши, что хочешь создать, и начнём с идеи.</div>
+
+    <div class="trend-card" data-cat="female" data-name="Киберпанк портрет" onclick="openTrend('Киберпанк портрет')">
+      <div class="badge-time">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        10 с
+      </div>
+      <img loading="lazy" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80" alt="Киберпанк портрет">
+      <div class="trend-info">
+        <span class="trend-name">Киберпанк портрет</span>
+        <span class="trend-likes"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 830</span>
+      </div>
+    </div>
+
+    <div class="trend-card" data-cat="male" data-name="Luxury Auto" onclick="openTrend('Luxury Auto')">
+      <div class="badge-time">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        10 с
+      </div>
+      <img loading="lazy" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80" alt="Luxury Auto">
+      <div class="trend-info">
+        <span class="trend-name">Luxury Auto</span>
+        <span class="trend-likes"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 512</span>
       </div>
     </div>
   </div>
 </section>
 
-<section id="ideasScreen" class="screen">
-  <div class="empty">
-    <div class="empty-icon">✧</div>
-    <div class="empty-title">Идеи и Prompt Hub</div>
-    <div class="empty-text">Подборки промптов и шаблонов для фото, видео, музыки, голоса и AI-инструментов.</div>
-  </div>
-  <div class="pro-grid">
-    <button class="pro-card" onclick="openTool('Промпты для фото')"><div class="pro-card-icon">▧</div><div class="pro-card-title">Промпты для фото</div></button>
-    <button class="pro-card" onclick="openTool('Промпты для видео')"><div class="pro-card-icon">▷</div><div class="pro-card-title">Промпты для видео</div></button>
-    <button class="pro-card" onclick="openTool('Тренды')"><div class="pro-card-icon">✧</div><div class="pro-card-title">Тренды</div></button>
-    <button class="pro-card" onclick="openTool('Музыка и голос')"><div class="pro-card-icon">♫</div><div class="pro-card-title">Музыка и голос</div></button>
-  </div>
-</section>
+<!-- ЭКРАН 2: «СОЗДАТЬ СВОЁ» (ОТКРЫВАЕТСЯ ПО НАЖАТИЮ «СОЗДАТЬ») -->
+<section id="creatorScreen" class="screen">
+  <div class="creator-container">
+    <div class="creator-head">
+      <h1>Создать своё</h1>
+      <p>Начните с идеи — опишите её словами или загрузите фото</p>
+    </div>
 
-<section id="historyScreen" class="screen">
-  <div class="empty">
-    <div class="empty-icon">◷</div>
-    <div class="empty-title">История</div>
-    <div class="empty-text">Здесь будут храниться твои чаты и результаты генераций. Сохранение генераций подключим отдельно.</div>
-  </div>
-  <div id="historyList"></div>
-</section>
+    <div class="creator-items">
+      <!-- 1. Фото -->
+      <div class="c-card" id="cardPhoto">
+        <button class="c-card-btn" onclick="toggleCard('cardPhoto')">
+          <div class="c-icon-wrap">
+            <svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          </div>
+          <div class="c-card-text">
+            <span class="c-title">Фото</span>
+            <span class="c-desc">По своему снимку или по описанию</span>
+          </div>
+          <svg class="c-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="c-card-sub">
+          <button class="c-sub-btn" onclick="openToolModal('Фото по описанию')">✦ Создать по описанию (текст) <span>→</span></button>
+          <button class="c-sub-btn" onclick="openToolModal('Фотосессия по фото')">📷 Загрузить свой снимок <span>→</span></button>
+        </div>
+      </div>
 
-<section id="profileScreen" class="screen">
-  <div class="profile-card">
-    <div class="profile-row">
-      <div class="profile-avatar" id="profileAvatarIcon">◉</div>
-      <div>
-        <div class="profile-name" id="profileName">Мой профиль</div>
-        <div class="profile-sub" id="profileSub">Аккаунт BoomAI</div>
+      <!-- 2. Видео -->
+      <div class="c-card" id="cardVideo">
+        <button class="c-card-btn" onclick="toggleCard('cardVideo')">
+          <div class="c-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="3"/></svg>
+          </div>
+          <div class="c-card-text">
+            <span class="c-title">Видео</span>
+            <span class="c-desc">Из текста или оживить фото</span>
+          </div>
+          <svg class="c-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="c-card-sub">
+          <button class="c-sub-btn" onclick="openToolModal('Видео из текста (Kling/Veo)')">▷ Сгенерировать видео по тексту <span>→</span></button>
+          <button class="c-sub-btn" onclick="openToolModal('Оживить статичное фото')">✨ Оживить фото (Motion) <span>→</span></button>
+        </div>
+      </div>
+
+      <!-- 3. Музыка -->
+      <div class="c-card" id="cardMusic">
+        <button class="c-card-btn" onclick="toggleCard('cardMusic')">
+          <div class="c-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <div class="c-card-text">
+            <span class="c-title">Музыка</span>
+            <span class="c-desc">Конструктор: текст + стиль</span>
+          </div>
+          <svg class="c-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="c-card-sub">
+          <button class="c-sub-btn" onclick="openToolModal('Песня с текстом')">🎵 Песня с вокалом <span>→</span></button>
+          <button class="c-sub-btn" onclick="openToolModal('Инструментальный бит')">🎧 Инструментал / Бит <span>→</span></button>
+        </div>
+      </div>
+
+      <!-- 4. Голос -->
+      <div class="c-card" id="cardVoice">
+        <button class="c-card-btn" onclick="toggleCard('cardVoice')">
+          <div class="c-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+          </div>
+          <div class="c-card-text">
+            <span class="c-title">Голос</span>
+            <span class="c-desc">Озвучка текста или клон голоса</span>
+          </div>
+          <svg class="c-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="c-card-sub">
+          <button class="c-sub-btn" onclick="openToolModal('Озвучка диктором')">🎙 Озвучить текст голосом AI <span>→</span></button>
+          <button class="c-sub-btn" onclick="openToolModal('Клон своего голоса')">⚡ Создать клон голоса <span>→</span></button>
+        </div>
+      </div>
+
+      <!-- 5. Инструменты -->
+      <div class="c-card" id="cardTools">
+        <button class="c-card-btn" onclick="toggleCard('cardTools')">
+          <div class="c-icon-wrap">
+            <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <div class="c-card-text">
+            <span class="c-title">Инструменты</span>
+            <span class="c-desc">Апскейл, удаление фона, реставрация</span>
+          </div>
+          <svg class="c-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="c-card-sub">
+          <button class="c-sub-btn" onclick="openToolModal('Удаление фона')">✂ Удалить фон <span>→</span></button>
+          <button class="c-sub-btn" onclick="openToolModal('Апскейл до 4K')">🔍 Улучшить качество (4K) <span>→</span></button>
+          <button class="c-sub-btn" onclick="openToolModal('Реставрация снимка')">📷 Реставрация фото <span>→</span></button>
+        </div>
       </div>
     </div>
   </div>
+</section>
 
-  <div class="section">
-    <div class="section-head"><div class="section-title">Режим приложения</div></div>
-    <button class="mode-option" id="profileFastOption" onclick="setMode('fast')"><span>⚡ Быстрый режим</span><span id="profileFastCheck">✓</span></button>
-    <button class="mode-option" id="profileProOption" onclick="setMode('pro')"><span>👑 PRO-режим</span><span id="profileProCheck"></span></button>
-  </div>
+<!-- РАЗДЕЛ МОИ РАБОТЫ -->
+<section id="worksScreen" class="screen" style="padding-top:40px;text-align:center;">
+  <div style="font-size:36px;margin-bottom:8px">📁</div>
+  <h2 style="font-size:18px;margin:0 0 4px">Мои работы</h2>
+  <p style="color:var(--text-sub);font-size:12px">Здесь будут храниться созданные вами видео и фото в BoomAI</p>
+</section>
 
-  <div class="section">
-    <div class="section-head"><div class="section-title">Аккаунт</div></div>
-    <button class="profile-action" onclick="openTool('Баланс и кредиты')">⚡ Баланс и кредиты — <span id="profileBalance">100</span></button>
-    <button class="profile-action" onclick="openTool('Платежи и тарифы')">▣ Платежи и тарифы</button>
-    <button class="profile-action" onclick="openTool('Пригласить друга')">♧ Пригласить друга</button>
-    <button class="profile-action" onclick="openTool('Поддержка')">? Поддержка</button>
-    <button class="profile-action" onclick="openTool('Настройки')">⚙ Настройки</button>
+<!-- РАЗДЕЛ ПРОФИЛЬ -->
+<section id="profileScreen" class="screen" style="padding-top:20px;">
+  <div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;padding:16px;display:flex;align-items:center;gap:12px;">
+    <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-purple-light);display:grid;place-items:center;font-size:20px">👤</div>
+    <div>
+      <div style="font-weight:800;font-size:15px">Мой аккаунт BoomAI</div>
+      <div style="color:var(--text-sub);font-size:12px">Баланс: 100 ⚡</div>
+    </div>
   </div>
 </section>
 
 </main>
 
-<div class="chat-input-area hidden" id="chatInputArea">
-  <div class="chat-input-row">
-    <input id="chatInput" class="chat-input" placeholder="Напиши сообщение..." onkeydown="handleEnter(event)">
-    <button class="send-btn" onclick="sendMessage()">↑</button>
-  </div>
-</div>
-
+<!-- НАВИГАЦИЯ -->
 <nav class="bottom-nav">
-  <button class="nav-btn active" data-screen="home" onclick="navigate('home')"><span class="nav-icon">⌂</span>Главная</button>
-  <button class="nav-btn" data-screen="ideas" onclick="navigate('ideas')"><span class="nav-icon">✧</span>Идеи</button>
-  <button class="nav-btn" data-screen="create" onclick="openChat()"><span class="nav-icon">＋</span>Создать</button>
-  <button class="nav-btn" data-screen="history" onclick="navigate('history')"><span class="nav-icon">◷</span>История</button>
-  <button class="nav-btn" data-screen="profile" onclick="navigate('profile')"><span class="nav-icon">◉</span>Профиль</button>
+  <button class="nav-item active" data-screen="trends" onclick="nav('trends', this)">
+    <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Главная
+  </button>
+  
+  <button class="nav-item" data-screen="creator" onclick="nav('creator', this)">
+    <svg viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+    Создать
+  </button>
+
+  <button class="nav-item" data-screen="works" onclick="nav('works', this)">
+    <svg viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+    Мои работы
+  </button>
+
+  <button class="nav-item" data-screen="profile" onclick="nav('profile', this)">
+    <svg viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Профиль
+  </button>
 </nav>
 
-<div id="modeModal" class="modal-bg" onclick="closeModeMenu(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title">Выбери режим</div>
-    <div class="modal-text">Можно переключать режим в любой момент.</div>
-    <button class="mode-option" id="fastOption" onclick="setMode('fast')"><span>⚡ Быстрый режим<small>Основные инструменты и простой интерфейс</small></span><span id="fastCheck">✓</span></button>
-    <button class="mode-option" id="proOption" onclick="setMode('pro')"><span>👑 PRO-режим<small>Отдельная AI-студия с расширенными инструментами</small></span><span id="proCheck"></span></button>
-    <button class="modal-close" onclick="closeModeMenu()">Закрыть</button>
-  </div>
 </div>
 
-<div id="modalBg" class="modal-bg" onclick="closeModal(event)">
+<!-- МОДАЛЬНОЕ ОКНО -->
+<div id="trendModal" class="modal-bg" onclick="closeModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
-    <div id="modalTitle" class="modal-title">BoomAI</div>
-    <div id="modalText" class="modal-text"></div>
-    <button class="modal-close" onclick="closeModal()">Закрыть</button>
+    <div class="modal-title" id="mTitle">Стиль BoomAI</div>
+    <div class="modal-text" id="mText">Загрузите фото для генерации видео в этом стиле. Стоимость генерации: 50 ⚡</div>
+    <button class="modal-btn" onclick="alert('Открыт выбор фото для генерации в BoomAI!')">Загрузить фото</button>
   </div>
 </div>
 
 <script>
-let currentMode = 'fast';
-let currentScreen = 'home';
-let currentTrendType = 'photo';
-let chatHistory = [];
+/* ТЕМА: ПЕРЕКЛЮЧЕНИЕ СВЕТЛОЙ / ТЁМНОЙ */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const isDark = theme === 'dark';
+  document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+  document.getElementById('themeColorMeta').setAttribute('content', isDark ? '#0C0B10' : '#F7F8FA');
+  localStorage.setItem('boomai_theme', theme);
 
-function getSaved(key, fallback) {
-  try {
-    const value = localStorage.getItem(key);
-    return value === null ? fallback : value;
-  } catch (e) {
-    return fallback;
+  if (window.Telegram?.WebApp) {
+    window.Telegram.WebApp.setHeaderColor?.(isDark ? '#0C0B10' : '#F7F8FA');
+    window.Telegram.WebApp.setBackgroundColor?.(isDark ? '#0C0B10' : '#F7F8FA');
   }
 }
 
-function saveValue(key, value) {
-  try { localStorage.setItem(key, value); } catch (e) {}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('medium');
+  applyTheme(next);
 }
 
-function openModeMenu() {
-  document.getElementById('modeModal').classList.add('show');
-}
-
-function closeModeMenu(event) {
-  if (!event || event.target === document.getElementById('modeModal')) {
-    document.getElementById('modeModal').classList.remove('show');
-  }
-}
-
-function setMode(mode) {
-  currentMode = mode === 'pro' ? 'pro' : 'fast';
-  saveValue('boomai_mode', currentMode);
-
-  const pro = currentMode === 'pro';
-  document.getElementById('modeIcon').textContent = pro ? '👑' : '⚡';
-  document.getElementById('modeName').textContent = pro ? 'PRO' : 'Быстрый';
-
-  document.getElementById('fastOption').classList.toggle('selected', !pro);
-  document.getElementById('proOption').classList.toggle('selected', pro);
-  document.getElementById('fastCheck').textContent = pro ? '' : '✓';
-  document.getElementById('proCheck').textContent = pro ? '✓' : '';
-
-  document.getElementById('profileFastOption').classList.toggle('selected', !pro);
-  document.getElementById('profileProOption').classList.toggle('selected', pro);
-  document.getElementById('profileFastCheck').textContent = pro ? '' : '✓';
-  document.getElementById('profileProCheck').textContent = pro ? '✓' : '';
-
-  document.getElementById('assistantName').textContent = pro ? 'AI Chat PRO' : 'Ассистент BoomAI';
-  closeModeMenu();
-  navigate('home');
-}
-
-function navigate(screen) {
-  currentScreen = screen;
-  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(el => {
-    el.classList.toggle('active', el.dataset.screen === screen);
-  });
-
-  if (screen === 'home') {
-    document.getElementById(currentMode === 'pro' ? 'proScreen' : 'homeScreen').classList.add('active');
+(function() {
+  const saved = localStorage.getItem('boomai_theme');
+  if (saved) {
+    applyTheme(saved);
+  } else if (window.Telegram?.WebApp?.colorScheme) {
+    applyTheme(window.Telegram.WebApp.colorScheme);
   } else {
-    const target = document.getElementById(screen + 'Screen');
-    if (target) target.classList.add('active');
+    applyTheme('light');
   }
-
-  document.getElementById('chatInputArea').classList.toggle('hidden', screen !== 'create');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function openChat(proChat) {
-  navigate('create');
-  if (proChat) document.getElementById('assistantName').textContent = 'AI Chat PRO';
-  else document.getElementById('assistantName').textContent = currentMode === 'pro' ? 'AI Chat PRO' : 'Ассистент BoomAI';
-  setTimeout(() => document.getElementById('chatInput').focus(), 100);
-}
-
-function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim();
-  if (!text) return;
-
-  const body = document.getElementById('chatBody');
-  const welcome = body.querySelector('.welcome');
-  if (welcome) welcome.remove();
-
-  addMessage(text, 'user');
-  chatHistory.push({role:'user',text});
-  input.value = '';
-
-  setTimeout(() => {
-    const reply = 'Сообщение принято. Сейчас в BoomAI отображается демонстрационный ответ. Чтобы ассистент отвечал по-настоящему, подключим AI API на сервере.';
-    addMessage(reply, 'ai');
-    chatHistory.push({role:'ai',text:reply});
-  }, 350);
-}
-
-function addMessage(text, type) {
-  const el = document.createElement('div');
-  el.className = 'message ' + type;
-  el.textContent = text;
-  document.getElementById('chatBody').appendChild(el);
-}
-
-function handleEnter(event) {
-  if (event.key === 'Enter') {
-    event.preventDefault();
-    sendMessage();
-  }
-}
-
-function openTool(name) {
-  document.getElementById('modalTitle').textContent = name;
-  document.getElementById('modalText').textContent =
-    'Раздел «' + name + '» пока подготовлен как интерфейс. Реальную генерацию подключим к нужной AI-модели или API.';
-  document.getElementById('modalBg').classList.add('show');
-}
-
-function openMenu() {
-  document.getElementById('modalTitle').textContent = 'Меню BoomAI';
-  document.getElementById('modalText').textContent =
-    'Выбери нужный раздел в нижнем меню. Режим переключается кнопкой в верхней панели или в профиле.';
-  document.getElementById('modalBg').classList.add('show');
-}
-
-function closeModal(event) {
-  if (!event || event.target === document.getElementById('modalBg')) {
-    document.getElementById('modalBg').classList.remove('show');
-  }
-}
-
-function filterTrends(type, button) {
-  currentTrendType = type;
-  document.querySelectorAll('.filter').forEach(el => el.classList.remove('active'));
-  button.classList.add('active');
-  searchIdeas();
-}
-
-function searchIdeas() {
-  const query = document.getElementById('searchInput').value.toLowerCase().trim();
-  document.querySelectorAll('.trend-card').forEach(card => {
-    const matchesType = card.dataset.type === currentTrendType;
-    const matchesText = card.dataset.name.toLowerCase().includes(query);
-    card.style.display = matchesType && matchesText ? '' : 'none';
-  });
-}
-
-function initTelegramUser() {
-  if (window.Telegram && window.Telegram.WebApp) {
-    const tg = window.Telegram.WebApp;
-    tg.ready();
-    tg.expand();
-    const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
-    if (user) {
-      const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || 'Пользователь';
-      const nameEl = document.getElementById('profileName');
-      if (nameEl) nameEl.textContent = fullName;
-      const subEl = document.getElementById('profileSub');
-      if (subEl) subEl.textContent = user.username ? '@' + user.username : 'Аккаунт BoomAI';
-      if (user.photo_url) {
-        const avatarEl = document.getElementById('profileAvatarIcon');
-        if (avatarEl) {
-          const img = document.createElement('img');
-          img.src = user.photo_url;
-          img.alt = 'Аватар пользователя';
-          img.style.cssText = 'width:100%;height:100%;border-radius:inherit;object-fit:cover;';
-          avatarEl.replaceChildren(img);
-        }
-      }
-    }
-  }
-}
-
-function initImageSkeletons() {
-  const images = document.querySelectorAll('.trend-image img, .collection img');
-  images.forEach(img => {
-    const parent = img.parentElement;
-    parent.classList.add('skeleton');
-    img.style.opacity = '0';
-    img.style.transition = 'opacity .4s ease, transform .4s ease';
-
-    const showImage = () => {
-      parent.classList.remove('skeleton');
-      img.style.opacity = '1';
-    };
-
-    const hideBrokenImage = () => {
-      parent.classList.remove('skeleton');
-      img.style.opacity = '0';
-    };
-
-    if (img.complete) {
-      if (img.naturalWidth > 0) showImage();
-      else hideBrokenImage();
-    } else {
-      img.addEventListener('load', showImage, {once:true});
-      img.addEventListener('error', hideBrokenImage, {once:true});
-    }
-  });
-}
-
-(function init() {
-  currentMode = getSaved('boomai_mode','fast') === 'pro' ? 'pro' : 'fast';
-  const balance = getSaved('boomai_balance','100');
-  document.getElementById('balanceValue').textContent = balance;
-  document.getElementById('profileBalance').textContent = balance;
-
-  const pro = currentMode === 'pro';
-  document.getElementById('modeIcon').textContent = pro ? '👑' : '⚡';
-  document.getElementById('modeName').textContent = pro ? 'PRO' : 'Быстрый';
-  document.getElementById('assistantName').textContent = pro ? 'AI Chat PRO' : 'Ассистент BoomAI';
-
-  document.getElementById('fastOption').classList.toggle('selected', !pro);
-  document.getElementById('proOption').classList.toggle('selected', pro);
-  document.getElementById('fastCheck').textContent = pro ? '' : '✓';
-  document.getElementById('proCheck').textContent = pro ? '✓' : '';
-
-  document.getElementById('profileFastOption').classList.toggle('selected', !pro);
-  document.getElementById('profileProOption').classList.toggle('selected', pro);
-  document.getElementById('profileFastCheck').textContent = pro ? '' : '✓';
-  document.getElementById('profileProCheck').textContent = pro ? '✓' : '';
-
-  initTelegramUser();
-  initImageSkeletons();
-  navigate('home');
 })();
+
+/* НАВИГАЦИЯ ПО ВЕСЬМА ЭКРАНАМ */
+function nav(screenName, btn) {
+  window.Telegram?.WebApp?.HapticFeedback?.selectionChanged();
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+
+  btn.classList.add('active');
+  const target = document.getElementById(screenName + 'Screen');
+  if (target) target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* АККОРДЕОН НА ЭКРАНЕ «СОЗДАТЬ СВОЁ» */
+function toggleCard(cardId) {
+  window.Telegram?.WebApp?.HapticFeedback?.selectionChanged();
+  const card = document.getElementById(cardId);
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.c-card').forEach(c => c.classList.remove('open'));
+  if (!isOpen) {
+    card.classList.add('open');
+  }
+}
+
+function openToolModal(toolName) {
+  window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light');
+  document.getElementById('mTitle').textContent = toolName;
+  document.getElementById('mText').textContent = `Инструмент «${toolName}» готов к использованию в BoomAI. Спишется от 2 до 50 ⚡`;
+  document.getElementById('trendModal').classList.add('show');
+}
+
+/* ФИЛЬТРАЦИЯ ТРЕНДОВ НА ГЛАВНОЙ */
+let activeCategory = 'video';
+
+function setChip(cat, btn) {
+  window.Telegram?.WebApp?.HapticFeedback?.selectionChanged();
+  document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeCategory = cat;
+  filterSearch();
+}
+
+function filterSearch() {
+  const q = document.getElementById('trendSearch').value.toLowerCase().trim();
+  document.querySelectorAll('.trend-card').forEach(card => {
+    const cardCat = card.dataset.cat;
+    const cardName = card.dataset.name.toLowerCase();
+    const matchCat = (activeCategory === 'all' || cardCat === activeCategory);
+    const matchQuery = cardName.includes(q);
+    card.style.display = (matchCat && matchQuery) ? 'block' : 'none';
+  });
+}
+
+function openTrend(name) {
+  window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light');
+  document.getElementById('mTitle').textContent = 'Тренд: ' + name;
+  document.getElementById('mText').textContent = 'Загрузите фото для генерации видео в этом стиле. Стоимость генерации: 50 ⚡';
+  document.getElementById('trendModal').classList.add('show');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('trendModal')) {
+    document.getElementById('trendModal').classList.remove('show');
+  }
+}
+
+if (window.Telegram?.WebApp) {
+  window.Telegram.WebApp.ready();
+  window.Telegram.WebApp.expand();
+}
 </script>
-</div>
 </body>
 </html>
