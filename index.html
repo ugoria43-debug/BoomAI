@@ -2,26 +2,31 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#F7F8FA" id="themeColorMeta">
-<title>BoomAI — Создать фото, видео</title>
+<title>BoomAI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;850;900&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 /* ========================================================
-   1. ПАЛИТРА BOOMAI (+10% ФИОЛЕТОВОГО НА ВСЕХ ЭКРАНАХ)
+   ПАЛИТРА И ДИЗАЙН-СИСТЕМА BOOMAI
    ======================================================== */
 :root {
-  /* Дневной режим */
-  --bg: #F7F8FA;
-  --header-bg: rgba(247, 248, 250, 0.95);
-  --card-bg: #FFFFFF;
+  --bg-gradient: radial-gradient(circle at 50% -40px, rgba(165, 123, 252, 0.38) 0%, rgba(247, 248, 250, 0) 65%), #F7F8FA;
+  --bg-solid: #F7F8FA;
+  --header-bg: rgba(247, 248, 250, 0.85);
+  --card-bg: rgba(255, 255, 255, 0.94);
   --card-border: #ECEEF2;
+  --card-border-hover: rgba(107, 37, 230, 0.4);
+  --input-bg: #FFFFFF;
   --text-main: #1C1A24;
   --text-sub: #8E92A0;
-  --search-bg: #FFFFFF;
+  --search-bg: rgba(255, 255, 255, 0.94);
   --search-border: #ECEEF2;
-  --chip-bg: #FFFFFF;
+  --chip-bg: rgba(255, 255, 255, 0.92);
   --chip-border: #ECEEF2;
   --chip-color: #6C7280;
   --chip-active-bg: #CBB4FD;
@@ -30,23 +35,31 @@
   --accent-purple-light: #F2EBFF;
   --accent-lavender: #CBB4FD;
   --accent-dark: #2F0E63;
-  --nav-bg: rgba(255, 255, 255, 0.98);
-  --nav-border: #ECEEF2;
-  --nav-color: #8E92A0;
-  --nav-active: #2F0E63;
+  --accent-cyan: #0284C7;
+  --accent-orange: #EA580C;
+  --shadow-color: rgba(28, 26, 36, 0.08);
+
+  --nav-island-bg: rgba(255, 255, 255, 0.92);
+  --nav-island-border: rgba(236, 238, 242, 0.85);
+  --nav-island-shadow: 0 14px 38px rgba(28, 26, 36, 0.08), 0 2px 8px rgba(0, 0, 0, 0.02);
+  --nav-text-color: #8E92A0;
+  --nav-active-pill: #F2EBFF;
+  --nav-active-text: #6B25E6;
 }
 
 [data-theme="dark"] {
-  /* Ночной режим */
-  --bg: #0C0B10;
-  --header-bg: rgba(12, 11, 16, 0.94);
-  --card-bg: #15141C;
+  --bg-gradient: radial-gradient(circle at 50% -50px, rgba(107, 37, 230, 0.48) 0%, rgba(12, 11, 16, 0) 65%), #0C0B10;
+  --bg-solid: #0C0B10;
+  --header-bg: rgba(12, 11, 16, 0.88);
+  --card-bg: rgba(21, 20, 28, 0.92);
   --card-border: #22202C;
+  --card-border-hover: rgba(195, 160, 255, 0.6);
+  --input-bg: #171520;
   --text-main: #F4F3F7;
   --text-sub: #8B8798;
-  --search-bg: #15141C;
+  --search-bg: rgba(21, 20, 28, 0.92);
   --search-border: #252332;
-  --chip-bg: #15141C;
+  --chip-bg: rgba(21, 20, 28, 0.92);
   --chip-border: #252332;
   --chip-color: #9E9AA9;
   --chip-active-bg: #6B25E6;
@@ -55,318 +68,730 @@
   --accent-purple-light: #231A38;
   --accent-lavender: #6B25E6;
   --accent-dark: #FFFFFF;
-  --nav-bg: rgba(17, 16, 23, 0.97);
-  --nav-border: #23212F;
-  --nav-color: #7E7A8C;
-  --nav-active: #CBB4FD;
+  --accent-cyan: #70D6FF;
+  --accent-orange: #FF8533;
+  --shadow-color: rgba(0, 0, 0, 0.45);
+
+  --nav-island-bg: rgba(18, 16, 25, 0.92);
+  --nav-island-border: rgba(255, 255, 255, 0.08);
+  --nav-island-shadow: 0 16px 44px rgba(0, 0, 0, 0.5), 0 0 20px rgba(107, 37, 230, 0.15);
+  --nav-text-color: #7E7A8C;
+  --nav-active-pill: rgba(107, 37, 230, 0.22);
+  --nav-active-text: #D6C2FD;
 }
 
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text-main);
-  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',Arial,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  transition:background-color .22s ease, color .22s ease;
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
 }
-button,input{font:inherit}
-button{color:inherit;cursor:pointer;border:none;background:none;transition:transform .15s ease}
-button:active{transform:scale(.96)}
+body {
+  background: var(--bg-solid);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-main);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+body.modal-locked { overflow: hidden; }
 
-.app{max-width:540px;margin:auto;padding-bottom:110px}
+button, input, textarea { font: inherit; outline: none; }
+button { color: inherit; cursor: pointer; border: none; background: none; transition: transform .15s ease; }
+button:active { transform: scale(.96); }
 
-/* Шапка */
-.header{
-  position:sticky;
-  top:0;
-  z-index:20;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:12px 18px;
-  background:var(--header-bg);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  transition:background-color .22s ease;
-}
-.header-left{display:flex;align-items:center;gap:8px}
-.header-logo{
-  width:28px;height:28px;border-radius:50%;
-  background:linear-gradient(135deg,#6B25E6,#A57BFC);
-  display:grid;place-items:center;color:#fff;font-size:15px;font-weight:900;
-  box-shadow:0 2px 8px rgba(107,37,230,.35);
-}
-.header-title{font-size:16px;font-weight:900;letter-spacing:-.3px}
-.header-title span{color:var(--accent-purple)}
-.header-right{display:flex;align-items:center;gap:8px}
-
-.theme-toggle{
-  width:34px;height:34px;border-radius:10px;
-  background:var(--card-bg);border:1px solid var(--card-border);
-  display:grid;place-items:center;font-size:15px;color:var(--text-main);
-  box-shadow:0 2px 6px rgba(0,0,0,.02);
-}
-
-.balance-chip{
-  display:flex;align-items:center;gap:6px;
-  padding:5px 12px;background:var(--card-bg);
-  border:1px solid var(--card-border);border-radius:9999px;
-  font-size:12px;font-weight:800;
-}
-.balance-chip .bolt{color:#F59E0B}
-
-/* Контейнер экранов */
-main{padding:8px 16px}
-.screen{display:none;animation:fadeIn .2s ease-in-out}
-.screen.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-
-/* ========================================================
-   ЭКРАН 1: ТРЕНДЫ (ГЛАВНАЯ)
-   ======================================================== */
-.trends-head{margin-bottom:14px}
-.trends-title{font-size:24px;font-weight:900;letter-spacing:-.4px;margin:0 0 4px}
-.trends-sub{font-size:12px;color:var(--text-sub);margin:0;line-height:1.45}
-
-.search-box{
-  position:relative;
-  margin-bottom:14px;
-}
-.search-box svg{
-  position:absolute;left:14px;top:50%;transform:translateY(-50%);
-  width:16px;height:16px;stroke:var(--text-sub);fill:none;
-}
-.search-input{
-  width:100%;height:44px;
-  padding:0 16px 0 40px;
-  background:var(--search-bg);
-  border:1px solid var(--search-border);
-  border-radius:13px;
-  color:var(--text-main);
-  outline:none;
-  font-size:13px;
-  box-shadow:0 2px 8px rgba(0,0,0,.02);
-  transition:border-color .2s, background-color .22s;
-}
-.search-input::placeholder{color:var(--text-sub)}
-.search-input:focus{border-color:var(--accent-purple)}
-
-.chips-row{
-  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
-  padding-bottom:14px;
-}
-.chips-row::-webkit-scrollbar{display:none}
-
-.chip-btn{
-  flex-shrink:0;
-  padding:7px 18px;
-  border-radius:9999px;
-  background:var(--chip-bg);
-  border:1px solid var(--chip-border);
-  color:var(--chip-color);
-  font-size:12px;
-  font-weight:700;
-  white-space:nowrap;
-  transition:all .2s;
-}
-.chip-btn.active{
-  background:var(--chip-active-bg);
-  border-color:transparent;
-  color:var(--chip-active-color);
-}
-
-.trends-grid{
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;
-}
-.trend-card{
-  position:relative;
-  border-radius:18px;
-  overflow:hidden;
-  aspect-ratio:3/4.4;
-  background:#201F2B;
-  cursor:pointer;
-  box-shadow:0 4px 14px rgba(0,0,0,.06);
-}
-.trend-card img{
-  width:100%;height:100%;object-fit:cover;display:block;
-  transition:transform .3s ease;
-}
-.trend-card:hover img{transform:scale(1.03)}
-
-.badge-time{
-  position:absolute;top:10px;left:10px;z-index:2;
-  display:flex;align-items:center;gap:4px;
-  padding:4px 8px;
-  background:rgba(0,0,0,.5);
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
-  border-radius:8px;
-  color:#FFFFFF;
-  font-size:10px;
-  font-weight:700;
-}
-.badge-time svg{width:10px;height:10px;fill:currentColor}
-
-.trend-info{
-  position:absolute;left:0;right:0;bottom:0;z-index:2;
-  padding:26px 12px 10px 12px;
-  background:linear-gradient(0deg,rgba(0,0,0,.85) 0%, rgba(0,0,0,.45) 55%, transparent 100%);
-  display:flex;align-items:flex-end;justify-content:space-between;
-  color:#FFFFFF;
-}
-.trend-name{font-size:12px;font-weight:800;line-height:1.2}
-.trend-likes{display:flex;align-items:center;gap:3px;font-size:10px;opacity:.9}
-.trend-likes svg{width:11px;height:11px;fill:currentColor}
-
-/* ========================================================
-   ЭКРАН 2: «СОЗДАТЬ СВОЁ» (КНОПКА СОЗДАТЬ ИЗ МЕНЮ)
-   ======================================================== */
-.creator-container{
-  margin-top:4px;
-}
-.creator-head{margin-bottom:16px}
-.creator-head h1{font-size:24px;font-weight:900;letter-spacing:-.4px;margin:0 0 5px}
-.creator-head p{font-size:12px;color:var(--text-sub);margin:0;line-height:1.45}
-
-.creator-items{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.c-card{
-  background:var(--card-bg);
-  border:1px solid var(--card-border);
-  border-radius:18px;
-  overflow:hidden;
-  transition:border-color .2s ease, box-shadow .2s ease;
-  box-shadow:0 2px 8px rgba(0,0,0,.02);
-}
-.c-card:hover{border-color:var(--accent-lavender)}
-
-.c-card-btn{
-  width:100%;
-  display:flex;
-  align-items:center;
-  gap:13px;
-  padding:14px 16px;
-  text-align:left;
-}
-
-.c-icon-wrap{
-  width:40px;
-  height:40px;
-  border-radius:13px;
-  background:var(--accent-purple-light);
-  color:var(--accent-purple);
-  display:grid;
-  place-items:center;
-  flex-shrink:0;
-}
-.c-icon-wrap svg{
-  width:21px;height:21px;stroke:currentColor;fill:none;
-  stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;
-}
-
-.c-card-text{flex:1;min-width:0}
-.c-title{display:block;font-size:14px;font-weight:850;color:var(--text-main);margin-bottom:2px}
-.c-desc{display:block;font-size:11px;color:var(--text-sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-.c-arrow{
-  width:16px;height:16px;stroke:var(--text-sub);fill:none;
-  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
-  transition:transform .2s ease;
-  flex-shrink:0;
-}
-.c-card.open .c-arrow{transform:rotate(180deg);stroke:var(--accent-purple)}
-
-/* Раскрывающийся блок опций */
-.c-card-sub{
-  display:none;
-  padding:6px 16px 14px 69px;
-  flex-direction:column;
-  gap:7px;
-  border-top:1px solid var(--card-border);
-  background:rgba(0,0,0,.01);
-}
-.c-card.open .c-card-sub{display:flex}
-
-.c-sub-btn{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:9px 12px;
-  border-radius:11px;
-  background:var(--bg);
-  border:1px solid var(--card-border);
-  font-size:12px;
-  font-weight:750;
-  color:var(--text-main);
-  text-align:left;
-  transition:all .15s ease;
-}
-.c-sub-btn:hover{
-  background:var(--accent-purple-light);
-  border-color:var(--accent-lavender);
-  color:var(--accent-purple);
-}
-
-/* ========================================================
-   НИЖНЕЕ МЕНЮ
-   ======================================================== */
-.bottom-nav {
-  position: fixed;
-  left: 0; right: 0; bottom: 0;
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 0px)) 12px;
-  background: var(--nav-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid var(--nav-border);
-  box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.03);
-  transition: background-color .22s ease, border-color .22s ease;
-}
-
-.nav-item {
+.app {
+  max-width: 500px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  position: relative;
   display: flex;
   flex-direction: column;
+}
+
+/* ШАПКА */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 3px;
-  color: var(--nav-color);
-  font-size: 10px;
-  font-weight: 600;
-  padding: 5px 12px;
-  min-width: 62px;
-  border-radius: 9999px;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: var(--header-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+.header-left { display: flex; align-items: center; gap: 8px; }
+.header-title { font-size: 18px; font-weight: 900; letter-spacing: -.4px; }
+.header-title span { color: var(--accent-purple); }
+.header-right { display: flex; align-items: center; gap: 8px; }
+
+.theme-toggle {
+  width: 36px; height: 36px; border-radius: 12px;
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  display: grid; place-items: center; color: var(--text-main);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: all .25s ease;
+}
+.theme-toggle svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+.balance-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; background: var(--card-bg);
+  border: 1px solid var(--card-border); border-radius: 9999px;
+  font-size: 13px; font-weight: 850; box-shadow: 0 2px 8px var(--shadow-color);
+  cursor: pointer; user-select: none; transition: all .2s ease;
+}
+.balance-chip:hover { border-color: var(--accent-lavender); }
+.balance-chip:active { transform: scale(0.92); }
+.energy-bolt-icon { width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; }
+.energy-bolt-icon svg { width: 100%; height: 100%; filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.45)); }
+.balance-chip.charging .energy-bolt-icon svg { animation: energyPulse 0.45s ease-out; }
+
+@keyframes energyPulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 4px #F59E0B); }
+  50% { transform: scale(1.45) rotate(-12deg); filter: drop-shadow(0 0 14px #FBBF24); }
+  100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.4)); }
+}
+
+main {
+  flex: 1;
+  padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px));
+  transition: padding-bottom 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+.screen { display: none; width: 100%; }
+.screen.active { display: block; animation: fadeIn .2s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ГЛАВНАЯ СТРАНИЦА */
+.top-create-section { margin-bottom: 20px; margin-top: 4px; }
+.top-create-head { margin-bottom: 12px; }
+.top-create-title { font-size: 17px; font-weight: 850; letter-spacing: -0.3px; }
+.top-create-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+.create-action-btn {
+  background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px;
+  padding: 12px 6px 10px; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.02);
+  transition: all 0.22s ease;
+}
+.create-action-btn:hover { border-color: var(--accent-lavender); transform: translateY(-2px); }
+.create-action-icon {
+  width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center;
+  box-shadow: 0 4px 12px rgba(107,37,230,0.15); transition: transform 0.3s ease;
+}
+.create-action-btn:hover .create-action-icon { transform: scale(1.08); }
+.create-action-icon svg { width: 24px; height: 24px; fill: none; }
+.create-action-label { font-size: 11px; font-weight: 800; color: var(--text-main); }
+
+.icon-video-box { background: linear-gradient(135deg, #8B5CF6, #6D28D9); }
+.icon-photo-box { background: linear-gradient(135deg, #A855F7, #7E22CE); }
+.icon-chat-box { background: linear-gradient(135deg, #C084FC, #7C3AED); }
+.icon-audio-box { background: linear-gradient(135deg, #7C3AED, #4C1D95); }
+
+.anim-shutter { transform-origin: center; animation: rotateShutter 8s linear infinite; }
+@keyframes rotateShutter { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+.anim-play-pulse { transform-origin: center; animation: playPulse 2s ease-in-out infinite alternate; }
+@keyframes playPulse { 0%{transform:scale(0.95);opacity:0.9} 100%{transform:scale(1.1);opacity:1} }
+.anim-lens-ring { transform-origin: center; animation: lensRing 3s ease-in-out infinite alternate; }
+@keyframes lensRing { 0%{transform:scale(0.92);opacity:0.8} 100%{transform:scale(1.08);opacity:1} }
+.anim-lens-spark { animation: sparkGlow 1.8s ease-in-out infinite alternate; }
+@keyframes sparkGlow { 0%{opacity:0.3;transform:scale(0.8)} 100%{transform:scale(1.2)} }
+.anim-chat-star { transform-origin: center; animation: starSpinPulse 4s ease-in-out infinite; }
+@keyframes starSpinPulse { 0%{transform:scale(0.85) rotate(0deg)} 50%{transform:scale(1.2) rotate(180deg)} 100%{transform:scale(0.85) rotate(360deg)} }
+.eq-bar-1 { animation: eqJump 1.2s ease-in-out infinite alternate; transform-origin: bottom; }
+.eq-bar-2 { animation: eqJump 0.9s ease-in-out infinite alternate 0.2s; transform-origin: bottom; }
+.eq-bar-3 { animation: eqJump 1.4s ease-in-out infinite alternate 0.4s; transform-origin: bottom; }
+.eq-bar-4 { animation: eqJump 1s ease-in-out infinite alternate 0.1s; transform-origin: bottom; }
+@keyframes eqJump { 0%{transform:scaleY(0.35)} 100%{transform:scaleY(1.15)} }
+
+.trends-head { margin-bottom: 14px; }
+.trends-title { font-size: 24px; font-weight: 900; letter-spacing: -.4px; margin: 0 0 4px; }
+.trends-sub { font-size: 12px; color: var(--text-sub); margin: 0; line-height: 1.45; }
+
+.search-box { position: relative; margin-bottom: 14px; }
+.search-box svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; stroke: var(--text-sub); fill: none; }
+.search-input {
+  width: 100%; height: 44px; padding: 0 16px 0 40px; background: var(--search-bg);
+  border: 1px solid var(--search-border); border-radius: 14px; color: var(--text-main);
+  font-size: 16px; /* 16px предотвращает принудительный зум в Safari на iOS */
+  box-shadow: 0 2px 8px rgba(0,0,0,.02);
+}
+.search-input:focus { border-color: var(--accent-purple); }
+
+.chips-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 14px; }
+.chips-row::-webkit-scrollbar { display: none; }
+.chip-btn {
+  flex-shrink: 0; padding: 7px 18px; border-radius: 9999px; background: var(--chip-bg);
+  border: 1px solid var(--chip-border); color: var(--chip-color); font-size: 12px; font-weight: 700; white-space: nowrap;
+}
+.chip-btn.active { background: var(--chip-active-bg); border-color: transparent; color: var(--chip-active-color); }
+
+.trends-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.trend-card {
+  position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 3/4.4;
+  background: #201F2B; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.07);
+}
+.trend-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
+.trend-card:hover img { transform: scale(1.03); }
+.badge-time {
+  position: absolute; top: 10px; left: 10px; z-index: 2; display: flex; align-items: center; gap: 4px;
+  padding: 4px 8px; background: rgba(0,0,0,.5); backdrop-filter: blur(6px); border-radius: 8px; color: #FFF; font-size: 10px; font-weight: 700;
+}
+.badge-time svg { width: 10px; height: 10px; fill: currentColor; }
+.trend-info {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 26px 12px 10px;
+  background: linear-gradient(0deg, rgba(0,0,0,.85) 0%, rgba(0,0,0,.45) 55%, transparent 100%);
+  display: flex; align-items: flex-end; justify-content: space-between; color: #FFF;
+}
+.trend-name { font-size: 12px; font-weight: 850; line-height: 1.2; }
+.trend-likes { display: flex; align-items: center; gap: 3px; font-size: 10px; opacity: .9; }
+.trend-likes svg { width: 11px; height: 11px; fill: currentColor; }
+
+/* ОБЩИЕ ЭЛЕМЕНТЫ */
+.media-tabs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+.media-tab-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; padding: 10px 4px; border-radius: 18px; background: var(--card-bg);
+  border: 1px solid var(--card-border); color: var(--text-sub); box-shadow: 0 2px 8px rgba(0,0,0,.02);
+}
+.media-tab-icon {
+  width: 40px; height: 40px; border-radius: 14px; background: var(--accent-purple-light);
+  color: var(--accent-purple); display: grid; place-items: center;
+}
+.media-tab-icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; }
+.media-tab-label { font-size: 11px; font-weight: 800; color: var(--text-main); }
+.media-tab-btn.active { border-color: var(--accent-lavender); background: var(--accent-purple-light); }
+.media-tab-btn.active .media-tab-icon { background: var(--accent-purple); color: #FFF; }
+.media-tab-btn.active .media-tab-label { color: var(--accent-purple); font-weight: 900; }
+
+.section-label { display: block; font-size: 12px; font-weight: 850; color: var(--text-main); margin-bottom: 8px; }
+.section-label span.req { color: #FF4D4D; }
+
+.model-card {
+  position: relative; background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 18px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.02); margin-bottom: 14px;
+}
+.model-card:hover { border-color: var(--accent-lavender); }
+.model-info { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+.model-icon-circle {
+  width: 40px; height: 40px; border-radius: 50%; background: var(--accent-purple-light);
+  color: var(--accent-purple); display: grid; place-items: center; flex-shrink: 0;
+}
+.model-icon-circle svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; }
+.model-texts { min-width: 0; flex: 1; }
+.model-header-row { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+.model-name { font-size: 14px; font-weight: 900; color: var(--text-main); }
+.model-desc { font-size: 11.5px; color: var(--text-sub); line-height: 1.35; }
+.model-header-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.model-cost-pill {
+  font-size: 12px; font-weight: 900; background: var(--accent-purple-light);
+  color: var(--accent-purple); padding: 4px 9px; border-radius: 10px; display: flex; align-items: center; gap: 4px;
+}
+.model-arrow { width: 18px; height: 18px; stroke: var(--text-sub); fill: none; stroke-width: 2.2; transition: transform .2s ease; }
+.model-card.open .model-arrow { transform: rotate(180deg); stroke: var(--accent-purple); }
+
+.model-menu {
+  display: none; position: absolute; left: 0; right: 0; top: calc(100% + 8px);
+  background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px;
+  overflow: hidden; box-shadow: 0 14px 38px rgba(0,0,0,.18); z-index: 40; padding: 4px;
+}
+.model-card.open .model-menu { display: block; }
+.model-menu-item {
+  width: 100%; padding: 14px; display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; border-radius: 14px; text-align: left; cursor: pointer; margin-bottom: 2px;
+}
+.model-menu-item:hover { background: var(--accent-purple-light); }
+.model-menu-item.active { background: var(--accent-purple-light); box-shadow: inset 0 0 0 1.5px var(--accent-lavender); }
+.item-left-block { flex: 1; min-width: 0; }
+.item-title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.item-title { font-size: 14px; font-weight: 850; color: var(--text-main); }
+.item-badge { font-size: 9.5px; font-weight: 850; padding: 2px 6px; border-radius: 6px; text-transform: uppercase; }
+.badge-ultra { background: #7C3AED; color: #FFF; }
+.badge-hot { background: #FF5A36; color: #FFF; }
+.badge-art { background: #3B82F6; color: #FFF; }
+.badge-pro { background: #7C3AED; color: #FFF; }
+.badge-veo { background: #10B981; color: #FFF; }
+.item-description { font-size: 11.5px; color: var(--text-sub); line-height: 1.4; }
+.item-cost-badge { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; flex-shrink: 0; }
+.item-cost-val {
+  font-size: 13px; font-weight: 900; color: var(--accent-purple); background: rgba(107,37,230,0.1);
+  padding: 4px 8px; border-radius: 10px;
+}
+.item-cost-sub { font-size: 9.5px; font-weight: 700; color: var(--text-sub); }
+
+.prompt-container { margin-bottom: 14px; }
+.prompt-area {
+  width: 100%; min-height: 90px; padding: 12px 14px; border-radius: 16px; background: var(--input-bg);
+  border: 1px solid var(--card-border); color: var(--text-main); font-size: 16px; /* Фикс автозума iOS */
+  line-height: 1.45; resize: vertical; box-shadow: 0 2px 8px rgba(0,0,0,.02);
+}
+.prompt-area::placeholder { color: var(--text-sub); font-size: 13px; }
+.prompt-area:focus { border-color: var(--accent-purple); }
+
+.upload-container { margin-bottom: 14px; }
+.upload-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.upload-counter { font-size: 11px; font-weight: 800; color: var(--accent-purple); }
+.upload-strip { display: flex; align-items: center; gap: 10px; overflow-x: auto; scrollbar-width: none; padding: 2px 2px 6px; }
+.upload-strip::-webkit-scrollbar { display: none; }
+.upload-add-btn {
+  width: 62px; height: 62px; flex-shrink: 0; border-radius: 16px; background: var(--card-bg);
+  border: 1.6px dashed var(--accent-lavender); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px; cursor: pointer;
+}
+.upload-add-btn:hover { border-color: var(--accent-purple); background: var(--accent-purple-light); }
+.upload-add-btn svg { width: 20px; height: 20px; stroke: var(--accent-purple); fill: none; stroke-width: 2.4; }
+.upload-add-text { font-size: 9.5px; font-weight: 800; color: var(--accent-purple); }
+.upload-item {
+  width: 62px; height: 62px; flex-shrink: 0; border-radius: 16px; position: relative; overflow: hidden;
+  border: 1px solid var(--card-border); box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+}
+.upload-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.upload-item-del {
+  position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(0,0,0,0.72); color: #FFF; display: grid; place-items: center; font-size: 10px; font-weight: 900;
+}
+
+.aspect-section { margin-bottom: 18px; }
+.aspect-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.aspect-current-hint { font-size: 11px; font-weight: 750; color: var(--accent-purple); }
+.aspect-grid-compact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.aspect-card {
+  background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 13px;
+  padding: 7px 8px; display: flex; align-items: center; gap: 8px; cursor: pointer;
+}
+.aspect-wire-box { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.wire { border: 1.6px solid var(--text-sub); border-radius: 2.5px; background: rgba(142, 146, 160, 0.08); }
+.aspect-texts { display: flex; flex-direction: column; min-width: 0; }
+.aspect-num { font-size: 12px; font-weight: 850; letter-spacing: -.2px; color: var(--text-main); line-height: 1.15; }
+.aspect-desc { font-size: 9.5px; font-weight: 650; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.aspect-card.active { background: var(--accent-purple-light); border-color: var(--accent-lavender); }
+.aspect-card.active .wire { border-color: var(--accent-purple); background: rgba(107, 37, 230, 0.25); }
+.aspect-card.active .aspect-num { color: var(--accent-purple); font-weight: 900; }
+.aspect-card.active .aspect-desc { color: var(--accent-purple); }
+
+.mode-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+.mode-chip {
+  padding: 14px 6px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--card-border);
+  color: var(--text-sub); font-size: 12px; font-weight: 800; text-align: center; display: flex;
+  align-items: center; justify-content: center; white-space: nowrap;
+}
+.mode-chip.active { background: var(--accent-lavender); border-color: transparent; color: var(--accent-dark); font-weight: 900; }
+
+.upload-box-single {
+  width: 60px; height: 60px; border-radius: 14px; background: var(--card-bg); border: 1.6px dashed var(--accent-lavender);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.upload-box-single svg { width: 20px; height: 20px; stroke: var(--accent-purple); fill: none; stroke-width: 2.2; }
+.upload-box-single span { font-size: 9.5px; font-weight: 800; color: var(--accent-purple); }
+.upload-box-single img { width: 100%; height: 100%; object-fit: cover; display: none; }
+.upload-box-single .del-single {
+  display: none; position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(0,0,0,.7); color: #FFF; font-size: 10px; place-items: center;
+}
+
+.aspect-trigger-box { margin-bottom: 14px; }
+.aspect-picker-btn {
+  width: 100%; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px;
+  padding: 13px 16px; display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+}
+.aspect-picker-left { display: flex; align-items: center; gap: 12px; }
+.wire-preview { border: 1.6px solid var(--accent-purple); border-radius: 3px; background: rgba(107,37,230,0.15); display: inline-block; }
+.aspect-picker-val { font-size: 14px; font-weight: 850; color: var(--text-main); }
+.aspect-picker-hint { font-size: 12px; color: var(--text-sub); margin-left: 4px; }
+.aspect-picker-right { display: flex; align-items: center; gap: 6px; color: var(--text-sub); font-size: 12px; font-weight: 750; }
+.aspect-picker-right svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+
+.duration-section { margin-bottom: 18px; }
+.duration-toggle {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: var(--card-bg);
+  border: 1px solid var(--card-border); padding: 4px; border-radius: 14px;
+}
+.duration-btn { padding: 10px 0; border-radius: 11px; text-align: center; font-size: 13px; font-weight: 850; color: var(--text-sub); }
+.duration-btn.active { background: var(--accent-lavender); color: var(--accent-dark); }
+
+.btn-generate-main {
+  width: 100%; padding: 15px 18px; border-radius: 16px;
+  background: linear-gradient(135deg, #7C3AED 0%, #6B25E6 50%, #581C87 100%);
+  color: #FFF; font-size: 14.5px; font-weight: 850; display: flex; align-items: center; justify-content: center; gap: 6px;
+  box-shadow: 0 6px 18px rgba(107,37,230,.35), inset 0 1px 0 rgba(255,255,255,.2);
+}
+
+/* ИСТОРИЯ, РАБОТЫ, ПРОФИЛЬ */
+.history-list { display: flex; flex-direction: column; gap: 10px; }
+.history-item {
+  display: flex; align-items: center; gap: 12px; background: var(--card-bg); border: 1px solid var(--card-border);
+  padding: 12px 14px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.02);
+}
+.history-thumb {
+  width: 44px; height: 44px; border-radius: 12px; background: var(--accent-purple-light);
+  display: grid; place-items: center; font-size: 20px; flex-shrink: 0;
+}
+.history-info { flex: 1; min-width: 0; }
+.history-title { font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 2px; }
+.history-time { font-size: 11px; color: var(--text-sub); }
+.history-status { font-size: 11px; font-weight: 750; color: var(--accent-purple); padding: 4px 10px; background: var(--accent-purple-light); border-radius: 9999px; }
+
+.works-empty { padding: 60px 16px; text-align: center; }
+.works-empty-icon { font-size: 42px; margin-bottom: 10px; }
+.works-empty h2 { font-size: 20px; font-weight: 900; margin: 0 0 6px; }
+.works-empty p { font-size: 13px; color: var(--text-sub); margin: 0; }
+
+.profile-card {
+  background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px;
+  padding: 18px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 10px rgba(0,0,0,.02); margin-bottom: 16px;
+}
+.profile-avatar {
+  width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #7C3AED 0%, #38BDF8 100%);
+  display: grid; place-items: center; font-size: 22px; color: #FFF; font-weight: 900;
+}
+.profile-name { font-weight: 900; font-size: 16px; }
+.profile-sub { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+
+/* ========================================================
+   AI ЧАТ МОДУЛЬ
+   ======================================================== */
+#createChatScreen {
+  position: relative;
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  min-height: 0;
+}
+#createChatScreen.active {
+  display: flex;
+}
+.chat-module-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.chat-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+  gap: 6px;
+}
+.chat-top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-back-chat {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--text-main);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  flex-shrink: 0;
+}
+.btn-back-chat svg {
+  width: 17px;
+  height: 17px;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  fill: none;
+}
+
+.pill-btn {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 9999px;
+  background: var(--card-bg); border: 1px solid var(--card-border);
+  color: var(--text-main); box-shadow: 0 2px 8px var(--shadow-color);
+}
+.pill-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.2; fill: none; }
+.pill-btn-new {
+  background: linear-gradient(135deg, #813CFC 0%, #6B25E6 100%);
+  color: #FFFFFF; border-color: rgba(255, 255, 255, 0.18);
+}
+
+.aurora-bg {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+}
+.aurora-blob {
+  position: absolute; border-radius: 50%; filter: blur(75px); opacity: 0.35;
+}
+.aurora-p { width: 260px; height: 260px; top: -40px; right: -20px; background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%); }
+.aurora-c { width: 220px; height: 220px; bottom: 80px; left: -40px; background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%); }
+
+.chat-dialog-area {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+  padding-right: 2px;
+}
+.chat-dialog-area::-webkit-scrollbar { display: none; }
+
+.welcome-chat-screen {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: auto 0;
+  width: 100%;
+  flex-shrink: 0;
+  padding: 8px 0;
+}
+.action-card-item {
+  width: 100%; background: var(--card-bg); border: 1.5px solid var(--card-border);
+  border-radius: 16px; padding: 11px 14px; display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 4px 14px var(--shadow-color); transition: all 0.22s ease;
+}
+.action-card-item:hover { border-color: var(--card-border-hover); transform: translateY(-2px); }
+.card-left { display: flex; align-items: center; gap: 12px; }
+.icon-box {
+  width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.12); flex-shrink: 0;
+}
+.icon-repeat { background: linear-gradient(135deg, rgba(112, 214, 255, 0.2) 0%, rgba(129, 60, 252, 0.3) 100%); color: var(--accent-cyan); }
+.icon-replace { background: linear-gradient(135deg, rgba(255, 133, 51, 0.2) 0%, rgba(230, 85, 0, 0.3) 100%); color: var(--accent-orange); }
+.icon-similar { background: linear-gradient(135deg, rgba(203, 180, 253, 0.25) 0%, rgba(129, 60, 252, 0.3) 100%); color: var(--accent-lavender); }
+.icon-animate { background: linear-gradient(135deg, rgba(244, 114, 182, 0.2) 0%, rgba(129, 60, 252, 0.3) 100%); color: #F472B6; }
+.icon-box svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 2.1; fill: none; }
+.card-text { font-size: 13.5px; font-weight: 850; }
+.card-arrow { width: 15px; height: 15px; stroke: var(--text-sub); stroke-width: 2.4; fill: none; }
+
+.dialog-flow {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding-bottom: 14px;
+}
+.bubble {
+  max-width: 86%; padding: 12px 16px; border-radius: 18px; font-size: 14.5px;
+  line-height: 1.45; word-break: break-word; animation: bubblePop 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes bubblePop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.bubble.user {
+  align-self: flex-end; background: linear-gradient(135deg, #813CFC 0%, #6B25E6 100%);
+  color: #FFFFFF; border-bottom-right-radius: 4px; box-shadow: 0 4px 16px rgba(107, 37, 230, 0.28);
+}
+.bubble.ai {
+  align-self: flex-start; background: var(--card-bg); border: 1px solid var(--card-border);
+  color: var(--text-main); border-bottom-left-radius: 4px;
+}
+.typing-anim { display: inline-flex; gap: 4px; align-items: center; height: 18px; }
+.typing-anim span {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent-purple);
+  animation: typingGlow 1.2s infinite ease-in-out;
+}
+.typing-anim span:nth-child(2) { animation-delay: 0.2s; }
+.typing-anim span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingGlow { 0%, 80%, 100% { transform: translateY(0); opacity: 0.35; } 40% { transform: translateY(-4px); opacity: 1; } }
+
+/* ПАНЕЛЬ ВВОДА В ЧАТЕ */
+.chat-input-capsule {
+  background: var(--input-bg); border: 1px solid var(--card-border);
+  border-radius: 22px; padding: 10px 14px; display: flex; flex-direction: column;
+  gap: 8px; box-shadow: 0 10px 30px var(--shadow-color);
+  margin-top: 8px;
+  margin-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index: 5;
+  flex-shrink: 0;
+  transition: margin-bottom 0.15s ease;
+}
+.chat-input-capsule:focus-within { border-color: var(--accent-purple); }
+
+.chat-textarea {
+  width: 100%; height: 38px; min-height: 38px; max-height: 110px; resize: none;
+  font-size: 16px; /* Фикс автозума iOS */
+  line-height: 1.4; color: var(--text-main); background: transparent; border: none;
+}
+.chat-textarea::placeholder { color: var(--text-sub); }
+.input-bar-bottom { display: flex; align-items: center; justify-content: space-between; }
+.btn-gallery {
+  width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
+  color: var(--text-sub); background: rgba(142, 146, 160, 0.08);
+}
+.btn-gallery svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2; fill: none; }
+.bar-right-actions { display: flex; align-items: center; gap: 8px; }
+.credit-badge {
+  display: flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 850;
+  color: var(--text-sub); padding: 4px 8px; border-radius: 9999px;
+  background: rgba(142, 146, 160, 0.08); border: 1px solid var(--card-border);
+}
+.bolt-icon-mini { width: 12px; height: 12px; display: flex; align-items: center; justify-content: center; }
+.bolt-icon-mini svg { width: 100%; height: 100%; fill: #F59E0B; }
+.btn-submit {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, #813CFC 0%, #6B25E6 100%);
+  display: grid; place-items: center; color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(107, 37, 230, 0.45);
+}
+.btn-submit svg { width: 18px; height: 18px; stroke: #FFFFFF; stroke-width: 2.6; fill: none; }
+
+/* ШТОРКА «МОИ ЧАТЫ» */
+.drawer-backdrop {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  z-index: 100; opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.drawer-backdrop.active { opacity: 1; visibility: visible; pointer-events: auto; }
+.drawer-view {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 85%; max-width: 330px;
+  background: var(--card-bg); border-right: 1px solid var(--card-border);
+  padding: calc(18px + env(safe-area-inset-top, 0px)) 18px calc(18px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column;
+  transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.drawer-backdrop.active .drawer-view { transform: translateX(0); }
+.drawer-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.drawer-title { font-size: 18px; font-weight: 900; }
+.drawer-close { width: 30px; height: 30px; border-radius: 50%; background: rgba(142, 146, 160, 0.12); color: var(--text-sub); display: grid; place-items: center; }
+.drawer-new-btn {
+  width: 100%; padding: 12px; background: var(--accent-purple-light);
+  border: 1px dashed var(--accent-lavender); border-radius: 14px;
+  color: var(--accent-purple); font-weight: 850; font-size: 13.5px;
+  display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 18px;
+}
+.history-section-label { font-size: 11.5px; font-weight: 850; text-transform: uppercase; color: var(--text-sub); margin-bottom: 8px; padding-left: 2px; }
+.history-cards-list { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.history-row {
+  width: 100%; display: flex; align-items: center; background: var(--card-bg);
+  border: 1px solid var(--card-border); border-radius: 12px; padding: 4px 6px 4px 10px;
+}
+.history-row:hover { border-color: var(--card-border-hover); }
+.history-item-content { flex: 1; min-width: 0; text-align: left; padding: 6px 0; font-size: 13px; font-weight: 750; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+.history-delete-btn { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; color: var(--text-sub); opacity: 0.7; }
+.history-delete-btn:hover { color: #FF4D4D; }
+.history-delete-btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2.2; }
+.history-empty-placeholder { text-align: center; padding: 20px 0; font-size: 12px; color: var(--text-sub); display: none; }
+
+/* КНОПКА БАЛАНСА В ШТОРКЕ */
+.drawer-bottom-card {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  box-shadow: 0 4px 16px var(--shadow-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s ease;
   user-select: none;
-  transition: all .2s ease;
 }
-.nav-item svg {
-  width: 21px;height: 21px;
-  stroke: currentColor;fill: none;stroke-width: 1.8;
-  stroke-linecap: round;stroke-linejoin: round;
+.drawer-bottom-card:hover {
+  border-color: var(--accent-lavender);
+  transform: translateY(-2px);
+}
+.drawer-bottom-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.drawer-balance-badge {
+  font-size: 14px;
+  font-weight: 850;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+.drawer-balance-hint {
+  font-size: 11px;
+  color: var(--accent-purple);
+  font-weight: 750;
+}
+.drawer-topup-btn {
+  background: linear-gradient(135deg, #813CFC 0%, #6B25E6 100%);
+  color: #FFF;
+  font-size: 12px;
+  font-weight: 850;
+  padding: 7px 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(107, 37, 230, 0.35);
+  pointer-events: none;
 }
 
-/* Активное состояние кнопки */
-.nav-item.active {
-  background: var(--accent-lavender);
-  color: var(--accent-dark);
-  font-weight: 800;
+/* МОДАЛКА ФОРМАТА ВИДЕО */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 100; background: rgba(8, 6, 14, 0);
+  backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.nav-item.active svg {stroke: var(--accent-dark)}
+.modal-overlay.show { opacity: 1; visibility: visible; pointer-events: auto; background: rgba(8, 6, 14, 0.58); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.center-modal-box {
+  width: min(100%, 390px); background: var(--card-bg); border: 1px solid var(--card-border);
+  border-radius: 26px; padding: 22px 20px 20px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+  transform: scale(0.88) translateY(14px); opacity: 0; filter: blur(6px);
+  transition: all 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.modal-overlay.show .center-modal-box { transform: scale(1) translateY(0); opacity: 1; filter: blur(0px); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.modal-title { font-size: 16.5px; font-weight: 900; letter-spacing: -.3px; }
+.modal-close-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.05); display: grid; place-items: center; font-size: 13px; color: var(--text-sub); font-weight: 800; cursor: pointer; }
+.format-grid-4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px; }
+.format-card-item {
+  background: var(--card-bg); border: 1.5px solid var(--card-border); border-radius: 18px;
+  padding: 15px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 9px; cursor: pointer; transition: all .22s ease;
+}
+.format-card-item:hover { border-color: var(--accent-lavender); transform: translateY(-2px); }
+.format-card-item.active { background: var(--accent-purple-light); border-color: var(--accent-purple); box-shadow: 0 6px 20px rgba(107,37,230,.18); }
+.format-wire-box { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; }
+.wire-shape { border: 1.8px solid var(--text-sub); border-radius: 4px; background: rgba(142, 146, 160, 0.08); }
+.format-card-item.active .wire-shape { border-color: var(--accent-purple); background: rgba(107, 37, 230, 0.25); }
+.format-texts { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.format-num { font-size: 13.5px; font-weight: 850; }
+.format-desc { font-size: 11px; font-weight: 700; color: var(--text-sub); }
+.format-card-item.active .format-num, .format-card-item.active .format-desc { color: var(--accent-purple); }
 
-/* Модальное окно */
-.modal-bg{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.6);backdrop-filter:blur(6px)}
-.modal-bg.show{display:flex}
-.modal{width:min(100%,480px);padding:22px;border-radius:24px 24px 0 0;background:var(--card-bg);border:1px solid var(--card-border)}
-.modal-title{font-size:18px;font-weight:850;margin-bottom:6px}
-.modal-text{font-size:13px;color:var(--text-sub);line-height:1.5}
-.modal-btn{width:100%;height:46px;margin-top:16px;border-radius:14px;background:var(--accent-purple);color:#FFF;font-size:13px;font-weight:800;box-shadow:0 3px 12px rgba(107,37,230,.35)}
+/* ПАРЯЩАЯ НИЖНЯЯ ПАНЕЛЬ */
+.nav-island-wrapper {
+  position: fixed; left: 0; right: 0; bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  z-index: 50; display: flex; justify-content: center; padding: 0 12px; pointer-events: none;
+  transition: transform .25s ease, opacity .25s ease;
+}
+.nav-island-wrapper.hide-on-keyboard { transform: translateY(140%); opacity: 0; pointer-events: none; }
+.nav-island-wrapper.hide-in-chat { transform: translateY(140%) !important; opacity: 0 !important; pointer-events: none !important; }
+
+.bottom-island {
+  pointer-events: auto; width: 100%; max-width: 440px; background: var(--nav-island-bg); border: 1px solid var(--nav-island-border);
+  box-shadow: var(--nav-island-shadow); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px);
+  border-radius: 32px; display: flex; align-items: center; justify-content: space-between; padding: 6px;
+}
+.nav-side-group { flex: 1 1 0; display: flex; align-items: center; justify-content: space-around; gap: 2px; }
+.nav-tab {
+  flex: 1; min-width: 0; height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; color: var(--nav-text-color); font-size: 10px; font-weight: 600; border-radius: 18px; user-select: none;
+}
+.nav-tab svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.85; stroke-linecap: round; stroke-linejoin: round; }
+.nav-tab.active { background: var(--nav-active-pill); color: var(--nav-active-text); font-weight: 800; }
+.nav-create-pill {
+  flex: 0 0 auto; height: 48px; padding: 0 16px;
+  background: linear-gradient(135deg, #7C3AED 0%, #6B25E6 50%, #581C87 100%);
+  color: #FFFFFF; border-radius: 9999px; display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 12px; font-weight: 850; box-shadow: 0 4px 18px rgba(107, 37, 230, 0.42);
+  margin: 0 4px; user-select: none; cursor: pointer;
+}
+.nav-create-pill svg { width: 18px; height: 18px; stroke: #FFFFFF; fill: none; stroke-width: 2.2; }
 </style>
 </head>
 
@@ -377,24 +802,96 @@ main{padding:8px 16px}
 <!-- ШАПКА BOOMAI -->
 <header class="header">
   <div class="header-left">
-    <div class="header-logo">✦</div>
     <div class="header-title">Boom<span>AI</span></div>
   </div>
   <div class="header-right">
     <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" aria-label="Сменить тему">
-      <span id="themeIcon">🌙</span>
+      <span id="themeIconContainer">
+        <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </span>
     </button>
-    <div class="balance-chip">
-      <span class="bolt">⚡</span>
+    
+    <div class="balance-chip" id="userBalanceChip" onclick="goToTopUpBalance()">
+      <span class="energy-bolt-icon" id="energyBoltIcon">
+        <svg viewBox="0 0 24 24">
+          <defs>
+            <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FDE047" />
+              <stop offset="100%" stop-color="#F59E0B" />
+            </linearGradient>
+          </defs>
+          <path fill="url(#boltGrad)" d="M13 2 L3 14 L11 14 L9 22 L21 9 L13 9 Z"/>
+        </svg>
+      </span>
       <span id="balanceVal">100</span>
     </div>
   </div>
 </header>
 
-<main>
+<main id="mainContainer">
 
-<!-- ЭКРАН 1: ТРЕНДЫ (ГЛАВНАЯ) -->
+<!-- 1. ЭКРАН: ТРЕНДЫ (ГЛАВНАЯ) -->
 <section id="trendsScreen" class="screen active">
+  <div class="top-create-section">
+    <div class="top-create-head">
+      <div class="top-create-title">✦ Создать</div>
+    </div>
+    <div class="top-create-grid">
+      <button class="create-action-btn" onclick="openCreateModule('video')">
+        <div class="create-action-icon icon-video-box">
+          <svg viewBox="0 0 48 48">
+            <g class="anim-shutter" stroke="#FFF" stroke-width="2.2" stroke-linecap="round" opacity="0.85">
+              <circle cx="24" cy="24" r="19" stroke-dasharray="24 8" />
+              <line x1="24" y1="5" x2="35" y2="18" />
+              <line x1="43" y1="24" x2="30" y2="35" />
+              <line x1="24" y1="43" x2="13" y2="30" />
+              <line x1="5" y1="24" x2="18" y2="13" />
+            </g>
+            <polygon class="anim-play-pulse" points="20,16 32,24 20,32" fill="#FFF" />
+          </svg>
+        </div>
+        <span class="create-action-label">Видео</span>
+      </button>
+
+      <button class="create-action-btn" onclick="openCreateModule('photo')">
+        <div class="create-action-icon icon-photo-box">
+          <svg viewBox="0 0 48 48">
+            <rect x="8" y="11" width="32" height="26" rx="8" stroke="#FFF" stroke-width="2.2" opacity="0.9" />
+            <path d="M19 11 L22 7 H26 L29 11" stroke="#FFF" stroke-width="2" stroke-linejoin="round" />
+            <circle class="anim-lens-ring" cx="24" cy="24" r="8" stroke="#FFF" stroke-width="2.2" />
+            <circle class="anim-lens-spark" cx="26.5" cy="21.5" r="2.5" fill="#FFF" />
+          </svg>
+        </div>
+        <span class="create-action-label">Фото</span>
+      </button>
+
+      <button class="create-action-btn" onclick="openCreateModule('chat')">
+        <div class="create-action-icon icon-chat-box">
+          <svg viewBox="0 0 48 48">
+            <path d="M9 22 C9 14 16 8 25 8 C34 8 40 14 40 22 C40 30 33 35 25 35 C22 35 19 34 16 33 L9 37 L11 31 C10 28 9 25 9 22 Z" stroke="#FFF" stroke-width="2.2" opacity="0.9" />
+            <g class="anim-chat-star" transform="translate(25, 21.5)">
+              <polygon points="0,-7 1.8,-1.8 7,0 1.8,1.8 0,7 -1.8,1.8 -7,0 -1.8,-1.8" fill="#FFF" />
+            </g>
+          </svg>
+        </div>
+        <span class="create-action-label">AI Чат</span>
+      </button>
+
+      <button class="create-action-btn" onclick="alert('Генератор аудио в разработке')">
+        <div class="create-action-icon icon-audio-box">
+          <svg viewBox="0 0 48 48">
+            <line class="eq-bar-1" x1="13" y1="33" x2="13" y2="15" stroke="#FFF" stroke-width="3" stroke-linecap="round" />
+            <line class="eq-bar-2" x1="20" y1="37" x2="20" y2="11" stroke="#FFF" stroke-width="3" stroke-linecap="round" />
+            <line class="eq-bar-3" x1="28" y1="38" x2="28" y2="10" stroke="#FFF" stroke-width="3" stroke-linecap="round" />
+            <line class="eq-bar-4" x1="35" y1="34" x2="35" y2="14" stroke="#FFF" stroke-width="3" stroke-linecap="round" />
+            <circle cx="24" cy="24" r="19" stroke="#E9D5FF" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.6" />
+          </svg>
+        </div>
+        <span class="create-action-label">Аудио</span>
+      </button>
+    </div>
+  </div>
+
   <div class="trends-head">
     <h1 class="trends-title">Тренды</h1>
     <p class="trends-sub">Выберите стиль и загрузите своё фото — получите себя в этом образе</p>
@@ -410,319 +907,1076 @@ main{padding:8px 16px}
     <button class="chip-btn active" onclick="setChip('video', this)">Видео</button>
     <button class="chip-btn" onclick="setChip('female', this)">Женское</button>
     <button class="chip-btn" onclick="setChip('male', this)">Мужское</button>
-    <button class="chip-btn" onclick="setChip('pair', this)">Парное</button>
   </div>
 
   <div class="trends-grid" id="trendsContainer">
-    <div class="trend-card" data-cat="video" data-name="Фигурка в руке" onclick="openTrend('Фигурка в руке')">
-      <div class="badge-time">
-        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        10 с
+    <div class="trend-card" data-cat="video" data-name="Фигурка в руке" onclick="openCreateModule('video')">
+      <div class="badge-time"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>10 с</div>
+      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" alt="Фигурка в руке">
+      <div class="trend-info"><span class="trend-name">Фигурка в руке</span><span class="trend-likes">⚡ 1.2k</span></div>
+    </div>
+    <div class="trend-card" data-cat="video" data-name="Наклейка" onclick="openCreateModule('video')">
+      <div class="badge-time"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>10 с</div>
+      <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=600&q=80" alt="Наклейка">
+      <div class="trend-info"><span class="trend-name">Наклейка</span><span class="trend-likes">⚡ 42</span></div>
+    </div>
+    <div class="trend-card" data-cat="female" data-name="Киберпанк портрет" onclick="openCreateModule('photo')">
+      <div class="badge-time"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>10 с</div>
+      <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80" alt="Киберпанк портрет">
+      <div class="trend-info"><span class="trend-name">Киберпанк портрет</span><span class="trend-likes">⚡ 830</span></div>
+    </div>
+    <div class="trend-card" data-cat="male" data-name="Luxury Auto" onclick="openCreateModule('photo')">
+      <div class="badge-time"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>10 с</div>
+      <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80" alt="Luxury Auto">
+      <div class="trend-info"><span class="trend-name">Luxury Auto</span><span class="trend-likes">⚡ 512</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. ЭКРАН: ИСТОРИЯ -->
+<section id="historyScreen" class="screen">
+  <h1 style="font-size:24px;font-weight:900;margin:0 0 4px">История</h1>
+  <p style="font-size:12px;color:var(--text-sub);margin:0 0 16px">Последние сгенерированные файлы и задачи</p>
+  <div class="history-list">
+    <div class="history-item">
+      <div class="history-thumb">🎬</div>
+      <div class="history-info">
+        <div class="history-title">Кинематографичный ролик (5 с)</div>
+        <div class="history-time">Сегодня, 19:42 · Kling 1.5 Pro</div>
       </div>
-      <img loading="lazy" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" alt="Фигурка в руке">
-      <div class="trend-info">
-        <span class="trend-name">Фигурка в руке</span>
-        <span class="trend-likes"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 1.2k</span>
+      <div class="history-status">Готово</div>
+    </div>
+    <div class="history-item">
+      <div class="history-thumb">📷</div>
+      <div class="history-info">
+        <div class="history-title">AI Портрет «Новый стиль»</div>
+        <div class="history-time">Сегодня, 18:10 · Flux 1.1 Pro</div>
+      </div>
+      <div class="history-status">Готово</div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. МОДУЛЬ: СОЗДАТЬ ФОТО -->
+<section id="createPhotoScreen" class="screen">
+  <div class="media-tabs-grid">
+    <button class="media-tab-btn active" onclick="openCreateModule('photo')">
+      <div class="media-tab-icon"><svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div>
+      <span class="media-tab-label">Фото</span>
+    </button>
+    <button class="media-tab-btn" onclick="openCreateModule('video')">
+      <div class="media-tab-icon"><svg viewBox="0 0 24 24"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="3"/></svg></div>
+      <span class="media-tab-label">Видео</span>
+    </button>
+    <button class="media-tab-btn" onclick="openCreateModule('chat')">
+      <div class="media-tab-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+      <span class="media-tab-label">AI Чат</span>
+    </button>
+    <button class="media-tab-btn" onclick="alert('Аудио в разработке')">
+      <div class="media-tab-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+      <span class="media-tab-label">Аудио</span>
+    </button>
+  </div>
+
+  <label class="section-label">Модель</label>
+  <div class="model-card" id="photoModelCard" onclick="toggleDropdown('photoModelCard')">
+    <div class="model-info">
+      <div class="model-icon-circle"><svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></div>
+      <div class="model-texts">
+        <div class="model-header-row"><span class="model-name" id="selectedPhotoModelName">Kling O3 Photo</span></div>
+        <div class="model-desc" id="selectedPhotoModelDesc">Ультра-детализация, кинематографичный свет и 4K текстуры кожи</div>
       </div>
     </div>
-
-    <div class="trend-card" data-cat="video" data-name="Наклейка" onclick="openTrend('Наклейка')">
-      <div class="badge-time">
-        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        10 с
-      </div>
-      <img loading="lazy" src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=600&q=80" alt="Наклейка">
-      <div class="trend-info">
-        <span class="trend-name">Наклейка</span>
-        <span class="trend-likes"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 42</span>
-      </div>
+    <div class="model-header-right">
+      <div class="model-cost-pill"><span>⚡</span><span id="selectedPhotoModelCost">30</span></div>
+      <svg class="model-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
 
-    <div class="trend-card" data-cat="female" data-name="Киберпанк портрет" onclick="openTrend('Киберпанк портрет')">
-      <div class="badge-time">
-        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        10 с
+    <div class="model-menu">
+      <div class="model-menu-item active" onclick="selectPhotoModel('Kling O3 Photo', 'Ультра-детализация, кинематографичный свет и 4K текстуры кожи', 30, this, event)">
+        <div class="item-left-block">
+          <div class="item-title-row"><span class="item-title">Kling O3 Photo</span><span class="item-badge badge-ultra">Ultra</span></div>
+          <div class="item-description">Ультра-детализация, кинематографичный свет и 4K текстуры кожи</div>
+        </div>
+        <div class="item-cost-badge"><span class="item-cost-val">30 ⚡</span><span class="item-cost-sub">за фото</span></div>
       </div>
-      <img loading="lazy" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80" alt="Киберпанк портрет">
-      <div class="trend-info">
-        <span class="trend-name">Киберпанк портрет</span>
-        <span class="trend-likes"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 830</span>
+      <div class="model-menu-item" onclick="selectPhotoModel('Flux 1.1 Pro', 'Гиперреализм, точная анатомия, надписи и идеальные пальцы', 25, this, event)">
+        <div class="item-left-block">
+          <div class="item-title-row"><span class="item-title">Flux 1.1 Pro</span><span class="item-badge badge-hot">Hot</span></div>
+          <div class="item-description">Гиперреализм, точная анатомия, надписи и идеальные пальцы</div>
+        </div>
+        <div class="item-cost-badge"><span class="item-cost-val">25 ⚡</span><span class="item-cost-sub">за фото</span></div>
+      </div>
+      <div class="model-menu-item" onclick="selectPhotoModel('Midjourney v6.1', 'Художественный арт, эстетика, иллюстрации и мода', 20, this, event)">
+        <div class="item-left-block">
+          <div class="item-title-row"><span class="item-title">Midjourney v6.1</span><span class="item-badge badge-art">Art</span></div>
+          <div class="item-description">Художественный арт, эстетика, иллюстрации и мода</div>
+        </div>
+        <div class="item-cost-badge"><span class="item-cost-val">20 ⚡</span><span class="item-cost-sub">за фото</span></div>
       </div>
     </div>
+  </div>
 
-    <div class="trend-card" data-cat="male" data-name="Luxury Auto" onclick="openTrend('Luxury Auto')">
-      <div class="badge-time">
-        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        10 с
+  <div class="upload-container">
+    <div class="upload-header-row">
+      <label class="section-label" style="margin-bottom:0">Изображения</label>
+      <span class="upload-counter" id="photoUploadCountText">0 / 5</span>
+    </div>
+    <div class="upload-strip" id="photoUploadStrip">
+      <div class="upload-add-btn" id="photoAddBtn" onclick="triggerPhotoUpload()">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span class="upload-add-text">Добавить</span>
       </div>
-      <img loading="lazy" src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80" alt="Luxury Auto">
-      <div class="trend-info">
-        <span class="trend-name">Luxury Auto</span>
-        <span class="trend-likes"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> 512</span>
+    </div>
+    <input type="file" id="photoFileInput" accept="image/*" multiple style="display:none" onchange="handlePhotoFiles(event)">
+  </div>
+
+  <div class="prompt-container">
+    <label class="section-label">Запрос <span class="req">*</span></label>
+    <textarea id="photoPrompt" class="prompt-area" placeholder="Опишите, что должно быть на изображении."></textarea>
+  </div>
+
+  <div class="aspect-section">
+    <div class="aspect-header">
+      <label class="section-label" style="margin-bottom:0">Соотношение сторон</label>
+      <span class="aspect-current-hint" id="photoAspectHint">1:1 (Квадрат)</span>
+    </div>
+    <div class="aspect-grid-compact">
+      <button class="aspect-card active" onclick="setPhotoRatio('1:1', 'Квадрат', this)"><div class="aspect-wire-box"><div class="wire" style="width:14px;height:14px;"></div></div><div class="aspect-texts"><span class="aspect-num">1:1</span><span class="aspect-desc">Квадрат</span></div></button>
+      <button class="aspect-card" onclick="setPhotoRatio('Авто', 'AI выбор', this)"><div class="aspect-wire-box"><span style="font-size:13px;color:var(--accent-purple)">✦</span></div><div class="aspect-texts"><span class="aspect-num">Авто</span><span class="aspect-desc">AI выбор</span></div></button>
+      <button class="aspect-card" onclick="setPhotoRatio('9:16', 'Reels', this)"><div class="aspect-wire-box"><div class="wire" style="width:10px;height:16px;"></div></div><div class="aspect-texts"><span class="aspect-num">9:16</span><span class="aspect-desc">Reels</span></div></button>
+      <button class="aspect-card" onclick="setPhotoRatio('2:3', 'Кадр', this)"><div class="aspect-wire-box"><div class="wire" style="width:11px;height:15px;"></div></div><div class="aspect-texts"><span class="aspect-num">2:3</span><span class="aspect-desc">Кадр</span></div></button>
+      <button class="aspect-card" onclick="setPhotoRatio('3:4', 'Портрет', this)"><div class="aspect-wire-box"><div class="wire" style="width:12px;height:15px;"></div></div><div class="aspect-texts"><span class="aspect-num">3:4</span><span class="aspect-desc">Портрет</span></div></button>
+      <button class="aspect-card" onclick="setPhotoRatio('4:3', 'Классика', this)"><div class="aspect-wire-box"><div class="wire" style="width:15px;height:12px;"></div></div><div class="aspect-texts"><span class="aspect-num">4:3</span><span class="aspect-desc">Классика</span></div></button>
+      <button class="aspect-card" onclick="setPhotoRatio('3:2', 'Пейзаж', this)"><div class="aspect-wire-box"><div class="wire" style="width:15px;height:11px;"></div></div><div class="aspect-texts"><span class="aspect-num">3:2</span><span class="aspect-desc">Пейзаж</span></div></button>
+      <button class="aspect-card" onclick="setPhotoRatio('16:9', 'Широкий', this)"><div class="aspect-wire-box"><div class="wire" style="width:16px;height:10px;"></div></div><div class="aspect-texts"><span class="aspect-num">16:9</span><span class="aspect-desc">Широкий</span></div></button>
+      <button class="aspect-card" onclick="setPhotoRatio('21:9', 'Синема', this)"><div class="aspect-wire-box"><div class="wire" style="width:17px;height:8px;"></div></div><div class="aspect-texts"><span class="aspect-num">21:9</span><span class="aspect-desc">Синема</span></div></button>
+    </div>
+  </div>
+
+  <button class="btn-generate-main" onclick="handleGeneratePhoto()">
+    <span>✦ Сгенерировать фото</span>
+    <span>( <span id="photoBtnCostLabel">30</span> ⚡ )</span>
+  </button>
+</section>
+
+<!-- 4. МОДУЛЬ: СОЗДАТЬ ВИДЕО -->
+<section id="createVideoScreen" class="screen">
+  <div class="media-tabs-grid">
+    <button class="media-tab-btn" onclick="openCreateModule('photo')">
+      <div class="media-tab-icon"><svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></div>
+      <span class="media-tab-label">Фото</span>
+    </button>
+    <button class="media-tab-btn active" onclick="openCreateModule('video')">
+      <div class="media-tab-icon"><svg viewBox="0 0 24 24"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="3"/></svg></div>
+      <span class="media-tab-label">Видео</span>
+    </button>
+    <button class="media-tab-btn" onclick="openCreateModule('chat')">
+      <div class="media-tab-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+      <span class="media-tab-label">AI Чат</span>
+    </button>
+    <button class="media-tab-btn" onclick="alert('Аудио в разработке')">
+      <div class="media-tab-icon"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+      <span class="media-tab-label">Аудио</span>
+    </button>
+  </div>
+
+  <label class="section-label">Модель</label>
+  <div class="model-card" id="videoModelCard" onclick="toggleDropdown('videoModelCard')">
+    <div class="model-info">
+      <div class="model-icon-circle"><svg viewBox="0 0 24 24"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="3"/></svg></div>
+      <div class="model-texts">
+        <div class="model-header-row"><span class="model-name" id="selectedVideoModelName">Kling 1.5 Pro</span></div>
+        <div class="model-desc" id="selectedVideoModelDesc">Кинематографичная физика, сложные движения и высокая чёткость</div>
+      </div>
+    </div>
+    <div class="model-header-right">
+      <div class="model-cost-pill"><span>⚡</span><span id="selectedVideoModelCost">90</span></div>
+      <svg class="model-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <div class="model-menu">
+      <div class="model-menu-item active" onclick="selectVideoModel('Kling 1.5 Pro', 'Кинематографичная физика, сложные движения и высокая чёткость', 90, this, event)">
+        <div class="item-left-block">
+          <div class="item-title-row"><span class="item-title">Kling 1.5 Pro</span><span class="item-badge badge-pro">Pro</span></div>
+          <div class="item-description">Кинематографичная физика, сложные движения и высокая чёткость</div>
+        </div>
+        <div class="item-cost-badge"><span class="item-cost-val">90 ⚡</span><span class="item-cost-sub">базовая</span></div>
+      </div>
+      <div class="model-menu-item" onclick="selectVideoModel('Google Veo 3', 'Ультра-реализм 4K, реалистичный свет и сложное следование промпту', 120, this, event)">
+        <div class="item-left-block">
+          <div class="item-title-row"><span class="item-title">Google Veo 3</span><span class="item-badge badge-veo">4K New</span></div>
+          <div class="item-description">Ультра-реализм 4K, реалистичный свет и сложное следование промпту</div>
+        </div>
+        <div class="item-cost-badge"><span class="item-cost-val">120 ⚡</span><span class="item-cost-sub">базовая</span></div>
+      </div>
+      <div class="model-menu-item" onclick="selectVideoModel('Grok Imagine', 'Быстрая генерация сочных динамичных клипов и эффектов', 75, this, event)">
+        <div class="item-left-block">
+          <div class="item-title-row"><span class="item-title">Grok Imagine</span><span class="item-badge badge-hot">Hot</span></div>
+          <div class="item-description">Быстрая генерация сочных динамичных клипов и эффектов</div>
+        </div>
+        <div class="item-cost-badge"><span class="item-cost-val">75 ⚡</span><span class="item-cost-sub">базовая</span></div>
+      </div>
+    </div>
+  </div>
+
+  <label class="section-label">Режим генерации</label>
+  <div class="mode-chips">
+    <button class="mode-chip active" onclick="setVideoMode('Текст→Видео', this)">Текст→Видео</button>
+    <button class="mode-chip" onclick="setVideoMode('Фото→Видео', this)">Фото→Видео</button>
+    <button class="mode-chip" onclick="setVideoMode('Движение', this)">Движение</button>
+    <button class="mode-chip" onclick="setVideoMode('Липсинк', this)">Липсинк</button>
+  </div>
+
+  <div class="upload-container" id="videoUploadContainer" style="display:none">
+    <label class="section-label">Стартовый кадр (Фото-референс)</label>
+    <div class="upload-strip">
+      <div class="upload-box-single" onclick="document.getElementById('videoSingleFileInput').click()">
+        <svg id="videoUploadIcon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span id="videoUploadText">Кадр</span>
+        <img id="videoUploadImg" alt="Кадр">
+        <div id="videoRemoveBtn" class="del-single" onclick="removeSingleVideoPhoto(event)">✕</div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text-sub)">Загрузите фото, чтобы нейросеть оживила его</div>
+    </div>
+    <input type="file" id="videoSingleFileInput" accept="image/*" style="display:none" onchange="handleSingleVideoPhoto(event)">
+  </div>
+
+  <div class="prompt-container">
+    <label class="section-label">Запрос <span class="req">*</span></label>
+    <textarea id="videoPrompt" class="prompt-area" placeholder="Дрон пролетает над неоновым ночным мегаполисом в дождь..."></textarea>
+  </div>
+
+  <div class="aspect-trigger-box">
+    <label class="section-label">Формат кадра</label>
+    <div class="aspect-picker-btn" onclick="openVideoFormatModal()">
+      <div class="aspect-picker-left">
+        <span class="wire-preview" id="pickerWirePreview" style="width:16px;height:10px;"></span>
+        <div>
+          <span class="aspect-picker-val" id="pickerAspectVal">16:9</span>
+          <span class="aspect-picker-hint" id="pickerAspectHint">(Широкий)</span>
+        </div>
+      </div>
+      <div class="aspect-picker-right">
+        <span>Выбрать</span>
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="duration-section">
+    <label class="section-label">Длительность клипа</label>
+    <div class="duration-toggle">
+      <button class="duration-btn active" onclick="setVideoDuration(5, 1, this)">5 секунд</button>
+      <button class="duration-btn" onclick="setVideoDuration(10, 1.6, this)">10 секунд (x1.6)</button>
+    </div>
+  </div>
+
+  <button class="btn-generate-main" onclick="handleGenerateVideo()">
+    <span>✦ Сгенерировать видео</span>
+    <span>( <span id="videoBtnCostLabel">90</span> ⚡ )</span>
+  </button>
+</section>
+
+<!-- 5. МОДУЛЬ: AI ЧАТ -->
+<section id="createChatScreen" class="screen">
+  <div class="chat-module-inner">
+    <div class="aurora-bg">
+      <div class="aurora-blob aurora-p"></div>
+      <div class="aurora-blob aurora-c"></div>
+    </div>
+
+    <!-- КОМПАКТНАЯ ВЕРХНЯЯ ПАНЕЛЬ -->
+    <div class="chat-top-bar">
+      <div class="chat-top-bar-left">
+        <button class="btn-back-chat" onclick="exitChatModule()" aria-label="Назад">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="pill-btn" onclick="openDrawer()">
+          <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          Диалоги
+        </button>
+      </div>
+      <button class="pill-btn pill-btn-new" onclick="startNewChat()">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Новый чат
+      </button>
+    </div>
+
+    <div class="chat-dialog-area" id="chatDialogContainer">
+      <!-- ПУНКТЫ ПО ЦЕНТРУ -->
+      <div class="welcome-chat-screen" id="welcomeChatScreen">
+        <button class="action-card-item" onclick="pickAction('Повторить пример')">
+          <div class="card-left">
+            <div class="icon-box icon-repeat"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></div>
+            <span class="card-text">Повторить пример</span>
+          </div>
+          <svg class="card-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="action-card-item" onclick="pickAction('Заменить объект')">
+          <div class="card-left">
+            <div class="icon-box icon-replace"><svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+            <span class="card-text">Заменить объект</span>
+          </div>
+          <svg class="card-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="action-card-item" onclick="pickAction('Сделать похожее')">
+          <div class="card-left">
+            <div class="icon-box icon-similar"><svg viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L12 3z"/></svg></div>
+            <span class="card-text">Сделать похожее</span>
+          </div>
+          <svg class="card-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <button class="action-card-item" onclick="pickAction('Оживить фото')">
+          <div class="card-left">
+            <div class="icon-box icon-animate"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="3"/><polygon points="10 9 15 12 10 15 10 9" fill="currentColor"/></svg></div>
+            <span class="card-text">Оживить фото</span>
+          </div>
+          <svg class="card-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+      <div class="dialog-flow" id="chatDialogFlow"></div>
+    </div>
+
+    <!-- ПОЛЕ ВВОДА ТЕКСТА -->
+    <div class="chat-input-capsule">
+      <textarea id="aiChatInput" class="chat-textarea" rows="1" placeholder="Задайте вопрос нейросети..." oninput="adjustChatHeight(this)" onkeydown="handleChatKey(event)"></textarea>
+      <div class="input-bar-bottom">
+        <button class="btn-gallery" onclick="chooseChatFile()" aria-label="Прикрепить файл">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </button>
+        <input type="file" id="chatFileInput" accept="image/*" style="display:none" onchange="fileSelectedChat()">
+
+        <div class="bar-right-actions">
+          <div class="credit-badge">
+            <span class="bolt-icon-mini">
+              <svg viewBox="0 0 24 24"><path d="M13 2L3 14h8l-2 8 10-12h-8l2-8z"/></svg>
+            </span>
+            <span>1 ⚡</span>
+          </div>
+          <button class="btn-submit" onclick="sendChatPrompt()" aria-label="Отправить">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ЭКРАН 2: «СОЗДАТЬ СВОЁ» (ОТКРЫВАЕТСЯ ПО НАЖАТИЮ «СОЗДАТЬ») -->
-<section id="creatorScreen" class="screen">
-  <div class="creator-container">
-    <div class="creator-head">
-      <h1>Создать своё</h1>
-      <p>Начните с идеи — опишите её словами или загрузите фото</p>
-    </div>
-
-    <div class="creator-items">
-      <!-- 1. Фото -->
-      <div class="c-card" id="cardPhoto">
-        <button class="c-card-btn" onclick="toggleCard('cardPhoto')">
-          <div class="c-icon-wrap">
-            <svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-          </div>
-          <div class="c-card-text">
-            <span class="c-title">Фото</span>
-            <span class="c-desc">По своему снимку или по описанию</span>
-          </div>
-          <svg class="c-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="c-card-sub">
-          <button class="c-sub-btn" onclick="openToolModal('Фото по описанию')">✦ Создать по описанию (текст) <span>→</span></button>
-          <button class="c-sub-btn" onclick="openToolModal('Фотосессия по фото')">📷 Загрузить свой снимок <span>→</span></button>
-        </div>
-      </div>
-
-      <!-- 2. Видео -->
-      <div class="c-card" id="cardVideo">
-        <button class="c-card-btn" onclick="toggleCard('cardVideo')">
-          <div class="c-icon-wrap">
-            <svg viewBox="0 0 24 24"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="3"/></svg>
-          </div>
-          <div class="c-card-text">
-            <span class="c-title">Видео</span>
-            <span class="c-desc">Из текста или оживить фото</span>
-          </div>
-          <svg class="c-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="c-card-sub">
-          <button class="c-sub-btn" onclick="openToolModal('Видео из текста (Kling/Veo)')">▷ Сгенерировать видео по тексту <span>→</span></button>
-          <button class="c-sub-btn" onclick="openToolModal('Оживить статичное фото')">✨ Оживить фото (Motion) <span>→</span></button>
-        </div>
-      </div>
-
-      <!-- 3. Музыка -->
-      <div class="c-card" id="cardMusic">
-        <button class="c-card-btn" onclick="toggleCard('cardMusic')">
-          <div class="c-icon-wrap">
-            <svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-          </div>
-          <div class="c-card-text">
-            <span class="c-title">Музыка</span>
-            <span class="c-desc">Конструктор: текст + стиль</span>
-          </div>
-          <svg class="c-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="c-card-sub">
-          <button class="c-sub-btn" onclick="openToolModal('Песня с текстом')">🎵 Песня с вокалом <span>→</span></button>
-          <button class="c-sub-btn" onclick="openToolModal('Инструментальный бит')">🎧 Инструментал / Бит <span>→</span></button>
-        </div>
-      </div>
-
-      <!-- 4. Голос -->
-      <div class="c-card" id="cardVoice">
-        <button class="c-card-btn" onclick="toggleCard('cardVoice')">
-          <div class="c-icon-wrap">
-            <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
-          </div>
-          <div class="c-card-text">
-            <span class="c-title">Голос</span>
-            <span class="c-desc">Озвучка текста или клон голоса</span>
-          </div>
-          <svg class="c-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="c-card-sub">
-          <button class="c-sub-btn" onclick="openToolModal('Озвучка диктором')">🎙 Озвучить текст голосом AI <span>→</span></button>
-          <button class="c-sub-btn" onclick="openToolModal('Клон своего голоса')">⚡ Создать клон голоса <span>→</span></button>
-        </div>
-      </div>
-
-      <!-- 5. Инструменты -->
-      <div class="c-card" id="cardTools">
-        <button class="c-card-btn" onclick="toggleCard('cardTools')">
-          <div class="c-icon-wrap">
-            <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-          </div>
-          <div class="c-card-text">
-            <span class="c-title">Инструменты</span>
-            <span class="c-desc">Апскейл, удаление фона, реставрация</span>
-          </div>
-          <svg class="c-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="c-card-sub">
-          <button class="c-sub-btn" onclick="openToolModal('Удаление фона')">✂ Удалить фон <span>→</span></button>
-          <button class="c-sub-btn" onclick="openToolModal('Апскейл до 4K')">🔍 Улучшить качество (4K) <span>→</span></button>
-          <button class="c-sub-btn" onclick="openToolModal('Реставрация снимка')">📷 Реставрация фото <span>→</span></button>
-        </div>
-      </div>
-    </div>
+<!-- 6. ЭКРАН: МОИ РАБОТЫ -->
+<section id="worksScreen" class="screen">
+  <div class="works-empty">
+    <div class="works-empty-icon">📁</div>
+    <h2>Мои работы</h2>
+    <p>Все сгенерированные фото и видео появятся здесь</p>
   </div>
 </section>
 
-<!-- РАЗДЕЛ МОИ РАБОТЫ -->
-<section id="worksScreen" class="screen" style="padding-top:40px;text-align:center;">
-  <div style="font-size:36px;margin-bottom:8px">📁</div>
-  <h2 style="font-size:18px;margin:0 0 4px">Мои работы</h2>
-  <p style="color:var(--text-sub);font-size:12px">Здесь будут храниться созданные вами видео и фото в BoomAI</p>
-</section>
-
-<!-- РАЗДЕЛ ПРОФИЛЬ -->
-<section id="profileScreen" class="screen" style="padding-top:20px;">
-  <div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;padding:16px;display:flex;align-items:center;gap:12px;">
-    <div style="width:48px;height:48px;border-radius:50%;background:var(--accent-purple-light);display:grid;place-items:center;font-size:20px">👤</div>
+<!-- 7. ЭКРАН: ПРОФИЛЬ -->
+<section id="profileScreen" class="screen">
+  <div class="profile-card">
+    <div class="profile-avatar">B</div>
     <div>
-      <div style="font-weight:800;font-size:15px">Мой аккаунт BoomAI</div>
-      <div style="color:var(--text-sub);font-size:12px">Баланс: 100 ⚡</div>
+      <div class="profile-name">Boom Creator</div>
+      <div class="profile-sub">Баланс: <span id="profileBalanceLabel">100</span> ⚡</div>
     </div>
   </div>
 </section>
 
 </main>
 
-<!-- НАВИГАЦИЯ -->
-<nav class="bottom-nav">
-  <button class="nav-item active" data-screen="trends" onclick="nav('trends', this)">
-    <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-    Главная
-  </button>
-  
-  <button class="nav-item" data-screen="creator" onclick="nav('creator', this)">
-    <svg viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
-    Создать
-  </button>
+<!-- ШТОРКА «МОИ ЧАТЫ» -->
+<div class="drawer-backdrop" id="chatDrawer" onclick="closeDrawer()">
+  <div class="drawer-view" onclick="event.stopPropagation()">
+    <div class="drawer-header">
+      <h2 class="drawer-title">Мои чаты</h2>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
 
-  <button class="nav-item" data-screen="works" onclick="nav('works', this)">
-    <svg viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
-    Мои работы
-  </button>
+    <button class="drawer-new-btn" onclick="startNewChat(); closeDrawer();">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Новый чат
+    </button>
 
-  <button class="nav-item" data-screen="profile" onclick="nav('profile', this)">
-    <svg viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-    Профиль
-  </button>
-</nav>
+    <div class="history-section-label">История запросов</div>
+    <div class="history-cards-list" id="historyList">
+      <div class="history-row" id="chat-item-1">
+        <div class="history-item-content" onclick="loadSavedChat('⚡ Киберпанк аватар в неоновом свете')">⚡ Киберпанк аватар в неоновом свете</div>
+        <button class="history-delete-btn" onclick="deleteHistoryItem('chat-item-1', event)" aria-label="Удалить">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="history-row" id="chat-item-2">
+        <div class="history-item-content" onclick="loadSavedChat('🎨 Замена фона авто на Токио')">🎨 Замена фона авто на Токио</div>
+        <button class="history-delete-btn" onclick="deleteHistoryItem('chat-item-2', event)" aria-label="Удалить">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="history-empty-placeholder" id="historyEmptyText">История пуста</div>
 
-</div>
-
-<!-- МОДАЛЬНОЕ ОКНО -->
-<div id="trendModal" class="modal-bg" onclick="closeModal(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <div class="modal-title" id="mTitle">Стиль BoomAI</div>
-    <div class="modal-text" id="mText">Загрузите фото для генерации видео в этом стиле. Стоимость генерации: 50 ⚡</div>
-    <button class="modal-btn" onclick="alert('Открыт выбор фото для генерации в BoomAI!')">Загрузить фото</button>
+    <!-- БАЛАНС ВНИЗУ ШТОРКИ С ПЕРЕХОДОМ В ПРОФИЛЬ -->
+    <div class="drawer-bottom-card" onclick="goToTopUpBalance()">
+      <div class="drawer-bottom-left">
+        <span class="energy-bolt-icon">
+          <svg viewBox="0 0 24 24">
+            <defs>
+              <linearGradient id="drawerBoltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FDE047" />
+                <stop offset="100%" stop-color="#F59E0B" />
+              </linearGradient>
+            </defs>
+            <path fill="url(#drawerBoltGrad)" d="M13 2 L3 14 L11 14 L9 22 L21 9 L13 9 Z"/>
+          </svg>
+        </span>
+        <div>
+          <div class="drawer-balance-badge"><span id="drawerBalanceVal">100</span> ⚡ Кредитов</div>
+          <div class="drawer-balance-hint">Нажмите для пополнения</div>
+        </div>
+      </div>
+      <div class="drawer-topup-btn">+ Пополнить</div>
+    </div>
   </div>
 </div>
 
+<!-- МОДАЛКА ФОРМАТА ВИДЕО -->
+<div class="modal-overlay" id="formatModalOverlay" onclick="closeVideoFormatModal(event)">
+  <div class="center-modal-box" onclick="event.stopPropagation()">
+    <div class="modal-head">
+      <span class="modal-title">Формат кадра</span>
+      <div class="modal-close-icon" onclick="closeVideoFormatModal()">✕</div>
+    </div>
+    <div class="format-grid-4">
+      <button class="format-card-item active" onclick="selectVideoRatio('16:9', 'Широкий', 16, 10, this)">
+        <div class="format-wire-box"><div class="wire-shape" style="width:24px;height:14px;"></div></div>
+        <div class="format-texts"><span class="format-num">16:9</span><span class="format-desc">Широкий</span></div>
+      </button>
+      <button class="format-card-item" onclick="selectVideoRatio('9:16', 'Reels', 10, 16, this)">
+        <div class="format-wire-box"><div class="wire-shape" style="width:14px;height:24px;"></div></div>
+        <div class="format-texts"><span class="format-num">9:16</span><span class="format-desc">Reels</span></div>
+      </button>
+      <button class="format-card-item" onclick="selectVideoRatio('1:1', 'Квадрат', 14, 14, this)">
+        <div class="format-wire-box"><div class="wire-shape" style="width:18px;height:18px;"></div></div>
+        <div class="format-texts"><span class="format-num">1:1</span><span class="format-desc">Квадрат</span></div>
+      </button>
+      <button class="format-card-item" onclick="selectVideoRatio('Авто', 'ИИ определяет', 14, 14, this)">
+        <div class="format-wire-box"><span style="font-size:18px;color:var(--accent-purple)">✦</span></div>
+        <div class="format-texts"><span class="format-num">Авто</span><span class="format-desc">ИИ определяет</span></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ПАРЯЩАЯ НИЖНЯЯ ПАНЕЛЬ -->
+<div class="nav-island-wrapper" id="navIslandWrapper">
+  <nav class="bottom-island">
+    <div class="nav-side-group">
+      <button class="nav-tab active" id="tabTrendsBtn" data-screen="trends" onclick="nav('trends', this)">
+        <svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        Главная
+      </button>
+      <button class="nav-tab" data-screen="history" onclick="nav('history', this)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        История
+      </button>
+    </div>
+
+    <button class="nav-create-pill" onclick="openCreateModule('video')">
+      <svg viewBox="0 0 24 24"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/></svg>
+      Создать
+    </button>
+
+    <div class="nav-side-group">
+      <button class="nav-tab" data-screen="works" onclick="nav('works', this)">
+        <svg viewBox="0 0 24 24"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg>
+        Работы
+      </button>
+      <button class="nav-tab" data-screen="profile" id="tabProfileBtn" onclick="nav('profile', this)">
+        <svg viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Профиль
+      </button>
+    </div>
+  </nav>
+</div>
+
+</div>
+
 <script>
-/* ТЕМА: ПЕРЕКЛЮЧЕНИЕ СВЕТЛОЙ / ТЁМНОЙ */
+/* СОСТОЯНИЕ */
+let currentBalance = 100;
+let isChatStreaming = false;
+let chatStreamInterval = null;
+let previousScreen = 'trends';
+const tg = window.Telegram?.WebApp;
+
+function updateBalance(delta = 0) {
+  currentBalance = Math.max(0, currentBalance + delta);
+  document.getElementById('balanceVal').textContent = currentBalance;
+  const pBal = document.getElementById('profileBalanceLabel');
+  if (pBal) pBal.textContent = currentBalance;
+  const dBal = document.getElementById('drawerBalanceVal');
+  if (dBal) dBal.textContent = currentBalance;
+}
+
+function pulseBalanceAnimation() {
+  const chip = document.getElementById('userBalanceChip');
+  if (!chip) return;
+  chip.classList.remove('charging');
+  void chip.offsetWidth;
+  chip.classList.add('charging');
+  tg?.HapticFeedback?.impactOccurred('medium');
+}
+
+function goToTopUpBalance() {
+  closeDrawer();
+  const profileTab = document.getElementById('tabProfileBtn');
+  nav('profile', profileTab);
+  pulseBalanceAnimation();
+}
+
+function dismissKeyboard() {
+  if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+    document.activeElement.blur();
+  }
+}
+
+/* ВЫХОД ИЗ ЧАТА */
+function exitChatModule() {
+  dismissKeyboard();
+  if (tg?.BackButton) {
+    tg.BackButton.offClick(exitChatModule);
+    tg.BackButton.hide();
+  }
+  if (previousScreen && previousScreen !== 'createChat') {
+    if (previousScreen === 'trends' || previousScreen === 'history' || previousScreen === 'works' || previousScreen === 'profile') {
+      const tabBtn = document.querySelector(`.nav-tab[data-screen="${previousScreen}"]`);
+      nav(previousScreen, tabBtn);
+    } else {
+      openCreateModule(previousScreen.replace('create', '').toLowerCase());
+    }
+  } else {
+    nav('trends', document.getElementById('tabTrendsBtn'));
+  }
+}
+
+/* НАВИГАЦИЯ */
+function nav(screenName, btn) {
+  dismissKeyboard();
+  tg?.HapticFeedback?.selectionChanged();
+  
+  if (tg?.BackButton) {
+    tg.BackButton.offClick(exitChatModule);
+    tg.BackButton.hide();
+  }
+
+  const navIsland = document.getElementById('navIslandWrapper');
+  navIsland?.classList.remove('hide-in-chat');
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab, .nav-create-pill').forEach(b => b.classList.remove('active'));
+
+  const mainEl = document.getElementById('mainContainer');
+  if (mainEl) mainEl.style.paddingBottom = '';
+
+  if (btn) btn.classList.add('active');
+  const target = document.getElementById(screenName + 'Screen');
+  if (target) target.classList.add('active');
+  
+  previousScreen = screenName;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openCreateModule(type) {
+  dismissKeyboard();
+  tg?.HapticFeedback?.impactOccurred('light');
+
+  const navIsland = document.getElementById('navIslandWrapper');
+  const activeScreenEl = document.querySelector('.screen.active');
+  if (activeScreenEl && activeScreenEl.id !== 'createChatScreen') {
+    previousScreen = activeScreenEl.id.replace('Screen', '');
+  }
+
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+
+  const createBtn = document.querySelector('.nav-create-pill');
+  const mainEl = document.getElementById('mainContainer');
+
+  if (type === 'video') {
+    if (tg?.BackButton) {
+      tg.BackButton.offClick(exitChatModule);
+      tg.BackButton.hide();
+    }
+    navIsland?.classList.remove('hide-in-chat');
+    if (createBtn) createBtn.classList.add('active');
+    if (mainEl) mainEl.style.paddingBottom = '';
+    document.getElementById('createVideoScreen')?.classList.add('active');
+  } else if (type === 'photo') {
+    if (tg?.BackButton) {
+      tg.BackButton.offClick(exitChatModule);
+      tg.BackButton.hide();
+    }
+    navIsland?.classList.remove('hide-in-chat');
+    if (createBtn) createBtn.classList.add('active');
+    if (mainEl) mainEl.style.paddingBottom = '';
+    document.getElementById('createPhotoScreen')?.classList.add('active');
+  } else if (type === 'chat') {
+    navIsland?.classList.add('hide-in-chat');
+
+    // Безопасная привязка Telegram BackButton
+    if (tg?.BackButton) {
+      tg.BackButton.offClick(exitChatModule);
+      tg.BackButton.show();
+      tg.BackButton.onClick(exitChatModule);
+    }
+
+    if (mainEl) mainEl.style.paddingBottom = '0px';
+    document.getElementById('createChatScreen')?.classList.add('active');
+    setTimeout(() => {
+      const container = document.getElementById('chatDialogContainer');
+      if (container) container.scrollTop = container.scrollHeight;
+    }, 50);
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ВЫПАДАЮЩИЕ МЕНЮ */
+function toggleDropdown(id) {
+  const card = document.getElementById(id);
+  if (card) card.classList.toggle('open');
+}
+
+document.addEventListener('click', function(e) {
+  ['photoModelCard', 'videoModelCard'].forEach(id => {
+    const card = document.getElementById(id);
+    if (card && !card.contains(e.target)) card.classList.remove('open');
+  });
+});
+
+/* ЛОГИКА ФОТО */
+let currentPhotoRatio = '1:1';
+let currentPhotoCost = 30;
+const MAX_PHOTO_IMAGES = 5;
+let uploadedPhotoImages = [];
+
+function selectPhotoModel(name, desc, cost, item, e) {
+  e.stopPropagation();
+  currentPhotoCost = cost;
+  document.getElementById('selectedPhotoModelName').textContent = name;
+  document.getElementById('selectedPhotoModelDesc').textContent = desc;
+  document.getElementById('selectedPhotoModelCost').textContent = cost;
+  document.getElementById('photoBtnCostLabel').textContent = cost;
+  item.closest('.model-menu').querySelectorAll('.model-menu-item').forEach(el => el.classList.remove('active'));
+  item.classList.add('active');
+  document.getElementById('photoModelCard').classList.remove('open');
+  tg?.HapticFeedback?.selectionChanged();
+}
+
+function triggerPhotoUpload() {
+  if (uploadedPhotoImages.length >= MAX_PHOTO_IMAGES) {
+    alert('Максимум 5 фото');
+    return;
+  }
+  document.getElementById('photoFileInput').click();
+}
+
+function handlePhotoFiles(e) {
+  const files = Array.from(e.target.files);
+  const slots = MAX_PHOTO_IMAGES - uploadedPhotoImages.length;
+  files.slice(0, slots).forEach(file => {
+    const r = new FileReader();
+    r.onload = evt => {
+      uploadedPhotoImages.push(evt.target.result);
+      renderPhotoUploads();
+    };
+    r.readAsDataURL(file);
+  });
+  e.target.value = '';
+}
+
+function removePhotoImage(idx, e) {
+  e.stopPropagation();
+  uploadedPhotoImages.splice(idx, 1);
+  renderPhotoUploads();
+  tg?.HapticFeedback?.selectionChanged();
+}
+
+function renderPhotoUploads() {
+  const strip = document.getElementById('photoUploadStrip');
+  const addBtn = document.getElementById('photoAddBtn');
+  strip.querySelectorAll('.upload-item').forEach(el => el.remove());
+
+  uploadedPhotoImages.forEach((src, idx) => {
+    const item = document.createElement('div');
+    item.className = 'upload-item';
+    item.innerHTML = `<img src="${src}" alt="Фото"><div class="upload-item-del" onclick="removePhotoImage(${idx}, event)">✕</div>`;
+    strip.insertBefore(item, addBtn);
+  });
+  document.getElementById('photoUploadCountText').textContent = `${uploadedPhotoImages.length} / ${MAX_PHOTO_IMAGES}`;
+  addBtn.style.display = uploadedPhotoImages.length >= MAX_PHOTO_IMAGES ? 'none' : 'flex';
+}
+
+function setPhotoRatio(ratio, desc, btn) {
+  currentPhotoRatio = ratio;
+  btn.closest('.aspect-grid-compact').querySelectorAll('.aspect-card').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('photoAspectHint').textContent = `${ratio} (${desc})`;
+  tg?.HapticFeedback?.selectionChanged();
+}
+
+function handleGeneratePhoto() {
+  const prompt = document.getElementById('photoPrompt').value.trim();
+  if (!prompt && uploadedPhotoImages.length === 0) {
+    alert('Введите запрос или прикрепите фото!');
+    return;
+  }
+  if (currentBalance < currentPhotoCost) {
+    alert('Недостаточно кредитов!');
+    return;
+  }
+  updateBalance(-currentPhotoCost);
+  pulseBalanceAnimation();
+  tg?.HapticFeedback?.impactOccurred('medium');
+  alert(`Генерация запущена!\nСписано: ${currentPhotoCost} ⚡`);
+}
+
+/* ЛОГИКА ВИДЕО */
+let currentVideoRatio = '16:9';
+let baseVideoCost = 90;
+let videoDurationMultiplier = 1;
+let uploadedVideoSinglePhoto = null;
+
+function updateVideoTotalPrice() {
+  const cost = Math.round(baseVideoCost * videoDurationMultiplier);
+  document.getElementById('videoBtnCostLabel').textContent = cost;
+  document.getElementById('selectedVideoModelCost').textContent = cost;
+}
+
+function selectVideoModel(name, desc, cost, item, e) {
+  e.stopPropagation();
+  baseVideoCost = cost;
+  document.getElementById('selectedVideoModelName').textContent = name;
+  document.getElementById('selectedVideoModelDesc').textContent = desc;
+  item.closest('.model-menu').querySelectorAll('.model-menu-item').forEach(el => el.classList.remove('active'));
+  item.classList.add('active');
+  document.getElementById('videoModelCard').classList.remove('open');
+  updateVideoTotalPrice();
+  tg?.HapticFeedback?.selectionChanged();
+}
+
+function setVideoMode(mode, btn) {
+  btn.parentElement.querySelectorAll('.mode-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('videoUploadContainer').style.display = (mode !== 'Текст→Видео') ? 'block' : 'none';
+  tg?.HapticFeedback?.selectionChanged();
+}
+
+function handleSingleVideoPhoto(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = evt => {
+    uploadedVideoSinglePhoto = evt.target.result;
+    const img = document.getElementById('videoUploadImg');
+    img.src = uploadedVideoSinglePhoto;
+    img.style.display = 'block';
+    document.getElementById('videoUploadIcon').style.display = 'none';
+    document.getElementById('videoUploadText').style.display = 'none';
+    document.getElementById('videoRemoveBtn').style.display = 'grid';
+  };
+  r.readAsDataURL(file);
+}
+
+function removeSingleVideoPhoto(e) {
+  e.stopPropagation();
+  uploadedVideoSinglePhoto = null;
+  document.getElementById('videoSingleFileInput').value = '';
+  document.getElementById('videoUploadImg').style.display = 'none';
+  document.getElementById('videoUploadIcon').style.display = 'block';
+  document.getElementById('videoUploadText').style.display = 'block';
+  document.getElementById('videoRemoveBtn').style.display = 'none';
+}
+
+function openVideoFormatModal() {
+  dismissKeyboard();
+  const overlay = document.getElementById('formatModalOverlay');
+  overlay.classList.add('show');
+  document.body.classList.add('modal-locked');
+  tg?.HapticFeedback?.impactOccurred('light');
+}
+
+function closeVideoFormatModal(e) {
+  const overlay = document.getElementById('formatModalOverlay');
+  if (!e || e.target === overlay || e.target.classList.contains('modal-close-icon')) {
+    overlay.classList.remove('show');
+    document.body.classList.remove('modal-locked');
+    tg?.HapticFeedback?.selectionChanged();
+  }
+}
+
+function selectVideoRatio(ratio, desc, w, h, btn) {
+  currentVideoRatio = ratio;
+  document.querySelectorAll('.format-card-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('pickerAspectVal').textContent = ratio;
+  document.getElementById('pickerAspectHint').textContent = `(${desc})`;
+  const wire = document.getElementById('pickerWirePreview');
+  if (ratio === 'Авто') {
+    wire.style.display = 'none';
+  } else {
+    wire.style.display = 'inline-block';
+    wire.style.width = w + 'px';
+    wire.style.height = h + 'px';
+  }
+  closeVideoFormatModal();
+}
+
+function setVideoDuration(sec, mult, btn) {
+  videoDurationMultiplier = mult;
+  btn.parentElement.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  updateVideoTotalPrice();
+  tg?.HapticFeedback?.selectionChanged();
+}
+
+function handleGenerateVideo() {
+  const prompt = document.getElementById('videoPrompt').value.trim();
+  const cost = parseInt(document.getElementById('videoBtnCostLabel').textContent);
+  if (!prompt && !uploadedVideoSinglePhoto) {
+    alert('Заполните поле запроса!');
+    return;
+  }
+  if (currentBalance < cost) {
+    alert('Недостаточно кредитов!');
+    return;
+  }
+  updateBalance(-cost);
+  pulseBalanceAnimation();
+  tg?.HapticFeedback?.impactOccurred('medium');
+  alert(`Генерация видео запущена!\nСписано: ${cost} ⚡`);
+}
+
+/* AI ЧАТ */
+const chatInput = document.getElementById('aiChatInput');
+
+function adjustChatHeight(el) {
+  el.style.height = '38px';
+  if (el.scrollHeight > 38) {
+    el.style.height = Math.min(el.scrollHeight, 110) + 'px';
+  }
+}
+
+function handleChatKey(e) {
+  if (e.isComposing || e.keyCode === 229) return;
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendChatPrompt();
+  }
+}
+
+function chooseChatFile() {
+  tg?.HapticFeedback?.selectionChanged();
+  document.getElementById('chatFileInput').click();
+}
+
+function fileSelectedChat() {
+  tg?.HapticFeedback?.notificationOccurred('success');
+  chatInput.placeholder = "Изображение прикреплено! Напишите задачу...";
+  chatInput.focus();
+}
+
+function pickAction(title) {
+  tg?.HapticFeedback?.selectionChanged();
+  chatInput.value = title + ': ';
+  adjustChatHeight(chatInput);
+  setTimeout(() => {
+    chatInput.focus();
+  }, 50);
+}
+
+function getChatContextAnswer(prompt) {
+  const p = prompt.toLowerCase();
+  if (p.includes('оживить') || p.includes('видео')) {
+    return 'Добавил естественную динамику кадра, плавное движение камеры и кинематографичный свет.';
+  } else if (p.includes('заменить') || p.includes('фон') || p.includes('объект')) {
+    return 'Аккуратно выделил главный объект, заменил задний план и сбалансировал освещение.';
+  } else if (p.includes('похожее') || p.includes('стил')) {
+    return 'Сохранил композицию и цветовую палитру, стилизовав образ под выбранный концепт.';
+  }
+  return `Запрос «${prompt}» успешно обработан нейросетью. Создан оптимизированный промпт.`;
+}
+
+function sendChatPrompt() {
+  const text = chatInput.value.trim();
+  if (!text || isChatStreaming) return;
+  if (currentBalance < 1) {
+    alert('Недостаточно кредитов!');
+    return;
+  }
+
+  updateBalance(-1);
+  pulseBalanceAnimation();
+  tg?.HapticFeedback?.impactOccurred('light');
+
+  document.getElementById('welcomeChatScreen').style.display = 'none';
+  const flow = document.getElementById('chatDialogFlow');
+  flow.style.display = 'flex';
+
+  const userBubble = document.createElement('div');
+  userBubble.className = 'bubble user';
+  userBubble.textContent = text;
+  flow.appendChild(userBubble);
+
+  chatInput.value = '';
+  chatInput.style.height = '38px';
+  chatInput.placeholder = "Задайте вопрос нейросети...";
+
+  const container = document.getElementById('chatDialogContainer');
+  container.scrollTop = container.scrollHeight;
+
+  const aiBubble = document.createElement('div');
+  aiBubble.className = 'bubble ai';
+  aiBubble.innerHTML = `<div class="typing-anim"><span></span><span></span><span></span></div>`;
+  flow.appendChild(aiBubble);
+  container.scrollTop = container.scrollHeight;
+
+  isChatStreaming = true;
+
+  if (chatStreamInterval) clearInterval(chatStreamInterval);
+
+  setTimeout(() => {
+    aiBubble.innerHTML = '';
+    const answer = getChatContextAnswer(text);
+    let i = 0;
+    chatStreamInterval = setInterval(() => {
+      aiBubble.textContent += answer[i];
+      i++;
+      container.scrollTop = container.scrollHeight;
+      if (i >= answer.length) {
+        clearInterval(chatStreamInterval);
+        chatStreamInterval = null;
+        isChatStreaming = false;
+        tg?.HapticFeedback?.notificationOccurred('success');
+      }
+    }, 18);
+  }, 600);
+}
+
+function startNewChat() {
+  if (chatStreamInterval) {
+    clearInterval(chatStreamInterval);
+    chatStreamInterval = null;
+  }
+  isChatStreaming = false;
+  tg?.HapticFeedback?.impactOccurred('medium');
+  const flow = document.getElementById('chatDialogFlow');
+  flow.innerHTML = '';
+  flow.style.display = 'none';
+  document.getElementById('welcomeChatScreen').style.display = 'flex';
+  chatInput.value = '';
+  chatInput.style.height = '38px';
+}
+
+function openDrawer() {
+  dismissKeyboard();
+  tg?.HapticFeedback?.impactOccurred('light');
+  document.getElementById('chatDrawer').classList.add('active');
+}
+function closeDrawer() {
+  document.getElementById('chatDrawer').classList.remove('active');
+}
+function loadSavedChat(title) {
+  closeDrawer();
+  startNewChat();
+  chatInput.value = title;
+  adjustChatHeight(chatInput);
+}
+function deleteHistoryItem(id, event) {
+  event?.stopPropagation();
+  tg?.HapticFeedback?.selectionChanged();
+  document.getElementById(id)?.remove();
+  const list = document.getElementById('historyList');
+  if (list && list.querySelectorAll('.history-row').length === 0) {
+    document.getElementById('historyEmptyText').style.display = 'block';
+  }
+}
+
+/* ПОИСК В ТРЕНДАХ */
+let activeTrendCategory = 'video';
+function setChip(cat, btn) {
+  document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeTrendCategory = cat;
+  filterSearch();
+}
+function filterSearch() {
+  const q = document.getElementById('trendSearch').value.toLowerCase().trim();
+  document.querySelectorAll('.trend-card').forEach(card => {
+    const matchCat = (activeTrendCategory === 'all' || card.dataset.cat === activeTrendCategory);
+    const matchQ = card.dataset.name.toLowerCase().includes(q);
+    card.style.display = (matchCat && matchQ) ? 'block' : 'none';
+  });
+}
+
+/* СИНХРОНИЗАЦИЯ КЛАВИАТУРЫ */
+const navIsland = document.getElementById('navIslandWrapper');
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    const isKeyboard = window.visualViewport.height < (window.innerHeight - 80);
+    if (isKeyboard) {
+      navIsland?.classList.add('hide-on-keyboard');
+    } else {
+      const activeEl = document.activeElement;
+      if (!activeEl || (activeEl.tagName !== 'INPUT' && activeEl.tagName !== 'TEXTAREA')) {
+        navIsland?.classList.remove('hide-on-keyboard');
+      }
+    }
+  });
+}
+
+/* ТЕМА */
+const SUN_SVG = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+const MOON_SVG = `<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   const isDark = theme === 'dark';
-  document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
-  document.getElementById('themeColorMeta').setAttribute('content', isDark ? '#0C0B10' : '#F7F8FA');
+  const container = document.getElementById('themeIconContainer');
+  if (container) container.innerHTML = isDark ? SUN_SVG : MOON_SVG;
+  const meta = document.getElementById('themeColorMeta');
+  if (meta) meta.setAttribute('content', isDark ? '#0C0B10' : '#F7F8FA');
   localStorage.setItem('boomai_theme', theme);
 
-  if (window.Telegram?.WebApp) {
-    window.Telegram.WebApp.setHeaderColor?.(isDark ? '#0C0B10' : '#F7F8FA');
-    window.Telegram.WebApp.setBackgroundColor?.(isDark ? '#0C0B10' : '#F7F8FA');
+  if (tg) {
+    tg.setHeaderColor?.(isDark ? '#0C0B10' : '#F7F8FA');
+    tg.setBackgroundColor?.(isDark ? '#0C0B10' : '#F7F8FA');
   }
 }
 
 function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme') || 'light';
-  const next = current === 'dark' ? 'light' : 'dark';
-  window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('medium');
-  applyTheme(next);
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  tg?.HapticFeedback?.impactOccurred('medium');
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
 }
 
-(function() {
-  const saved = localStorage.getItem('boomai_theme');
-  if (saved) {
-    applyTheme(saved);
-  } else if (window.Telegram?.WebApp?.colorScheme) {
-    applyTheme(window.Telegram.WebApp.colorScheme);
-  } else {
-    applyTheme('light');
+/* ИНИЦИАЛИЗАЦИЯ */
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('boomai_theme') || tg?.colorScheme || 'light';
+  applyTheme(saved);
+  updateVideoTotalPrice();
+  updateBalance(0);
+
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    tg.enableClosingConfirmation?.();
   }
-})();
-
-/* НАВИГАЦИЯ ПО ВЕСЬМА ЭКРАНАМ */
-function nav(screenName, btn) {
-  window.Telegram?.WebApp?.HapticFeedback?.selectionChanged();
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-
-  btn.classList.add('active');
-  const target = document.getElementById(screenName + 'Screen');
-  if (target) target.classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-/* АККОРДЕОН НА ЭКРАНЕ «СОЗДАТЬ СВОЁ» */
-function toggleCard(cardId) {
-  window.Telegram?.WebApp?.HapticFeedback?.selectionChanged();
-  const card = document.getElementById(cardId);
-  const isOpen = card.classList.contains('open');
-  document.querySelectorAll('.c-card').forEach(c => c.classList.remove('open'));
-  if (!isOpen) {
-    card.classList.add('open');
-  }
-}
-
-function openToolModal(toolName) {
-  window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light');
-  document.getElementById('mTitle').textContent = toolName;
-  document.getElementById('mText').textContent = `Инструмент «${toolName}» готов к использованию в BoomAI. Спишется от 2 до 50 ⚡`;
-  document.getElementById('trendModal').classList.add('show');
-}
-
-/* ФИЛЬТРАЦИЯ ТРЕНДОВ НА ГЛАВНОЙ */
-let activeCategory = 'video';
-
-function setChip(cat, btn) {
-  window.Telegram?.WebApp?.HapticFeedback?.selectionChanged();
-  document.querySelectorAll('.chip-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  activeCategory = cat;
-  filterSearch();
-}
-
-function filterSearch() {
-  const q = document.getElementById('trendSearch').value.toLowerCase().trim();
-  document.querySelectorAll('.trend-card').forEach(card => {
-    const cardCat = card.dataset.cat;
-    const cardName = card.dataset.name.toLowerCase();
-    const matchCat = (activeCategory === 'all' || cardCat === activeCategory);
-    const matchQuery = cardName.includes(q);
-    card.style.display = (matchCat && matchQuery) ? 'block' : 'none';
-  });
-}
-
-function openTrend(name) {
-  window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light');
-  document.getElementById('mTitle').textContent = 'Тренд: ' + name;
-  document.getElementById('mText').textContent = 'Загрузите фото для генерации видео в этом стиле. Стоимость генерации: 50 ⚡';
-  document.getElementById('trendModal').classList.add('show');
-}
-
-function closeModal(e) {
-  if (!e || e.target === document.getElementById('trendModal')) {
-    document.getElementById('trendModal').classList.remove('show');
-  }
-}
-
-if (window.Telegram?.WebApp) {
-  window.Telegram.WebApp.ready();
-  window.Telegram.WebApp.expand();
-}
+});
 </script>
 </body>
 </html>
