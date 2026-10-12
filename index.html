@@ -264,9 +264,12 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 .aspect-card.active .wire { border-color: var(--accent-purple); background: rgba(107, 37, 230, 0.25); }
 .aspect-card.active .aspect-num { color: var(--accent-purple); font-weight: 900; }
 .aspect-card.active .aspect-desc { color: var(--accent-purple); }
-.mode-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+
+/* Изменено на 3 колонки после удаления липсинка */
+.mode-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 .mode-chip { padding: 14px 6px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-sub); font-size: 12px; font-weight: 800; text-align: center; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
 .mode-chip.active { background: var(--accent-lavender); border-color: transparent; color: var(--accent-dark); font-weight: 900; }
+
 .upload-box-single { width: 60px; height: 60px; border-radius: 14px; background: var(--card-bg); border: 1.6px dashed var(--accent-lavender); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; position: relative; overflow: hidden; }
 .upload-box-single svg { width: 20px; height: 20px; stroke: var(--accent-purple); fill: none; stroke-width: 2.2; }
 .upload-box-single span { font-size: 9.5px; font-weight: 800; color: var(--accent-purple); }
@@ -419,9 +422,7 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 .nav-create-pill { flex: 0 0 auto; height: 48px; padding: 0 16px; background: linear-gradient(135deg, #7C3AED 0%, #6B25E6 50%, #581C87 100%); color: #FFFFFF; border-radius: 9999px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 12px; font-weight: 850; box-shadow: 0 4px 18px rgba(107, 37, 230, 0.42); margin: 0 4px; user-select: none; cursor: pointer; }
 .nav-create-pill svg { width: 18px; height: 18px; stroke: #FFFFFF; fill: none; stroke-width: 2.2; }
 
-/* ========================================================
-   КОД: ПРОФИЛЬ И МАГАЗИН (ИНТЕГРАЦИЯ)
-   ======================================================== */
+/* ПРОФИЛЬ И МАГАЗИН */
 .profile-user-card { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding: 10px 0; }
 .profile-avatar-large { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple)); display: grid; place-items: center; color: #FFF; font-size: 24px; font-weight: 900; box-shadow: 0 8px 24px rgba(107,37,230,0.3), 0 0 15px rgba(2, 132, 199, 0.4), inset 0 2px 6px rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.2); }
 .profile-user-details { display: flex; flex-direction: column; justify-content: center; }
@@ -453,14 +454,10 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 .setting-right svg { width: 18px; height: 18px; stroke: var(--text-sub); fill: none; stroke-width: 2.5; transition: transform 0.2s; }
 .setting-item:hover .setting-right svg { transform: translateX(4px); stroke: var(--accent-purple); }
 
-/* МАГАЗИН (КОМПАКТНЫЙ СПИСОК) - ИСПРАВЛЕННАЯ АНИМАЦИЯ */
 .packages-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
 .pkg-card { position: relative; background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 18px; padding: 14px 12px 12px 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 8px var(--shadow-color); backdrop-filter: blur(10px); }
-
-/* Анимация пульсации для хита */
 .pkg-card.popular { border-color: rgba(107, 37, 230, 0.4); opacity: 0; transform: translateY(10px); }
 .screen.active .pkg-card.popular { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards, breathGlow 3s ease-in-out 0.55s infinite alternate !important; }
-
 @keyframes breathGlow { 0% { box-shadow: 0 2px 6px rgba(107, 37, 230, 0.1); } 100% { box-shadow: 0 4px 16px rgba(107, 37, 230, 0.3); } }
 .badge-popular { position: absolute; top: -10px; left: 12px; background: linear-gradient(135deg, var(--accent-purple), #813CFC); color: #FFF; font-size: 9px; font-weight: 850; padding: 3px 8px; border-radius: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
 
@@ -486,7 +483,6 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 .btn-stars.btn-loading::after { border-color: rgba(245, 158, 11, 0.2); border-top-color: var(--accent-star); }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* ИСПРАВЛЕННАЯ АНИМАЦИЯ ПОЯВЛЕНИЯ КАРТОЧЕК */
 .stagger-anim { opacity: 0; transform: translateY(10px); }
 .screen.active .stagger-anim { animation: fadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
@@ -760,7 +756,7 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
   </button>
 </section>
 
-<!-- 4. МОДУЛЬ: СОЗДАТЬ ВИДЕО -->
+<!-- 4. МОДУЛЬ: СОЗДАТЬ ВИДЕО (Липсинк удален, сетка 3 колонки) -->
 <section id="createVideoScreen" class="screen">
   <div class="media-tabs-grid">
     <button class="media-tab-btn" onclick="openCreateModule('photo')">
@@ -944,7 +940,7 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
   </div>
 </section>
 
-<!-- 7. ЭКРАН: ПРОФИЛЬ -->
+<!-- 7. ЭКРАН: ПРОФИЛЬ (С автоподстановкой имени и ID из Telegram) -->
 <section id="profileScreen" class="screen">
   <div class="profile-user-card">
     <div class="profile-avatar-wrapper" onclick="alert('Выбор нового фото профиля')">
@@ -952,13 +948,13 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
     </div>
     <div class="profile-user-details">
       <div class="profile-name-row">
-        <div class="profile-name-large">Алексей</div>
+        <div class="profile-name-large" id="profileUserName">Алексей</div>
         <div class="profile-balance-badge">
           <span class="energy-bolt-icon" style="width: 14px; height: 14px;"><svg viewBox="0 0 24 24"><path fill="#F59E0B" d="M13 2 L3 14 L11 14 L9 22 L21 9 L13 9 Z"/></svg></span>
           <span id="profileBalanceLabel">100</span>
         </div>
       </div>
-      <div class="profile-id">ID: 49201948</div>
+      <div class="profile-id" id="profileUserId">ID: 49201948</div>
     </div>
   </div>
 
@@ -1090,8 +1086,8 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <span>🖼 ~320 фото</span> <div class="dot-sep"></div> <span>🎥 ~80 видео</span>
       </div>
       <div class="pkg-buttons">
-        <button class="btn-primary" onclick="handleBuy(this, 8000)">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 8000)"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 4799</button>
+        <button class="btn-primary" onclick="handleBuy(this, 3999)">Купить</button>
+        <button class="btn-stars" onclick="handleBuy(this, 3999)"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 4799</button>
       </div>
     </div>
   </div>
@@ -1778,7 +1774,24 @@ document.addEventListener('DOMContentLoaded', () => {
   updateVideoTotalPrice();
   updateBalance(0);
 
-  if (tg) { tg.ready(); tg.expand(); tg.enableClosingConfirmation?.(); }
+  if (tg) { 
+    tg.ready(); 
+    tg.expand(); 
+    tg.enableClosingConfirmation?.(); 
+
+    // Автоподстановка реального имени и ID пользователя из Telegram
+    const tgUser = tg.initDataUnsafe?.user;
+    if (tgUser) {
+      const userName = tgUser.first_name || tgUser.username || 'Пользователь';
+      const userId = tgUser.id || '---';
+
+      const nameEl = document.getElementById('profileUserName');
+      if (nameEl) nameEl.textContent = userName;
+
+      const idEl = document.getElementById('profileUserId');
+      if (idEl) idEl.textContent = `ID: ${userId}`;
+    }
+  }
 
   const photoPrompt = document.getElementById('photoPrompt');
   const videoPrompt = document.getElementById('videoPrompt');
