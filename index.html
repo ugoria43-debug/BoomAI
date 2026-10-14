@@ -265,7 +265,6 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 .aspect-card.active .aspect-num { color: var(--accent-purple); font-weight: 900; }
 .aspect-card.active .aspect-desc { color: var(--accent-purple); }
 
-/* Изменено на 3 колонки после удаления липсинка */
 .mode-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 .mode-chip { padding: 14px 6px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-sub); font-size: 12px; font-weight: 800; text-align: center; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
 .mode-chip.active { background: var(--accent-lavender); border-color: transparent; color: var(--accent-dark); font-weight: 900; }
@@ -289,18 +288,24 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 .duration-btn.active { background: var(--accent-lavender); color: var(--accent-dark); }
 .btn-generate-main { width: 100%; padding: 15px 18px; border-radius: 16px; background: linear-gradient(135deg, #7C3AED 0%, #6B25E6 50%, #581C87 100%); color: #FFF; font-size: 14.5px; font-weight: 850; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 6px 18px rgba(107,37,230,.35), inset 0 1px 0 rgba(255,255,255,.2); }
 
-/* ИСТОРИЯ, РАБОТЫ */
+/* ИСТОРИЯ И РАБОТЫ */
 .history-list { display: flex; flex-direction: column; gap: 10px; }
-.history-item { display: flex; align-items: center; gap: 12px; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px 14px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.02); }
+.history-item { display: flex; align-items: center; gap: 12px; background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px 14px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,.02); position: relative; }
 .history-thumb { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-purple-light); display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
 .history-info { flex: 1; min-width: 0; }
 .history-title { font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 2px; }
 .history-time { font-size: 11px; color: var(--text-sub); }
-.history-status { font-size: 11px; font-weight: 750; color: var(--accent-purple); padding: 4px 10px; background: var(--accent-purple-light); border-radius: 9999px; }
-.works-empty { padding: 60px 16px; text-align: center; }
-.works-empty-icon { font-size: 42px; margin-bottom: 10px; }
-.works-empty h2 { font-size: 20px; font-weight: 900; margin: 0 0 6px; }
-.works-empty p { font-size: 13px; color: var(--text-sub); margin: 0; }
+.history-del-btn { width: 26px; height: 26px; border-radius: 50%; background: rgba(142,146,160,0.1); color: var(--text-sub); display: grid; place-items: center; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+.history-del-btn:hover { background: #FF4D4D; color: #FFF; }
+
+/* ГАЛЕРЕЯ РАБОТ */
+.works-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.work-card { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 3/4; background: var(--card-bg); border: 1px solid var(--card-border); box-shadow: 0 4px 14px rgba(0,0,0,.07); display: flex; flex-direction: column; }
+.work-card-preview { flex: 1; background: var(--accent-purple-light); display: grid; place-items: center; font-size: 32px; position: relative; overflow: hidden; }
+.work-card-preview img { width: 100%; height: 100%; object-fit: cover; }
+.work-card-footer { padding: 10px 12px; background: var(--card-bg); display: flex; flex-direction: column; gap: 2px; }
+.work-card-title { font-size: 12px; font-weight: 850; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.work-card-sub { font-size: 10px; color: var(--text-sub); }
 
 /* ========================================================
    AI ЧАТ МОДУЛЬ
@@ -380,7 +385,7 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 .drawer-balance-hint { font-size: 11px; color: var(--accent-purple); font-weight: 750; }
 .drawer-topup-btn { background: linear-gradient(135deg, #813CFC 0%, #6B25E6 100%); color: #FFF; font-size: 12px; font-weight: 850; padding: 7px 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(107, 37, 230, 0.35); pointer-events: none; }
 
-/* МОДАЛКИ (ВИДЕО ФОРМАТ + СТАНДАРТНЫЕ) */
+/* МОДАЛКИ */
 .modal-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(8, 6, 14, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.32s cubic-bezier(0.16, 1, 0.3, 1); }
 .modal-overlay.show, .modal-overlay.active { opacity: 1; visibility: visible; pointer-events: auto; background: rgba(8, 6, 14, 0.58); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 .center-modal-box { width: min(100%, 390px); background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 26px; padding: 22px 20px 20px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.32); transform: scale(0.88) translateY(14px); opacity: 0; filter: blur(6px); transition: all 0.36s cubic-bezier(0.16, 1, 0.3, 1); text-align: center; position: relative; }
@@ -519,7 +524,7 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
           <path fill="url(#boltGrad)" d="M13 2 L3 14 L11 14 L9 22 L21 9 L13 9 Z"/>
         </svg>
       </span>
-      <span id="balanceVal">100</span>
+      <span id="balanceVal">0</span>
     </div>
   </div>
 </header>
@@ -629,27 +634,13 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
   </div>
 </section>
 
-<!-- 2. ЭКРАН: ИСТОРИЯ -->
+<!-- 2. ЭКРАН: ИСТОРИЯ (С кнопкой удаления каждой записи) -->
 <section id="historyScreen" class="screen">
   <h1 style="font-size:24px;font-weight:900;margin:0 0 4px">История</h1>
-  <p style="font-size:12px;color:var(--text-sub);margin:0 0 16px">Последние сгенерированные файлы и задачи</p>
-  <div class="history-list">
-    <div class="history-item">
-      <div class="history-thumb">🎬</div>
-      <div class="history-info">
-        <div class="history-title">Кинематографичный ролик (5 с)</div>
-        <div class="history-time">Сегодня, 19:42 · Kling 1.5 Pro</div>
-      </div>
-      <div class="history-status">Готово</div>
-    </div>
-    <div class="history-item">
-      <div class="history-thumb">📷</div>
-      <div class="history-info">
-        <div class="history-title">AI Портрет «Новый стиль»</div>
-        <div class="history-time">Сегодня, 18:10 · Flux 1.1 Pro</div>
-      </div>
-      <div class="history-status">Готово</div>
-    </div>
+  <p style="font-size:12px;color:var(--text-sub);margin:0 0 16px">Ваши последние сгенерированные файлы и запросы</p>
+  <div class="history-list" id="dynamicHistoryList"></div>
+  <div id="historyEmptyState" style="text-align:center; padding:40px 0; color:var(--text-sub); font-size:13px; display:none;">
+    История пока пуста. Сделайте первую генерацию!
   </div>
 </section>
 
@@ -756,7 +747,7 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
   </button>
 </section>
 
-<!-- 4. МОДУЛЬ: СОЗДАТЬ ВИДЕО (Липсинк удален, сетка 3 колонки) -->
+<!-- 4. МОДУЛЬ: СОЗДАТЬ ВИДЕО -->
 <section id="createVideoScreen" class="screen">
   <div class="media-tabs-grid">
     <button class="media-tab-btn" onclick="openCreateModule('photo')">
@@ -933,14 +924,17 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 
 <!-- 6. ЭКРАН: МОИ РАБОТЫ -->
 <section id="worksScreen" class="screen">
-  <div class="works-empty">
-    <div class="works-empty-icon">📁</div>
-    <h2>Мои работы</h2>
-    <p>Все сгенерированные фото и видео появятся здесь</p>
+  <h1 style="font-size:24px;font-weight:900;margin:0 0 4px">Мои работы</h1>
+  <p style="font-size:12px;color:var(--text-sub);margin:0 0 16px">Галерея ваших сгенерированных фото и видео</p>
+  <div class="works-grid" id="dynamicWorksGrid"></div>
+  <div id="worksEmptyState" style="text-align:center; padding:60px 16px; display:none;">
+    <div style="font-size:42px;margin-bottom:10px;">📁</div>
+    <h2 style="font-size:20px;font-weight:900;margin:0 0 6px">Пока пусто</h2>
+    <p style="font-size:13px;color:var(--text-sub);margin:0">Здесь появится результат ваших генераций</p>
   </div>
 </section>
 
-<!-- 7. ЭКРАН: ПРОФИЛЬ (С автоподстановкой имени и ID из Telegram) -->
+<!-- 7. ЭКРАН: ПРОФИЛЬ -->
 <section id="profileScreen" class="screen">
   <div class="profile-user-card">
     <div class="profile-avatar-wrapper" onclick="alert('Выбор нового фото профиля')">
@@ -951,7 +945,7 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <div class="profile-name-large" id="profileUserName">Алексей</div>
         <div class="profile-balance-badge">
           <span class="energy-bolt-icon" style="width: 14px; height: 14px;"><svg viewBox="0 0 24 24"><path fill="#F59E0B" d="M13 2 L3 14 L11 14 L9 22 L21 9 L13 9 Z"/></svg></span>
-          <span id="profileBalanceLabel">100</span>
+          <span id="profileBalanceLabel">0</span>
         </div>
       </div>
       <div class="profile-id" id="profileUserId">ID: 49201948</div>
@@ -1015,8 +1009,8 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <span>🖼 ~3 фото</span> <div class="dot-sep"></div> <span>🎥 ~1 видео</span>
       </div>
       <div class="pkg-buttons">
-        <button class="btn-primary" onclick="handleBuy(this, 100)">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 100)"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 119</button>
+        <button class="btn-primary" onclick="handleBuy(this, 'pack_100', 'fiat')">Купить</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_100', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 119</button>
       </div>
     </div>
 
@@ -1029,8 +1023,8 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <span>🖼 ~8 фото</span> <div class="dot-sep"></div> <span>🎥 ~2 видео</span> <div class="dot-sep"></div> <span>🎵 ~1 трек</span>
       </div>
       <div class="pkg-buttons">
-        <button class="btn-primary" onclick="handleBuy(this, 220)">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 220)"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 239</button>
+        <button class="btn-primary" onclick="handleBuy(this, 'pack_220', 'fiat')">Купить</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_220', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 239</button>
       </div>
     </div>
 
@@ -1044,8 +1038,8 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <span>🖼 ~24 фото</span> <div class="dot-sep"></div> <span>🎥 ~6 видео</span> <div class="dot-sep"></div> <span>🎵 ~3 трека</span>
       </div>
       <div class="pkg-buttons">
-        <button class="btn-primary" onclick="handleBuy(this, 600)">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 600)"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 599</button>
+        <button class="btn-primary" onclick="handleBuy(this, 'pack_600', 'fiat')">Купить</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_600', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 599</button>
       </div>
     </div>
 
@@ -1058,8 +1052,8 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <span>🖼 ~60 фото</span> <div class="dot-sep"></div> <span>🎥 ~15 видео</span> <div class="dot-sep"></div> <span>🎵 ~7 треков</span>
       </div>
       <div class="pkg-buttons">
-        <button class="btn-primary" onclick="handleBuy(this, 1500)">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 1500)"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 1199</button>
+        <button class="btn-primary" onclick="handleBuy(this, 'pack_1500', 'fiat')">Купить</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_1500', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 1199</button>
       </div>
     </div>
     
@@ -1072,8 +1066,8 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <span>🖼 ~140 фото</span> <div class="dot-sep"></div> <span>🎥 ~35 видео</span>
       </div>
       <div class="pkg-buttons">
-        <button class="btn-primary" onclick="handleBuy(this, 3500)">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 3500)"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 2399</button>
+        <button class="btn-primary" onclick="handleBuy(this, 'pack_3500', 'fiat')">Купить</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_3500', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 2399</button>
       </div>
     </div>
 
@@ -1086,8 +1080,8 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <span>🖼 ~320 фото</span> <div class="dot-sep"></div> <span>🎥 ~80 видео</span>
       </div>
       <div class="pkg-buttons">
-        <button class="btn-primary" onclick="handleBuy(this, 3999)">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 3999)"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 4799</button>
+        <button class="btn-primary" onclick="handleBuy(this, 'pack_8000', 'fiat')">Купить</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_8000', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 4799</button>
       </div>
     </div>
   </div>
@@ -1133,7 +1127,7 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
           </svg>
         </span>
         <div>
-          <div class="drawer-balance-badge"><span id="drawerBalanceVal">100</span> ⚡ Кредитов</div>
+          <div class="drawer-balance-badge"><span id="drawerBalanceVal">0</span> ⚡ Кредитов</div>
           <div class="drawer-balance-hint">Нажмите для пополнения</div>
         </div>
       </div>
@@ -1226,12 +1220,142 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 </div>
 
 <script>
-/* СОСТОЯНИЕ */
-let currentBalance = 100;
+/* ЗАЩИТА ОТ ВНЕДРЕНИЯ КОДА (XSS) */
+function escapeHTML(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[&<>'"]/g, tag => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+  }[tag] || tag));
+}
+
+/* СОСТОЯНИЕ И УПРАВЛЕНИЕ ИСТОРИЕЙ/РАБОТАМИ */
+let currentBalance = 0; // Изначально 0, ждем ответа от сервера
 let isChatStreaming = false;
 let chatStreamInterval = null;
 let previousScreen = 'trends';
 const tg = window.Telegram?.WebApp;
+
+// УМНАЯ ЗАГРУЗКА БАЛАНСА С СЕРВЕРА
+async function initUserProfile() {
+  try {
+    const initData = tg?.initData || '';
+    const res = await fetch('/api/get_profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ initData }) // Отправляем серверу зашифрованные данные юзера
+    });
+    if (res.ok) {
+      const data = await res.json();
+      currentBalance = data.balance !== undefined ? data.balance : 100;
+    } else {
+      currentBalance = 100; // Сервер есть, но выдал ошибку (заглушка для тестов)
+    }
+  } catch (e) {
+    currentBalance = 100; // Сервера еще нет (заглушка для тестов)
+  }
+  updateBalance(0); // Обновляем цифры на экране
+}
+
+let userHistory = JSON.parse(localStorage.getItem('boomai_history')) || [
+  { type: 'video', title: 'Кинематографичный ролик (5 с)', time: 'Сегодня, 19:42 · Kling 1.5 Pro' },
+  { type: 'photo', title: 'AI Портрет «Новый стиль»', time: 'Сегодня, 18:10 · Flux 1.1 Pro' }
+];
+
+let userWorks = JSON.parse(localStorage.getItem('boomai_works')) || [
+  { type: '🎬 Видео', title: 'Неоновый мегаполис', sub: 'Kling 1.5 Pro', img: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=500&q=80' },
+  { type: '📷 Фото', title: 'Киберпанк портрет', sub: 'Flux 1.1 Pro', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=80' }
+];
+
+function saveHistoryToStorage() {
+  localStorage.setItem('boomai_history', JSON.stringify(userHistory));
+  renderHistoryList();
+}
+
+function saveWorksToStorage() {
+  localStorage.setItem('boomai_works', JSON.stringify(userWorks));
+  renderWorksGrid();
+}
+
+function addHistoryItem(type, title, details) {
+  const now = new Date();
+  const timeStr = `Сегодня, ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')} · ${details}`;
+  userHistory.unshift({ type, title, time: timeStr });
+  saveHistoryToStorage();
+}
+
+function removeHistoryItem(index, event) {
+  event?.stopPropagation();
+  tg?.HapticFeedback?.selectionChanged();
+  userHistory.splice(index, 1);
+  saveHistoryToStorage();
+}
+
+function addWorkItem(type, title, sub, img) {
+  userWorks.unshift({ type, title, sub, img: img || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=500&q=80' });
+  saveWorksToStorage();
+}
+
+function renderHistoryList() {
+  const listEl = document.getElementById('dynamicHistoryList');
+  const emptyEl = document.getElementById('historyEmptyState');
+  if (!listEl) return;
+  listEl.innerHTML = '';
+
+  if (userHistory.length === 0) {
+    if (emptyEl) emptyEl.style.display = 'block';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+
+  userHistory.forEach((item, index) => {
+    let thumb = '✨';
+    if (item.type === 'video') thumb = '🎬';
+    if (item.type === 'photo') thumb = '📷';
+    if (item.type === 'chat') thumb = '💬';
+
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `
+      <div class="history-thumb">${thumb}</div>
+      <div class="history-info">
+        <div class="history-title">${escapeHTML(item.title)}</div>
+        <div class="history-time">${escapeHTML(item.time)}</div>
+      </div>
+      <button class="history-del-btn" onclick="removeHistoryItem(${index}, event)" title="Удалить">✕</button>
+    `;
+    listEl.appendChild(div);
+  });
+}
+
+function renderWorksGrid() {
+  const gridEl = document.getElementById('dynamicWorksGrid');
+  const emptyEl = document.getElementById('worksEmptyState');
+  if (!gridEl) return;
+  gridEl.innerHTML = '';
+
+  if (userWorks.length === 0) {
+    if (emptyEl) emptyEl.style.display = 'block';
+    gridEl.style.display = 'none';
+    return;
+  }
+  if (emptyEl) emptyEl.style.display = 'none';
+  gridEl.style.display = 'grid';
+
+  userWorks.forEach(work => {
+    const card = document.createElement('div');
+    card.className = 'work-card';
+    card.innerHTML = `
+      <div class="work-card-preview">
+        <img src="${work.img}" alt="${escapeHTML(work.title)}">
+      </div>
+      <div class="work-card-footer">
+        <div class="work-card-title">${escapeHTML(work.title)}</div>
+        <div class="work-card-sub">${escapeHTML(work.type)} · ${escapeHTML(work.sub)}</div>
+      </div>
+    `;
+    gridEl.appendChild(card);
+  });
+}
 
 function updateBalance(delta = 0) {
   currentBalance = Math.max(0, currentBalance + delta);
@@ -1257,22 +1381,13 @@ function dismissKeyboard() {
   }
 }
 
-/* ВЫХОД ИЗ ЧАТА */
+/* НАВИГАЦИЯ */
 function exitChatModule() {
   dismissKeyboard();
-  
-  if (chatStreamInterval) {
-    clearInterval(chatStreamInterval);
-    chatStreamInterval = null;
-    isChatStreaming = false;
-  }
-
-  if (tg?.BackButton) {
-    tg.BackButton.offClick(exitChatModule);
-    tg.BackButton.hide();
-  }
+  if (chatStreamInterval) { clearInterval(chatStreamInterval); chatStreamInterval = null; isChatStreaming = false; }
+  if (tg?.BackButton) { tg.BackButton.offClick(exitChatModule); tg.BackButton.hide(); }
   if (previousScreen && previousScreen !== 'createChat') {
-    if (previousScreen === 'trends' || previousScreen === 'history' || previousScreen === 'works' || previousScreen === 'profile' || previousScreen === 'store') {
+    if (['trends', 'history', 'works', 'profile', 'store'].includes(previousScreen)) {
       const tabBtn = document.querySelector(`.nav-tab[data-screen="${previousScreen}"]`);
       nav(previousScreen, tabBtn);
     } else {
@@ -1283,15 +1398,10 @@ function exitChatModule() {
   }
 }
 
-/* НАВИГАЦИЯ */
 function nav(screenName, btn) {
   dismissKeyboard();
   tg?.HapticFeedback?.selectionChanged();
-  
-  if (tg?.BackButton) {
-    tg.BackButton.offClick(exitChatModule);
-    tg.BackButton.hide();
-  }
+  if (tg?.BackButton) { tg.BackButton.offClick(exitChatModule); tg.BackButton.hide(); }
 
   const navIsland = document.getElementById('navIslandWrapper');
   navIsland?.classList.remove('hide-in-chat');
@@ -1305,6 +1415,9 @@ function nav(screenName, btn) {
   if (btn) btn.classList.add('active');
   const target = document.getElementById(screenName + 'Screen');
   if (target) target.classList.add('active');
+
+  if (screenName === 'history') renderHistoryList();
+  if (screenName === 'works') renderWorksGrid();
   
   previousScreen = screenName;
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1365,7 +1478,7 @@ function openCreateModule(type) {
   }
 }
 
-/* МОДАЛКИ (Промо, Поддержка, Успех) */
+/* МОДАЛКИ */
 function openModal(id) {
   dismissKeyboard();
   document.getElementById(id).classList.add('active');
@@ -1395,15 +1508,28 @@ function openSupportChat() {
   closeModal('supportModal');
 }
 
-/* ЛОГИКА ОПЛАТЫ В МАГАЗИНЕ */
+/* ОПЛАТА С ПОДДЕРЖКОЙ СЕРВЕРА */
 let pendingCredits = 0;
-function handleBuy(btn, credits) {
+function handleBuy(btn, packId, method) {
+  if (btn.classList.contains('btn-loading')) return; // Защита от двойного клика
   tg?.HapticFeedback?.impactOccurred('medium');
   btn.classList.add('btn-loading');
+  
+  // В будущем здесь будет запрос к серверу: fetch('/api/pay', { body: JSON.stringify({ packId, method }) })
   
   setTimeout(() => {
     btn.classList.remove('btn-loading');
     tg?.HapticFeedback?.notificationOccurred('success');
+    
+    // Заглушка для теста (кредиты в зависимости от переданного packId)
+    let credits = 0;
+    if (packId === 'pack_100') credits = 100;
+    if (packId === 'pack_220') credits = 220;
+    if (packId === 'pack_600') credits = 600;
+    if (packId === 'pack_1500') credits = 1500;
+    if (packId === 'pack_3500') credits = 3500;
+    if (packId === 'pack_8000') credits = 8000;
+    
     pendingCredits = credits;
     document.getElementById('addedCreditsVal').textContent = credits;
     openModal('successModal');
@@ -1458,7 +1584,17 @@ function triggerPhotoUpload() {
 function handlePhotoFiles(e) {
   const files = Array.from(e.target.files);
   const slots = MAX_PHOTO_IMAGES - uploadedPhotoImages.length;
-  files.slice(0, slots).forEach(file => {
+  const validFiles = [];
+  
+  for (let file of files.slice(0, slots)) {
+    if (file.size > 5 * 1024 * 1024) { // Проверка на 5 МБ
+      alert(`Файл ${file.name} слишком большой! Максимальный размер — 5 МБ.`);
+      continue;
+    }
+    validFiles.push(file);
+  }
+
+  validFiles.forEach(file => {
     const r = new FileReader();
     r.onload = evt => { uploadedPhotoImages.push(evt.target.result); renderPhotoUploads(); };
     r.readAsDataURL(file);
@@ -1491,14 +1627,26 @@ function setPhotoRatio(ratio, desc, btn) {
   document.getElementById('photoAspectHint').textContent = `${ratio} (${desc})`;
   tg?.HapticFeedback?.selectionChanged();
 }
+
+let isGeneratingPhoto = false;
 function handleGeneratePhoto() {
+  if (isGeneratingPhoto) return; // Блокировка спама
   const prompt = document.getElementById('photoPrompt').value.trim();
+  const modelName = document.getElementById('selectedPhotoModelName').textContent;
   if (!prompt && uploadedPhotoImages.length === 0) return alert('Введите запрос или прикрепите фото!');
   if (currentBalance < currentPhotoCost) return alert('Недостаточно кредитов!');
+  
+  isGeneratingPhoto = true;
   updateBalance(-currentPhotoCost);
   pulseBalanceAnimation();
   tg?.HapticFeedback?.impactOccurred('medium');
-  alert(`Генерация запущена!\nСписано: ${currentPhotoCost} ⚡`);
+  
+  const title = prompt ? prompt.slice(0, 22) + '...' : 'AI Генерация фото';
+  addHistoryItem('photo', `Фото: "${title}"`, modelName);
+  addWorkItem('📷 Фото', title, modelName, uploadedPhotoImages[0]);
+  
+  alert(`Генерация фото запущена и сохранена в «Работы»!\nСписано: ${currentPhotoCost} ⚡`);
+  setTimeout(() => { isGeneratingPhoto = false; }, 1000);
 }
 
 /* ЛОГИКА ВИДЕО */
@@ -1532,6 +1680,13 @@ function setVideoMode(mode, btn) {
 function handleSingleVideoPhoto(e) {
   const file = e.target.files[0];
   if (!file) return;
+  
+  if (file.size > 5 * 1024 * 1024) { // Проверка на 5 МБ
+    alert('Файл слишком большой! Максимальный размер — 5 МБ.');
+    e.target.value = '';
+    return;
+  }
+
   const r = new FileReader();
   r.onload = evt => {
     uploadedVideoSinglePhoto = evt.target.result;
@@ -1593,15 +1748,27 @@ function setVideoDuration(sec, mult, btn) {
   updateVideoTotalPrice();
   tg?.HapticFeedback?.selectionChanged();
 }
+
+let isGeneratingVideo = false;
 function handleGenerateVideo() {
+  if (isGeneratingVideo) return; // Блокировка спама
   const prompt = document.getElementById('videoPrompt').value.trim();
   const cost = parseInt(document.getElementById('videoBtnCostLabel').textContent);
+  const modelName = document.getElementById('selectedVideoModelName').textContent;
   if (!prompt && !uploadedVideoSinglePhoto) return alert('Заполните поле запроса!');
   if (currentBalance < cost) return alert('Недостаточно кредитов!');
+
+  isGeneratingVideo = true;
   updateBalance(-cost);
   pulseBalanceAnimation();
   tg?.HapticFeedback?.impactOccurred('medium');
-  alert(`Генерация видео запущена!\nСписано: ${cost} ⚡`);
+
+  const title = prompt ? prompt.slice(0, 22) + '...' : 'AI Генерация видео';
+  addHistoryItem('video', `Видео: "${title}"`, modelName);
+  addWorkItem('🎬 Видео', title, modelName, uploadedVideoSinglePhoto);
+
+  alert(`Генерация видео запущена и сохранена в «Работы»!\nСписано: ${cost} ⚡`);
+  setTimeout(() => { isGeneratingVideo = false; }, 1000);
 }
 
 /* AI ЧАТ */
@@ -1619,6 +1786,15 @@ function chooseChatFile() {
   document.getElementById('chatFileInput').click();
 }
 function fileSelectedChat() {
+  const fileInput = document.getElementById('chatFileInput');
+  const file = fileInput.files[0];
+  
+  if (file && file.size > 5 * 1024 * 1024) { // Проверка на 5 МБ
+    alert('Фото слишком большое! Максимальный размер — 5 МБ.');
+    fileInput.value = '';
+    return;
+  }
+  
   tg?.HapticFeedback?.notificationOccurred('success');
   chatInput.placeholder = "Изображение прикреплено! Напишите задачу...";
   chatInput.focus();
@@ -1640,9 +1816,12 @@ function sendChatPrompt() {
   const text = chatInput.value.trim();
   if (!text || isChatStreaming) return;
   if (currentBalance < 1) return alert('Недостаточно кредитов!');
+  
   updateBalance(-1);
   pulseBalanceAnimation();
   tg?.HapticFeedback?.impactOccurred('light');
+
+  addHistoryItem('chat', `Чат: "${text.slice(0, 22)}..."`, 'AI Assistant');
 
   document.getElementById('welcomeChatScreen').style.display = 'none';
   const flow = document.getElementById('chatDialogFlow');
@@ -1654,7 +1833,7 @@ function sendChatPrompt() {
   flow.appendChild(userBubble);
 
   chatInput.value = '';
-  chatInput.style.height = '38px';
+  adjustChatHeight(chatInput); // Принудительно сбрасываем высоту
   chatInput.placeholder = "Задайте вопрос нейросети...";
 
   const container = document.getElementById('chatDialogContainer');
@@ -1685,6 +1864,7 @@ function sendChatPrompt() {
     }, 18);
   }, 600);
 }
+
 function startNewChat() {
   if (chatStreamInterval) { clearInterval(chatStreamInterval); chatStreamInterval = null; }
   isChatStreaming = false;
@@ -1704,13 +1884,6 @@ function openDrawer() {
 function closeDrawer() { document.getElementById('chatDrawer').classList.remove('active'); }
 function loadSavedChat(title) {
   closeDrawer(); startNewChat(); chatInput.value = title; adjustChatHeight(chatInput);
-}
-function deleteHistoryItem(id, event) {
-  event?.stopPropagation();
-  tg?.HapticFeedback?.selectionChanged();
-  document.getElementById(id)?.remove();
-  const list = document.getElementById('historyList');
-  if (list && list.querySelectorAll('.history-row').length === 0) document.getElementById('historyEmptyText').style.display = 'block';
 }
 
 /* ПОИСК В ТРЕНДАХ */
@@ -1772,14 +1945,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('boomai_theme') || tg?.colorScheme || 'light';
   applyTheme(saved);
   updateVideoTotalPrice();
-  updateBalance(0);
+  initUserProfile(); // УМНЫЙ ЗАПРОС БАЛАНСА С СЕРВЕРА
+  renderHistoryList();
+  renderWorksGrid();
 
   if (tg) { 
     tg.ready(); 
     tg.expand(); 
     tg.enableClosingConfirmation?.(); 
 
-    // Автоподстановка реального имени и ID пользователя из Telegram
     const tgUser = tg.initDataUnsafe?.user;
     if (tgUser) {
       const userName = tgUser.first_name || tgUser.username || 'Пользователь';
