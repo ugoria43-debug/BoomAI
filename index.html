@@ -1235,27 +1235,39 @@ let chatStreamInterval = null;
 let previousScreen = 'trends';
 const tg = window.Telegram?.WebApp;
 
-// УМНАЯ ЗАГРУЗКА БАЛАНСА С СЕРВЕРА
+// УМНАЯ ЗАГРУЗКА БАЛАНСА С СЕРВЕРА FASTAPI
+const API_URL = "http://127.0.0.1:8000";
+let currentUserTgId = 8931516521;
+
 async function initUserProfile() {
   try {
-    const initData = tg?.initData || '';
-    const res = await fetch('/api/get_profile', {
+    const initData = tg?.initData || "query_id=AAH...&user=%7B%22id%22%3A8931516521%2C%22first_name%22%3A%22Admin%22%7D&hash=test";
+    
+    const res = await fetch(`${API_URL}/api/v1/auth/telegram`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ initData }) // Отправляем серверу зашифрованные данные юзера
+      body: JSON.stringify({ init_data: initData })
     });
+    
     if (res.ok) {
       const data = await res.json();
-      currentBalance = data.balance !== undefined ? data.balance : 100;
+      currentUserTgId = data.tg_id;
+      currentBalance = data.credits_balance;
+      
+      const nameEl = document.getElementById('profileUserName');
+      if (nameEl) nameEl.textContent = data.first_name || data.username || 'Пользователь';
+
+      const idEl = document.getElementById('profileUserId');
+      if (idEl) idEl.textContent = `ID: ${data.tg_id}`;
     } else {
-      currentBalance = 100; // Сервер есть, но выдал ошибку (заглушка для тестов)
+      currentBalance = 10;
     }
   } catch (e) {
-    currentBalance = 100; // Сервера еще нет (заглушка для тестов)
+    console.error("Ошибка связи с FastAPI бэкендом:", e);
+    currentBalance = 10;
   }
-  updateBalance(0); // Обновляем цифры на экране
+  updateBalance(0);
 }
-
 let userHistory = JSON.parse(localStorage.getItem('boomai_history')) || [
   { type: 'video', title: 'Кинематографичный ролик (5 с)', time: 'Сегодня, 19:42 · Kling 1.5 Pro' },
   { type: 'photo', title: 'AI Портрет «Новый стиль»', time: 'Сегодня, 18:10 · Flux 1.1 Pro' }
@@ -1508,32 +1520,44 @@ function openSupportChat() {
   closeModal('supportModal');
 }
 
-/* ОПЛАТА С ПОДДЕРЖКОЙ СЕРВЕРА */
+/* СОЗДАНИЕ ЗАКАЗА И ОПЛАТА ЧЕРЕЗ FASTAPI */
 let pendingCredits = 0;
-function handleBuy(btn, packId, method) {
-  if (btn.classList.contains('btn-loading')) return; // Защита от двойного клика
+async function handleBuy(btn, packKey, method) {
+  if (btn.classList.contains('btn-loading')) return;
   tg?.HapticFeedback?.impactOccurred('medium');
   btn.classList.add('btn-loading');
-  
-  // В будущем здесь будет запрос к серверу: fetch('/api/pay', { body: JSON.stringify({ packId, method }) })
-  
-  setTimeout(() => {
+
+  // Превращаем строковый ключ типа 'pack_100' в ID пакета из базы данных (от 1 до 6)
+  const packageIdMap = {
+    'pack_100': 1,
+    'pack_220': 2,
+    'pack_600': 3,
+    'pack_1500': 4,
+    'pack_3500': 5,
+    'pack_8000': 6
+  };
+  const packageId = packageIdMap[packKey] || 1;
+
+  try {
+    const res = await fetch(`${API_URL}/api/v1/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tg_id: currentUserTgId, package_id: packageId })
+    });
+    const data = await res.json();
     btn.classList.remove('btn-loading');
-    tg?.HapticFeedback?.notificationOccurred('success');
-    
-    // Заглушка для теста (кредиты в зависимости от переданного packId)
-    let credits = 0;
-    if (packId === 'pack_100') credits = 100;
-    if (packId === 'pack_220') credits = 220;
-    if (packId === 'pack_600') credits = 600;
-    if (packId === 'pack_1500') credits = 1500;
-    if (packId === 'pack_3500') credits = 3500;
-    if (packId === 'pack_8000') credits = 8000;
-    
-    pendingCredits = credits;
-    document.getElementById('addedCreditsVal').textContent = credits;
-    openModal('successModal');
-  }, 1500);
+
+    if (res.ok) {
+      tg?.HapticFeedback?.notificationOccurred('success');
+      // Перенаправляем пользователя на официальную ссылку оплаты ЮKassa
+      window.open(data.confirmation_url, '_blank');
+    } else {
+      alert("Ошибка создания платежа: " + data.detail);
+    }
+  } catch (e) {
+    btn.classList.remove('btn-loading');
+    alert("Ошибка соединения с платежным шлюзом");
+  }
 }
 
 function closeSuccessModal(event, force) {
@@ -1629,25 +1653,43 @@ function setPhotoRatio(ratio, desc, btn) {
 }
 
 let isGeneratingPhoto = false;
-function handleGeneratePhoto() {
+async function handleGeneratePhoto() {
   if (isGeneratingPhoto) return; // Блокировка спама
   const prompt = document.getElementById('photoPrompt').value.trim();
-  const modelName = document.getElementById('selectedPhotoModelName').textContent;
+  const modelCode = "flux-pro"; // Код модели для бэкенда
   if (!prompt && uploadedPhotoImages.length === 0) return alert('Введите запрос или прикрепите фото!');
   if (currentBalance < currentPhotoCost) return alert('Недостаточно кредитов!');
   
   isGeneratingPhoto = true;
-  updateBalance(-currentPhotoCost);
-  pulseBalanceAnimation();
   tg?.HapticFeedback?.impactOccurred('medium');
   
-  const title = prompt ? prompt.slice(0, 22) + '...' : 'AI Генерация фото';
-  addHistoryItem('photo', `Фото: "${title}"`, modelName);
-  addWorkItem('📷 Фото', title, modelName, uploadedPhotoImages[0]);
-  
-  alert(`Генерация фото запущена и сохранена в «Работы»!\nСписано: ${currentPhotoCost} ⚡`);
-  setTimeout(() => { isGeneratingPhoto = false; }, 1000);
-}
+  try {
+    const res = await fetch(`${API_URL}/api/v1/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tg_id: currentUserTgId, model_code: modelCode, prompt: prompt })
+    });
+    const data = await res.json();
+    isGeneratingPhoto = false;
+
+    if (res.ok) {
+      updateBalance(-data.cost);
+      pulseBalanceAnimation();
+      tg?.HapticFeedback?.notificationOccurred('success');
+      
+      const title = prompt ? prompt.slice(0, 22) + '...' : 'AI Генерация фото';
+      addHistoryItem('photo', `Фото: "${title}"`, modelCode);
+      addWorkItem('📷 Фото', title, modelCode, uploadedPhotoImages[0]);
+      
+      alert(data.message + `\nСписано: ${data.cost} ⚡. Остаток: ${data.remaining_balance} кр.`);
+    } else {
+      alert(data.detail);
+    }
+  } catch (e) {
+    isGeneratingPhoto = false;
+    alert("Ошибка связи с сервером генерации");
+  }
+}ы
 
 /* ЛОГИКА ВИДЕО */
 let currentVideoRatio = '16:9';
