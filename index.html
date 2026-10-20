@@ -1238,35 +1238,40 @@ const tg = window.Telegram?.WebApp;
 // УМНАЯ ЗАГРУЗКА БАЛАНСА С СЕРВЕРА FASTAPI
 const API_URL = "http://127.0.0.1:8000";
 let currentUserTgId = 8931516521;
+let activePercentPromoCode = null;alert(data.message || "Промокод успешно активирован!");
 
 async function initUserProfile() {
   try {
-    const initData = tg?.initData || "query_id=AAH...&user=%7B%22id%22%3A8931516521%2C%22first_name%22%3A%22Admin%22%7D&hash=test";
     
-    const res = await fetch(`${API_URL}/api/v1/auth/telegram`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ init_data: initData })
-    });
-    
-    if (res.ok) {
-      const data = await res.json();
-      currentUserTgId = data.tg_id;
-      currentBalance = data.credits_balance;
-      
-      const nameEl = document.getElementById('profileUserName');
-      if (nameEl) nameEl.textContent = data.first_name || data.username || 'Пользователь';
+const initData = tg?.initData;
+if (!initData) {
+  throw new Error("Откройте BoomAI через Telegram");
+}
 
-      const idEl = document.getElementById('profileUserId');
-      if (idEl) idEl.textContent = `ID: ${data.tg_id}`;
-    } else {
-      currentBalance = 10;
-    }
-  } catch (e) {
-    console.error("Ошибка связи с FastAPI бэкендом:", e);
-    currentBalance = 10;
-  }
-  updateBalance(0);
+
+const res = await fetch(`${API_URL}/api/v1/auth/telegram`, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ init_data: initData })
+});
+
+if (res.ok) {
+  const data = await res.json();
+  currentUserTgId = data.tg_id;
+  currentBalance = data.credits_balance;
+
+  const nameEl = document.getElementById('profileUserName');
+  if (nameEl) nameEl.textContent = data.first_name || data.username || 'Пользователь';
+
+  const idEl = document.getElementById('profileUserId');
+  if (idEl) idEl.textContent = `ID: ${data.tg_id}`;
+} else {
+  console.error("Не удалось авторизоваться:", res.status);
+}
+} catch (e) {
+  console.error("Ошибка авторизации или связи с FastAPI:", e);
+}
+updateBalance(0);
 }
 let userHistory = JSON.parse(localStorage.getItem('boomai_history')) || [
   { type: 'video', title: 'Кинематографичный ролик (5 с)', time: 'Сегодня, 19:42 · Kling 1.5 Pro' },
@@ -1505,14 +1510,64 @@ function closeModal(id, event) {
     tg?.HapticFeedback?.selectionChanged();
   }
 }
-function submitPromo() {
-  const val = document.getElementById('promoInputVal').value.trim();
-  if(!val) return alert("Введите код");
-  tg?.HapticFeedback?.impactOccurred('medium');
-  alert(`Промокод "${val}" проверяется...`);
-  closeModal('promoModal');
-  document.getElementById('promoInputVal').value = '';
+
+async function submitPromo() {
+  const input = document.getElementById('promoInputVal');
+  const val = input.value.trim();
+
+  if (!val) {
+    alert("Введите код");
+    return;
+  }
+
+  if (!tg?.initData || !currentUserTgId) {
+    alert("Откройте BoomAI через Telegram и попробуйте снова.");
+    return;
+  }
+
+  tg.HapticFeedback?.impactOccurred('medium');
+
+  try {
+    const res = await fetch(`${API_URL}/api/v1/promos/activate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `tma ${tg.initData}`
+      },
+      body: JSON.stringify({
+        tg_id: currentUserTgId,
+        promo_code: val
+      })
+    });
+
+const data = await res.json();
+
+if (!res.ok) {
+  alert(data.detail || "Не удалось активировать промокод.");
+  return;
 }
+
+if (data.reward_type === 'percent') {
+  activePercentPromoCode = data.promo_code;
+} else if (data.reward_type === 'fixed') {
+  activePercentPromoCode = null;
+}
+
+alert(data.message || "Промокод успешно активирован!");
+closeModal('promoModal');
+input.value = '';
+
+if (typeof data.credits_balance === 'number') {
+  currentBalance = data.credits_balance;
+  updateBalance(currentBalance);
+}
+    }
+  } catch (error) {
+    console.error("Ошибка активации промокода:", error);
+    alert("Не удалось связаться с сервером. Попробуйте позже.");
+  }
+}
+
 function openSupportChat() {
   tg?.HapticFeedback?.impactOccurred('medium');
   if (tg && tg.openTelegramLink) tg.openTelegramLink('https://t.me/BoomAI_Support');
@@ -1541,8 +1596,15 @@ async function handleBuy(btn, packKey, method) {
   try {
     const res = await fetch(`${API_URL}/api/v1/orders`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tg_id: currentUserTgId, package_id: packageId })
+      headers: {
+  'Content-Type': 'application/json',
+  'Authorization': `tma ${tg?.initData || ''}`
+},
+body: JSON.stringify({
+  tg_id: currentUserTgId,
+  package_id: packageId,
+  promo_code: activePercentPromoCode
+})
     });
     const data = await res.json();
     btn.classList.remove('btn-loading');
@@ -1666,8 +1728,15 @@ async function handleGeneratePhoto() {
   try {
     const res = await fetch(`${API_URL}/api/v1/generate`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tg_id: currentUserTgId, model_code: modelCode, prompt: prompt })
+      headers: {
+  'Content-Type': 'application/json',
+  'Authorization': `tma ${tg?.initData || ''}`
+},
+body: JSON.stringify({
+  tg_id: currentUserTgId,
+  model_code: modelCode,
+  prompt: prompt
+})
     });
     const data = await res.json();
     isGeneratingPhoto = false;
