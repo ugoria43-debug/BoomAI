@@ -1236,12 +1236,18 @@ let previousScreen = 'trends';
 const tg = window.Telegram?.WebApp;
 
 // УМНАЯ ЗАГРУЗКА БАЛАНСА С СЕРВЕРА FASTAPI
-const API_URL = "http://127.0.0.1:8000";
-let currentUserTgId = 8931516521;
+const API_URL = "https://boomsss.ru";
+let currentUserTgId = null;
 
 async function initUserProfile() {
   try {
-    const initData = tg?.initData || "query_id=AAH...&user=%7B%22id%22%3A8931516521%2C%22first_name%22%3A%22Admin%22%7D&hash=test";
+    const initData = tg?.initData || "";
+    if (!initData) {
+  currentBalance = 0;
+  updateBalance(0);
+  console.error("Открой BoomAI через Telegram.");
+  return;
+}
     
     const res = await fetch(`${API_URL}/api/v1/auth/telegram`, {
       method: 'POST',
@@ -1255,12 +1261,12 @@ async function initUserProfile() {
       currentBalance = data.credits_balance;
       
       const nameEl = document.getElementById('profileUserName');
-      if (nameEl) nameEl.textContent = data.first_name || data.username || 'Пользователь';
+      if (nameEl) nameEl.textContent = data.full_name || data.username || 'Пользователь';
 
       const idEl = document.getElementById('profileUserId');
       if (idEl) idEl.textContent = `ID: ${data.tg_id}`;
     } else {
-      currentBalance = 10;
+      currentBalance = 0;
     }
   } catch (e) {
     console.error("Ошибка связи с FastAPI бэкендом:", e);
@@ -1689,7 +1695,7 @@ async function handleGeneratePhoto() {
     isGeneratingPhoto = false;
     alert("Ошибка связи с сервером генерации");
   }
-}ы
+}
 
 /* ЛОГИКА ВИДЕО */
 let currentVideoRatio = '16:9';
