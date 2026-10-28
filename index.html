@@ -670,37 +670,31 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
     <div class="model-info">
       <div class="model-icon-circle"><svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></div>
       <div class="model-texts">
-        <div class="model-header-row"><span class="model-name" id="selectedPhotoModelName">Kling O3 Photo</span></div>
+        <div class="model-header-row"><span class="model-name" id="selectedPhotoModelName">Nano Banana 2 Lite</span></div>
         <div class="model-desc" id="selectedPhotoModelDesc">Ультра-детализация, кинематографичный свет и 4K текстуры кожи</div>
       </div>
     </div>
     <div class="model-header-right">
-      <div class="model-cost-pill"><span>⚡</span><span id="selectedPhotoModelCost">30</span></div>
+      <div class="model-cost-pill"><span>⚡</span><span id="selectedPhotoModelCost">10</span></div>
       <svg class="model-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
 
     <div class="model-menu">
-      <div class="model-menu-item active" onclick="selectPhotoModel('Kling O3 Photo', 'Ультра-детализация, кинематографичный свет и 4K текстуры кожи', 30, this, event)">
-        <div class="item-left-block">
-          <div class="item-title-row"><span class="item-title">Kling O3 Photo</span><span class="item-badge badge-ultra">Ultra</span></div>
-          <div class="item-description">Ультра-детализация, кинематографичный свет и 4K текстуры кожи</div>
-        </div>
-        <div class="item-cost-badge"><span class="item-cost-val">30 ⚡</span><span class="item-cost-sub">за фото</span></div>
-      </div>
-      <div class="model-menu-item" onclick="selectPhotoModel('Flux 1.1 Pro', 'Гиперреализм, точная анатомия, надписи и идеальные пальцы', 25, this, event)">
-        <div class="item-left-block">
-          <div class="item-title-row"><span class="item-title">Flux 1.1 Pro</span><span class="item-badge badge-hot">Hot</span></div>
-          <div class="item-description">Гиперреализм, точная анатомия, надписи и идеальные пальцы</div>
-        </div>
-        <div class="item-cost-badge"><span class="item-cost-val">25 ⚡</span><span class="item-cost-sub">за фото</span></div>
-      </div>
-      <div class="model-menu-item" onclick="selectPhotoModel('Midjourney v6.1', 'Художественный арт, эстетика, иллюстрации и мода', 20, this, event)">
-        <div class="item-left-block">
-          <div class="item-title-row"><span class="item-title">Midjourney v6.1</span><span class="item-badge badge-art">Art</span></div>
-          <div class="item-description">Художественный арт, эстетика, иллюстрации и мода</div>
-        </div>
-        <div class="item-cost-badge"><span class="item-cost-val">20 ⚡</span><span class="item-cost-sub">за фото</span></div>
-      </div>
+<div class="model-menu-item active" onclick="selectPhotoModel('nano-banana-2-lite', 'Nano Banana 2 Lite', 'Text-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Nano Banana 2 Lite</span></div><div class="item-description">Text-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('nano-banana-2-1', 'Nano Banana 2.1', 'Image generation', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Nano Banana 2.1</span></div><div class="item-description">Image generation</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('nano-banana-pro', 'Nano Banana Pro', 'Advanced image generation', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Nano Banana Pro</span></div><div class="item-description">Advanced image generation</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('nano-banana-2', 'Nano Banana 2', 'Image generation', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Nano Banana 2</span></div><div class="item-description">Image generation</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('grok-imagine-image-to-image', 'Grok Imagine', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Grok Imagine</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('wan-2-7-image-pro-image-to-image', 'Wan 2.7 Image Pro', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Wan 2.7 Image Pro</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('wan-2-7-image-image-to-image', 'Wan 2.7 Image', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Wan 2.7 Image</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('seedream-4-5-edit', 'Seedream 4.5 Edit', 'Image editing', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Seedream 4.5 Edit</span></div><div class="item-description">Image editing</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('seedream-5-lite-image-to-image', 'Seedream 5 Lite', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Seedream 5 Lite</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('seedream-5-pro-image-to-image', 'Seedream 5 Pro', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Seedream 5 Pro</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('gpt-image-1-5-image-to-image', 'GPT Image 1.5', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">GPT Image 1.5</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('gpt-image-2-image-to-image', 'GPT Image 2', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">GPT Image 2</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('gpt-image-2-5-flare-image-to-image', 'GPT Image 2.5 Flare', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">GPT Image 2.5 Flare</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+<div class="model-menu-item" onclick="selectPhotoModel('gpt-image-2-5-sunburst-image-to-image', 'GPT Image 2.5 Sunburst', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">GPT Image 2.5 Sunburst</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
+</div>
     </div>
   </div>
 
@@ -1591,12 +1585,14 @@ document.addEventListener('click', function(e) {
 
 /* ЛОГИКА ФОТО */
 let currentPhotoRatio = '1:1';
-let currentPhotoCost = 30;
+let currentPhotoCost = 10;
+let currentPhotoModelCode = 'nano-banana-2-lite';
 const MAX_PHOTO_IMAGES = 5;
 let uploadedPhotoImages = [];
 
-function selectPhotoModel(name, desc, cost, item, e) {
+function selectPhotoModel(code, name, desc, cost, item, e) {
   e.stopPropagation();
+  currentPhotoModelCode = code;
   currentPhotoCost = cost;
   document.getElementById('selectedPhotoModelName').textContent = name;
   document.getElementById('selectedPhotoModelDesc').textContent = desc;
@@ -1659,44 +1655,128 @@ function setPhotoRatio(ratio, desc, btn) {
 }
 
 let isGeneratingPhoto = false;
-async function handleGeneratePhoto() {
-  if (isGeneratingPhoto) return; // Блокировка спама
-  const prompt = document.getElementById('photoPrompt').value.trim();
-  const modelCode = "flux-pro"; // Код модели для бэкенда
-  if (!prompt && uploadedPhotoImages.length === 0) return alert('Введите запрос или прикрепите фото!');
-  if (currentBalance < currentPhotoCost) return alert('Недостаточно кредитов!');
-  
-  isGeneratingPhoto = true;
-  tg?.HapticFeedback?.impactOccurred('medium');
-  
-  try {
-    const res = await fetch(`${API_URL}/api/v1/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tg_id: currentUserTgId, model_code: modelCode, prompt: prompt })
-    });
-    const data = await res.json();
-    isGeneratingPhoto = false;
 
-    if (res.ok) {
-      updateBalance(-data.cost);
-      pulseBalanceAnimation();
-      tg?.HapticFeedback?.notificationOccurred('success');
-      
-      const title = prompt ? prompt.slice(0, 22) + '...' : 'AI Генерация фото';
-      addHistoryItem('photo', `Фото: "${title}"`, modelCode);
-      addWorkItem('📷 Фото', title, modelCode, uploadedPhotoImages[0]);
-      
-      alert(data.message + `\nСписано: ${data.cost} ⚡. Остаток: ${data.remaining_balance} кр.`);
-    } else {
-      alert(data.detail);
+async function handleGeneratePhoto() {
+  if (isGeneratingPhoto) return;
+
+  const prompt = document.getElementById('photoPrompt').value.trim();
+
+  if (uploadedPhotoImages.length > 0) {
+    alert('едактирование загруженных фото пока не подключено. дали фото и попробуй генерацию по тексту.');
+    return;
+  }
+
+  if (!prompt) {
+    alert('Сначала введи описание изображения.');
+    return;
+  }
+
+  const modelName = document.getElementById('selectedPhotoModelName').textContent.trim();
+  const modelCode = currentPhotoModelCode;
+
+  if (!modelCode) {
+    alert('та модель ещё не подключена к реальной генерации. ыбери Nano Banana 2 Lite.');
+    return;
+  }
+
+  if (currentBalance < currentPhotoCost) {
+    alert('едостаточно кредитов.');
+    return;
+  }
+
+  isGeneratingPhoto = true;
+  const button = document.querySelector('[onclick="handleGeneratePhoto()"]');
+  if (button) button.disabled = true;
+
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `tma ${tg?.initData || ''}`
+  };
+
+  const syncBalance = value => {
+    if (typeof value === 'number') updateBalance(value - currentBalance);
+  };
+
+  try {
+    const res = await fetch(`${API_URL}/api/v1/photo/generate`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        tg_id: Number(currentUserTgId),
+        model_code: modelCode,
+        prompt,
+        aspect_ratio: currentPhotoRatio,
+        output_format: 'png'
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.detail || 'е удалось запустить генерацию.');
+      return;
     }
+
+    syncBalance(data.remaining_balance);
+    pulseBalanceAnimation();
+
+    if (!data.generation_id) {
+      alert('Сервер не вернул номер задания.');
+      return;
+    }
+
+    for (let attempt = 0; attempt < 45; attempt++) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const statusRes = await fetch(
+        `${API_URL}/api/v1/photo/generate/${encodeURIComponent(data.generation_id)}/status`,
+        {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ tg_id: Number(currentUserTgId) })
+        }
+      );
+
+      const result = await statusRes.json();
+
+      if (!statusRes.ok) {
+        alert(result.detail || 'е удалось проверить статус генерации.');
+        return;
+      }
+
+      syncBalance(result.remaining_balance);
+
+      const status = String(result.status || '').toLowerCase();
+
+      if (['success', 'succeeded', 'completed', 'done'].includes(status)) {
+        if (!result.result_url) {
+          alert('адание завершено, но ссылка на изображение не получена.');
+          return;
+        }
+
+        const title = prompt.slice(0, 22);
+        addHistoryItem('photo', `ото: "${title}"`, modelCode);
+        addWorkItem('📷 ото', title, modelCode, result.result_url);
+        tg?.HapticFeedback?.notificationOccurred('success');
+        alert('ото успешно создано.');
+        return;
+      }
+
+      if (['failed', 'error', 'cancelled', 'canceled'].includes(status)) {
+        alert(result.detail || 'е удалось создать изображение.');
+        return;
+      }
+    }
+
+    alert('енерация ещё выполняется. отовый результат пока не получен.');
   } catch (e) {
+    console.error('Photo generation error:', e);
+    alert('шибка соединения с сервером генерации.');
+  } finally {
     isGeneratingPhoto = false;
-    alert("Ошибка связи с сервером генерации");
+    if (button) button.disabled = false;
   }
 }
-
 /* ЛОГИКА ВИДЕО */
 let currentVideoRatio = '16:9';
 let baseVideoCost = 90;
