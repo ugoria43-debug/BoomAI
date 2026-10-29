@@ -7,7 +7,7 @@
 <title>BoomAI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;850;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
@@ -94,6 +94,7 @@ body {
   -webkit-font-smoothing: antialiased; min-height: 100dvh;
 }
 body.modal-locked { overflow: hidden; }
+body.photo-model-modal-open { overflow: hidden; }
 
 button, input, textarea { font: inherit; outline: none; }
 button { color: inherit; cursor: pointer; border: none; background: none; transition: transform .15s ease; }
@@ -250,20 +251,126 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 .upload-item { width: 62px; height: 62px; flex-shrink: 0; border-radius: 16px; position: relative; overflow: hidden; border: 1px solid var(--card-border); box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
 .upload-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .upload-item-del { position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%; background: rgba(0,0,0,0.72); color: #FFF; display: grid; place-items: center; font-size: 10px; font-weight: 900; }
-.aspect-section { margin-bottom: 18px; }
-.aspect-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.aspect-section { margin-bottom: 10px; }
+.aspect-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .aspect-current-hint { font-size: 11px; font-weight: 750; color: var(--accent-purple); }
-.aspect-grid-compact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-.aspect-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 13px; padding: 7px 8px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
-.aspect-wire-box { width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.aspect-grid-compact { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+.aspect-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 5px 6px; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.aspect-wire-box { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .wire { border: 1.6px solid var(--text-sub); border-radius: 2.5px; background: rgba(142, 146, 160, 0.08); }
 .aspect-texts { display: flex; flex-direction: column; min-width: 0; }
-.aspect-num { font-size: 12px; font-weight: 850; letter-spacing: -.2px; color: var(--text-main); line-height: 1.15; }
+.aspect-num { font-size: 11px; font-weight: 850; letter-spacing: -.2px; color: var(--text-main); line-height: 1.15; }
 .aspect-desc { font-size: 9.5px; font-weight: 650; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .aspect-card.active { background: var(--accent-purple-light); border-color: var(--accent-lavender); }
 .aspect-card.active .wire { border-color: var(--accent-purple); background: rgba(107, 37, 230, 0.25); }
 .aspect-card.active .aspect-num { color: var(--accent-purple); font-weight: 900; }
+
 .aspect-card.active .aspect-desc { color: var(--accent-purple); }
+
+/* Компактные настройки фото и отдельные окна выбора */
+.photo-options-compact { display:grid; grid-template-columns:1fr; gap:10px; margin:0 0 12px; }
+.photo-option-trigger { width:100%; min-width:0; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:11px 12px; text-align:left; border:1px solid var(--card-border); border-radius:14px; background:var(--card-bg); color:var(--text-main); cursor:pointer; }
+.photo-option-field { display:flex; flex-direction:column; gap:6px; min-width:0; }
+.photo-option-trigger .photo-option-icon { display:none; }
+.photo-option-trigger .photo-option-copy { flex:1; }
+.photo-option-trigger .photo-option-label { font-size:11px; text-align:left; }
+.photo-option-trigger .photo-option-value { text-align:left; }
+.photo-option-trigger .photo-option-chevron { margin-left:auto; }
+.photo-option-trigger:active { transform:scale(.985); }
+.photo-option-icon { width:30px; height:30px; flex:0 0 30px; display:grid; place-items:center; border-radius:10px; color:var(--accent-purple); background:var(--accent-purple-light); font-size:17px; }
+.photo-option-copy { min-width:0; display:flex; flex:1; flex-direction:column; gap:4px; }
+.photo-option-label { font-size:10px; line-height:1.2; color:var(--text-sub); font-weight:700; }
+.photo-option-value { font-size:12px; line-height:1.25; color:var(--text-main); font-weight:850; overflow-wrap:anywhere; }
+.photo-option-chevron { color:var(--text-sub); font-size:20px; line-height:1; }
+.photo-option-picker { display:contents; }
+.photo-option-picker.open .photo-picker-options { opacity:1; visibility:visible; pointer-events:auto; }
+.photo-option-picker.open .photo-picker-sheet { transform:translateY(0); }
+.photo-option-picker .photo-sheet-header {
+  position:relative;
+  justify-content:center;
+  text-align:center;
+}
+.photo-option-picker .photo-sheet-header > span {
+  width:100%;
+  text-align:center;
+}
+.photo-option-picker .photo-sheet-close {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  text-align: center;
+}
+.photo-option-modal-subtitle { margin:0 0 14px; text-align:left; font-size:12px; line-height:1.4; color:var(--text-sub); }
+.photo-aspect-modal-grid {
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  padding-bottom:6px;
+}
+.photo-aspect-modal-grid .aspect-card {
+  width:100%;
+  min-height:48px;
+  padding:10px 12px;
+  gap:12px;
+  border-radius:13px;
+}
+.photo-aspect-modal-grid .aspect-wire-box {
+  width:26px;
+  height:26px;
+}
+.photo-aspect-modal-grid .aspect-texts {
+  flex-direction:column;
+  align-items:flex-start;
+  gap:3px;
+}
+.photo-aspect-modal-grid .aspect-num {
+  min-width:0;
+  font-size:12px;
+}
+.photo-aspect-modal-grid .aspect-desc {
+  font-size:11px;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  line-height:1.35;
+}
+.photo-aspect-modal-grid .aspect-card[data-ratio="Авто"] .aspect-num {
+  min-width:auto;
+}
+.photo-quality-options { display:flex; flex-direction:column; gap:9px; }
+.photo-picker-bottom-close {
+  display:block;
+  min-width:120px;
+  margin:14px auto 0;
+  padding:10px 22px;
+  border:1px solid var(--accent-lavender);
+  border-radius:12px;
+  background:var(--accent-purple-light);
+  color:var(--text-main);
+  font-size:13px;
+  font-weight:800;
+  text-align:center;
+  cursor:pointer;
+}
+.photo-quality-main { align-items:flex-start; text-align:left; }
+.photo-quality-main strong, .photo-quality-main small { text-align:left; }
+.photo-quality-option { width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px; border:1px solid var(--card-border); border-radius:15px; background:color-mix(in srgb,var(--card-bg) 88%,var(--accent-lavender)); color:var(--text-main); text-align:left; cursor:pointer; transition:border-color .18s ease,background .18s ease,transform .18s ease; }
+.photo-quality-option:active { transform:scale(.99); }
+.photo-quality-option.active { border-color:var(--accent-lavender); background:linear-gradient(110deg,rgba(128,96,216,.18),rgba(193,123,191,.10)); }
+.photo-quality-main { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.photo-quality-main strong { font-size:14px; line-height:1.35; font-weight:600; }
+.photo-quality-main small { font-size:11px; line-height:1.4; color:var(--text-sub); font-weight:400; }
+.photo-quality-price { white-space:nowrap; font-size:12px; font-weight:600; color:var(--accent-purple); }
+.photo-quality-note { margin:12px 0 0; font-size:10px; line-height:1.45; text-align:left; color:var(--text-sub); }
+@media(max-width:360px) { .photo-option-trigger { gap:6px; padding:9px 7px; } .photo-option-icon { width:26px; height:26px; flex-basis:26px; } .photo-option-label { font-size:9px; } .photo-option-value { font-size:11px; } }
+
 
 .mode-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 .mode-chip { padding: 14px 6px; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-sub); font-size: 12px; font-weight: 800; text-align: center; display: flex; align-items: center; justify-content: center; white-space: nowrap; }
@@ -459,6 +566,168 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 .setting-right svg { width: 18px; height: 18px; stroke: var(--text-sub); fill: none; stroke-width: 2.5; transition: transform 0.2s; }
 .setting-item:hover .setting-right svg { transform: translateX(4px); stroke: var(--accent-purple); }
 
+
+/* PREMIUM LAVENDER STORE BANNER */
+.store-desc {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0 0 12px;
+  padding: 15px 16px;
+  border: 1px solid transparent;
+  border-radius: 18px;
+  background:
+    linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+    linear-gradient(115deg, #E8DEFF, #B69AFF, #8E6AE8, #E8DEFF, #CBB4FD) border-box;
+  background-size: auto, 240% 240%;
+  box-shadow: 0 7px 22px rgba(130,100,216,.10), inset 0 1px 0 rgba(255,255,255,.72);
+  color: var(--text-main);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+  letter-spacing: .05px;
+  animation: storeBannerBorder 8s ease-in-out infinite;
+}
+.store-desc::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: -45%;
+  bottom: -45%;
+  left: -55%;
+  width: 42%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(182,154,255,.22), transparent);
+  transform: skewX(-18deg);
+  animation: storeBannerShimmer 6s ease-in-out infinite;
+}
+.store-desc::after {
+  content: '✦';
+  position: absolute;
+  top: 7px;
+  right: 11px;
+  color: #A783FF;
+  font-family: sans-serif;
+  font-size: 12px;
+  opacity: .75;
+  animation: storeBannerSparkle 3s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes storeBannerBorder {
+  0%, 100% { background-position: 0 0, 0% 50%; box-shadow: 0 7px 22px rgba(130,100,216,.10), inset 0 1px 0 rgba(255,255,255,.72); }
+  50% { background-position: 0 0, 100% 50%; box-shadow: 0 9px 26px rgba(130,100,216,.17), inset 0 1px 0 rgba(255,255,255,.82); }
+}
+@keyframes storeBannerShimmer {
+  0%, 15% { left: -55%; opacity: 0; }
+  30% { opacity: 1; }
+  65%, 100% { left: 125%; opacity: 0; }
+}
+@keyframes storeBannerSparkle {
+  0%, 100% { opacity: .45; transform: scale(.9) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.15) rotate(18deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .store-desc, .store-desc::before, .store-desc::after { animation: none !important; }
+}
+
+
+/* PREMIUM PACKAGE DESIGN — LIGHT AND DARK THEMES */
+body::before {
+  content: '';
+  position: fixed;
+  inset: -35%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 18% 25%, rgba(169,211,255,.48), transparent 36%),
+    radial-gradient(ellipse at 82% 30%, rgba(182,154,255,.28), transparent 33%),
+    radial-gradient(ellipse at 58% 85%, rgba(232,222,255,.38), transparent 40%);
+  background-size: 130% 130%;
+  animation: lavenderAmbient 18s ease-in-out infinite alternate;
+}
+@keyframes lavenderAmbient {
+  0% { transform: translate3d(-2%, -1%, 0) scale(1); }
+  50% { transform: translate3d(2%, 1%, 0) scale(1.04); }
+  100% { transform: translate3d(-1%, 2%, 0) scale(1.02); }
+}
+.app { isolation: isolate; }
+.pkg-card {
+  border-color: rgba(142,106,232,.35);
+  background: linear-gradient(145deg, var(--card-bg), rgba(169,211,255,.12));
+  box-shadow: 0 4px 15px rgba(90,105,180,.08), inset 0 1px 0 rgba(255,255,255,.35);
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+.pkg-card:active { border-color: rgba(142,106,232,.72); }
+.pkg-card.popular {
+  border-color: rgba(142,106,232,.72);
+  background: linear-gradient(145deg, var(--card-bg), rgba(182,154,255,.16));
+}
+.pkg-header {
+  position: relative;
+  padding: 10px;
+  border: 1px solid rgba(142,106,232,.35);
+  border-radius: 13px;
+  background: linear-gradient(115deg, rgba(169,211,255,.22), rgba(255,255,255,.24), rgba(232,222,255,.25));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 3px 12px rgba(130,100,216,.07);
+  animation: lavenderHeaderGlow 5s ease-in-out infinite alternate;
+}
+.pkg-credits-wrap {
+  color: var(--text-main);
+  text-shadow: 0 0 16px rgba(182,154,255,.22);
+}
+.pkg-price {
+  color: var(--accent-purple);
+  text-shadow: 0 0 14px rgba(182,154,255,.2);
+}
+.pkg-feature-item { gap: 5px !important; color: var(--text-sub); }
+.pkg-feature-icon {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 15px;
+  fill: none;
+  stroke: var(--accent-purple);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 3px rgba(182,154,255,.4));
+  animation: featureIconFloat 3.2s ease-in-out infinite;
+}
+.video-icon { animation-delay: .45s; }
+@keyframes featureIconFloat {
+  0%, 100% { transform: translateY(0); filter: drop-shadow(0 0 2px rgba(182,154,255,.35)); }
+  50% { transform: translateY(-1.5px); filter: drop-shadow(0 0 6px rgba(182,154,255,.75)); }
+}
+@keyframes lavenderHeaderGlow {
+  from { box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 3px 10px rgba(130,100,216,.06); }
+  to { box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 4px 15px rgba(130,100,216,.16); }
+}
+[data-theme="dark"] body::before {
+  background:
+    radial-gradient(ellipse at 18% 25%, rgba(169,211,255,.13), transparent 36%),
+    radial-gradient(ellipse at 82% 30%, rgba(129,60,252,.19), transparent 33%),
+    radial-gradient(ellipse at 58% 85%, rgba(107,37,230,.12), transparent 40%);
+}
+[data-theme="dark"] .pkg-card {
+  border-color: rgba(182,154,255,.28);
+  background: linear-gradient(145deg, var(--card-bg), rgba(107,37,230,.09));
+  box-shadow: 0 4px 15px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.025);
+}
+[data-theme="dark"] .pkg-card.popular {
+  border-color: rgba(182,154,255,.62);
+  background: linear-gradient(145deg, var(--card-bg), rgba(107,37,230,.17));
+}
+[data-theme="dark"] .pkg-header {
+  border-color: rgba(182,154,255,.34);
+  background: linear-gradient(115deg, rgba(169,211,255,.07), rgba(255,255,255,.025), rgba(129,60,252,.10));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 3px 12px rgba(0,0,0,.12);
+}
+[data-theme="dark"] .pkg-price { color: #CBB4FD; }
+[data-theme="dark"] .pkg-feature-icon { stroke: #CBB4FD; }
+@media (prefers-reduced-motion: reduce) {
+  body::before, .pkg-header, .pkg-feature-icon { animation: none !important; }
+}
+
 .packages-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
 .pkg-card { position: relative; background: var(--card-bg); border: 2px solid var(--card-border); border-radius: 18px; padding: 14px 12px 12px 12px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 2px 8px var(--shadow-color); backdrop-filter: blur(10px); }
 .pkg-card.popular { border-color: rgba(107, 37, 230, 0.4); opacity: 0; transform: translateY(10px); }
@@ -493,6 +762,390 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
 @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
 .d-1 { animation-delay: 0.05s; } .d-2 { animation-delay: 0.1s; } .d-4 { animation-delay: 0.2s; } .d-5 { animation-delay: 0.25s; } .d-6 { animation-delay: 0.3s; }
+/* PROMO FEEDBACK ANIMATION */
+
+.promo-feedback {
+  align-items: center; justify-content: center; gap: 12px;
+  padding: 14px 16px; border-radius: 16px; text-align: left;
+  line-height: 1.4; animation: promoFeedbackIn .42s ease-out both;
+}
+.promo-feedback-success {
+  color: #f4efff;
+  background: linear-gradient(135deg, rgba(130,100,216,.24), rgba(182,154,255,.09));
+  border: 1px solid rgba(182,154,255,.48);
+  box-shadow: 0 0 26px rgba(130,100,216,.16);
+}
+.promo-success-check {
+  display: inline-flex; flex: 0 0 38px; width: 38px; height: 38px;
+  align-items: center; justify-content: center; border-radius: 50%;
+  color: white; font-size: 23px; font-weight: 800;
+  background: linear-gradient(145deg, #9b7af4, #6f4dcc);
+  box-shadow: 0 0 20px rgba(155,122,244,.45);
+  animation: promoCheckPop .48s .08s cubic-bezier(.2,1.6,.4,1) both;
+}
+.promo-feedback-copy { display: flex; flex-direction: column; gap: 3px; }
+.promo-feedback-copy strong { color: #cbb8ff; font-size: 14px; }
+.promo-bonus-text { color: var(--text-main, #fff); font-size: 13px; }
+.pkg-promo-bonus {
+  display: none;
+  margin-left: 6px;
+  color: #B69AFF;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.promo-feedback-error {
+  display: block; color: #ffb4bd;
+  background: rgba(239,68,68,.09); border: 1px solid rgba(239,68,68,.3);
+}
+#promoModal .modal-action-btn:disabled { opacity: .7; cursor: wait; }
+@keyframes promoFeedbackIn {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes promoCheckPop {
+  from { opacity: 0; transform: scale(.35) rotate(-25deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .promo-feedback, .promo-success-check { animation: none !important; }
+}
+
+
+
+/* BoomAI: режимы фото и каталог моделей */
+.photo-mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 16px}
+.photo-mode-btn{display:flex;flex-direction:column;gap:5px;text-align:left;padding:12px 10px;border:1px solid var(--card-border);border-radius:14px;background:var(--card-bg);color:var(--text-main)}
+.photo-mode-btn strong{font-size:12px;font-weight:500}
+.photo-mode-btn small{font-size:10px;line-height:1.4;color:var(--text-sub);font-weight:400}
+.photo-mode-btn.active{border-color:var(--accent-lavender);background:var(--accent-purple-light)}
+.photo-selected-model{margin-bottom:10px;cursor:pointer}
+.photo-model-notice{font-size:10px;font-weight:500;color:var(--text-sub);white-space:nowrap}
+.photo-model-picker{position:relative;margin-bottom:16px}
+.photo-model-picker .photo-selected-model{margin-bottom:0;cursor:pointer}
+.photo-model-picker.open .photo-selected-model{border-color:var(--accent-lavender)}
+.photo-picker-options{position:fixed;inset:0;z-index:1200;display:flex;align-items:flex-end;justify-content:center;background:rgba(8,7,15,.58);background:color-mix(in srgb,var(--bg-solid) 72%,transparent);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .24s ease,visibility .24s ease}
+.photo-model-picker.open .photo-picker-options{opacity:1;visibility:visible;pointer-events:auto}
+.photo-picker-sheet{width:100%;max-width:500px;max-height:86dvh;overflow-y:auto;overscroll-behavior:contain;padding:9px 16px calc(22px + env(safe-area-inset-bottom));border:1px solid var(--accent-lavender);border-bottom:0;border-radius:24px 24px 0 0;background:var(--card-bg);box-shadow:0 -12px 48px rgba(0,0,0,.22);transform:translateY(100%);transition:transform .34s cubic-bezier(.2,.8,.2,1)}
+.photo-model-picker.open .photo-picker-sheet{transform:translateY(0)}
+.photo-sheet-grabber{width:38px;height:4px;border-radius:99px;background:var(--text-sub);opacity:.42;margin:2px auto 14px}
+.photo-sheet-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px;color:var(--text-main);font-size:16px;font-weight:600}
+.photo-sheet-close {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid var(--card-border);
+  border-radius: 50%;
+  background: var(--card-bg);
+  color: var(--text-sub);
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1;
+  text-align: center;
+  cursor: pointer;
+}
+.photo-featured-grid{display:flex;flex-direction:column;gap:7px;margin:0 0 12px}
+.photo-featured-card,.photo-model-option{display:grid;grid-template-columns:minmax(0,1fr) 20px;align-items:center;column-gap:12px;row-gap:4px;width:100%;min-width:0;text-align:left;padding:12px 13px;border:1px solid var(--card-border);border-radius:13px;background:transparent;color:var(--text-main)}
+.photo-featured-card .photo-featured-tag{grid-column:1;grid-row:1;font-size:9px;font-weight:500;color:var(--accent-purple);background:var(--accent-purple-light);padding:3px 6px;border-radius:6px;justify-self:start}
+.photo-featured-card strong,.photo-model-option strong{grid-column:1;grid-row:2;font-size:12.5px;line-height:1.35;font-weight:500;overflow-wrap:anywhere}
+.photo-featured-card small,.photo-model-option small{grid-column:1;grid-row:3;font-size:10.5px;line-height:1.4;color:var(--text-sub);font-weight:400;white-space:normal}
+.photo-featured-card::after,.photo-model-option::after{content:"";grid-column:2;grid-row:1 / span 3;justify-self:center;align-self:center;width:17px;height:17px;border:1.5px solid var(--text-sub);border-radius:50%;background:transparent}
+.photo-featured-card.active,.photo-model-option.active{border-color:var(--accent-lavender);background:var(--accent-purple-light)}
+.photo-featured-card.active::after,.photo-model-option.active::after{border:5px solid var(--accent-purple);background:var(--card-bg);box-shadow:0 0 0 3px rgba(130,100,216,.12)}
+.photo-show-all-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;margin:0 0 10px;border:1px solid var(--accent-lavender);border-radius:12px;background:var(--accent-purple-light);color:var(--text-main);font-size:12px;font-weight:500}
+.photo-all-models{max-height:0;opacity:0;overflow:hidden;padding:0;margin:0;border:0;transition:max-height .35s ease,opacity .22s ease,padding .25s ease,margin .25s ease}
+.photo-all-models.expanded{max-height:6000px;opacity:1;padding:8px 0 0;margin:0 0 6px}
+.photo-catalog-heading{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:500;margin:0 2px 8px;color:var(--text-sub)}
+.photo-catalog-heading span{font-size:10px;color:var(--text-sub);font-weight:400}
+.photo-provider-group{padding:7px 0;border-top:1px solid var(--card-border)}
+.photo-provider-title{font-size:11px;font-weight:600;color:var(--accent-purple);padding:5px 4px 8px}
+.photo-provider-list{display:flex;flex-direction:column;gap:5px}
+.photo-model-option{padding:11px 12px;border-radius:12px}
+.photo-model-option strong{grid-row:1;font-size:12px;font-weight:500}
+.photo-model-option small{grid-row:2;font-size:10px}
+@media(prefers-reduced-motion:reduce){.photo-picker-options,.photo-picker-sheet,.photo-all-models{transition:none}}
+/* Общая типографика: легче, но сохраняем текущий шрифт и компоновку */
+body{font-weight:400}
+.header-title,.top-create-title,.trends-title,.drawer-title,.modal-title,.profile-name-large{font-weight:600!important}
+.section-label,.model-name,.item-title,.history-title,.work-card-title,.setting-title,.aspect-num,.aspect-picker-val,.format-num,.pkg-price,.photo-mode-btn strong{font-weight:600!important}
+button,.balance-chip,.chip-btn,.create-action-label,.trend-name,.media-tab-label,.upload-counter,.upload-add-text,.aspect-current-hint,.aspect-desc,.mode-chip,.aspect-picker-right,.photo-show-all-btn,.photo-model-notice{font-weight:500!important}
+input,textarea{font-weight:400}
+
+
+
+/* BOOMAI: современная нижняя навигация */
+.nav-island-wrapper {
+  bottom: 0;
+  padding: 0 12px calc(8px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+}
+.bottom-island {
+  padding: 7px;
+  border-radius: 28px;
+  transition: box-shadow .25s ease, border-color .25s ease;
+}
+.nav-tab {
+  height: 50px;
+  gap: 3px;
+  border-radius: 17px;
+  transition:
+    color .22s ease,
+    background .22s ease,
+    transform .22s cubic-bezier(.2,.8,.2,1),
+    box-shadow .22s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.nav-tab svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.9;
+  transform-origin: center;
+  transition: filter .22s ease, color .22s ease;
+}
+.nav-tab.active {
+  box-shadow: inset 0 0 0 1px rgba(182,154,255,.12),
+              0 3px 14px rgba(130,100,216,.12);
+}
+.nav-tab.active svg {
+  filter: drop-shadow(0 0 4px rgba(182,154,255,.38));
+  animation: boomNavIconPop .34s cubic-bezier(.2,.8,.2,1) both;
+}
+.nav-tab:active {
+  transform: scale(.92);
+}
+.nav-tab:active svg {
+  transform: scale(.88);
+}
+@keyframes boomNavIconPop {
+  0% { transform: scale(.78); }
+  65% { transform: scale(1.13); }
+  100% { transform: scale(1); }
+}
+.nav-create-pill {
+  min-height: 50px;
+  box-shadow: 0 5px 20px rgba(107,37,230,.34),
+              inset 0 1px 0 rgba(255,255,255,.18);
+  transition: transform .18s ease, box-shadow .22s ease, filter .22s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.nav-create-pill svg {
+  width: 20px;
+  height: 20px;
+  transition: transform .25s cubic-bezier(.2,.8,.2,1);
+}
+.nav-create-pill:active {
+  transform: scale(.94);
+  box-shadow: 0 2px 10px rgba(107,37,230,.3);
+}
+.nav-create-pill:active svg {
+  transform: rotate(-12deg) scale(1.12);
+}
+@media (hover: hover) {
+  .nav-tab:hover {
+    background: var(--nav-active-pill);
+  }
+  .nav-create-pill:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 7px 24px rgba(107,37,230,.42);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav-tab, .nav-tab svg, .nav-create-pill, .nav-create-pill svg {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+
+
+/* BOOMAI_PHOTO_PICKER_THEME_AWARE */
+.photo-picker-options {
+  background:
+    radial-gradient(ellipse at 12% 78%, rgba(130, 70, 230, .32), transparent 52%),
+    radial-gradient(ellipse at 88% 86%, rgba(225, 75, 190, .22), transparent 48%),
+    rgba(8, 6, 16, .72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.photo-picker-sheet {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(130, 85, 235, .24), transparent 55%),
+    radial-gradient(ellipse at 100% 8%, rgba(220, 85, 195, .16), transparent 48%),
+    var(--card-bg);
+  border-color: rgba(160, 126, 220, .48);
+  box-shadow: 0 -14px 54px rgba(70, 35, 110, .22);
+}
+[data-theme="light"] .photo-picker-options {
+  background:
+    radial-gradient(ellipse at 12% 78%, rgba(130, 70, 230, .20), transparent 52%),
+    radial-gradient(ellipse at 88% 86%, rgba(225, 75, 190, .15), transparent 48%),
+    rgba(38, 24, 55, .36);
+}
+[data-theme="light"] .photo-picker-sheet {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(150, 110, 240, .20), transparent 55%),
+    radial-gradient(ellipse at 100% 8%, rgba(235, 145, 210, .16), transparent 48%),
+    var(--card-bg);
+  border-color: rgba(145, 105, 205, .38);
+  box-shadow: 0 -14px 44px rgba(70, 35, 110, .16);
+}
+.photo-sheet-header {
+  letter-spacing: -.2px;
+}
+.photo-featured-card,
+.photo-model-option {
+  background: color-mix(in srgb, var(--card-bg) 78%, transparent);
+  border-color: color-mix(in srgb, var(--accent-lavender) 24%, var(--card-border));
+  transition: background .2s ease, border-color .2s ease, transform .2s ease,
+              box-shadow .2s ease;
+}
+.photo-featured-card.active,
+.photo-model-option.active {
+  background: linear-gradient(110deg,
+    rgba(128, 96, 216, .17),
+    rgba(193, 123, 191, .09));
+  border-color: rgba(160, 126, 220, .72);
+  box-shadow: 0 0 16px rgba(128, 96, 216, .08);
+}
+.photo-featured-card:active,
+.photo-model-option:active {
+  transform: scale(.985);
+}
+.photo-provider-title {
+  color: var(--accent-lavender);
+}
+.photo-show-all-btn {
+  display: none !important;
+}
+.photo-all-models {
+  max-height: 6000px;
+  height: auto;
+  opacity: 1;
+  overflow: visible;
+  padding: 8px 0 0;
+  margin: 0 0 6px;
+  border: 0;
+  transition: opacity .24s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .photo-featured-card, .photo-model-option, .photo-all-models {
+    transition: none !important;
+  }
+}
+
+
+/* BoomAI: типографика настроек фото в стиле основного интерфейса */
+.photo-options-compact,
+.photo-options-compact *,
+.photo-option-picker .photo-picker-sheet,
+.photo-option-picker .photo-picker-sheet * {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.photo-option-field > .photo-option-label {
+  display: block;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-main);
+}
+.photo-option-trigger .photo-option-value {
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text-main);
+}
+.photo-option-trigger .photo-option-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  margin-left: auto;
+  font-size: 0;
+  line-height: 1;
+}
+.photo-option-trigger .photo-option-chevron::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid var(--text-sub);
+  border-bottom: 1.5px solid var(--text-sub);
+  transform: rotate(45deg);
+  margin-top: -4px;
+}
+.photo-option-picker .photo-sheet-header > span {
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -.2px;
+}
+.photo-option-picker .photo-option-modal-subtitle {
+  font-size: 12px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+.photo-aspect-modal-grid .aspect-texts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
+}
+.photo-aspect-modal-grid .aspect-num {
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 850;
+  letter-spacing: -.2px;
+  color: var(--text-main);
+}
+.photo-aspect-modal-grid .aspect-desc {
+  font-size: 11px;
+  line-height: 1.35;
+  font-weight: 650;
+  letter-spacing: 0;
+  color: var(--text-sub);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+.photo-aspect-modal-grid .aspect-card.active .aspect-num {
+  font-weight: 900;
+  color: var(--accent-purple);
+}
+.photo-aspect-modal-grid .aspect-card.active .aspect-desc {
+  font-weight: 650;
+  color: var(--accent-purple);
+}
+.photo-quality-option .photo-quality-main strong {
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.photo-quality-option .photo-quality-main small {
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 400;
+}
+.photo-quality-option .photo-quality-price {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
 </style>
 </head>
 
@@ -665,38 +1318,113 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
     </button>
   </div>
 
-  <label class="section-label">Модель</label>
-  <div class="model-card" id="photoModelCard" onclick="toggleDropdown('photoModelCard')">
+  <div class="photo-mode-switch" role="group" aria-label="Режим создания фото">
+    <button type="button" class="photo-mode-btn active" id="photoModeImageBtn" onclick="setPhotoMode('image')">
+      <strong>Фото → Фото</strong><small>Изменить загруженное фото</small>
+    </button>
+    <button type="button" class="photo-mode-btn" id="photoModeTextBtn" onclick="setPhotoMode('text')">
+      <strong>Текст → Фото</strong><small>Создать по описанию</small>
+    </button>
+  </div>
+
+<div class="photo-model-picker" id="photoModelPicker">
+<div class="model-card photo-selected-model" id="photoModelCard" onclick="togglePhotoModelPicker()" role="button" aria-expanded="false">
     <div class="model-info">
-      <div class="model-icon-circle"><svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg></div>
+      <div class="model-icon-circle"><svg viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg></div>
       <div class="model-texts">
-        <div class="model-header-row"><span class="model-name" id="selectedPhotoModelName">Nano Banana 2 Lite</span></div>
-        <div class="model-desc" id="selectedPhotoModelDesc">Ультра-детализация, кинематографичный свет и 4K текстуры кожи</div>
+        <div class="model-header-row"><span class="model-name" id="selectedPhotoModelName">Nano Banana Pro</span></div>
+        <div class="model-desc" id="selectedPhotoModelDesc">Высокая детализация</div>
       </div>
     </div>
     <div class="model-header-right">
-      <div class="model-cost-pill"><span>⚡</span><span id="selectedPhotoModelCost">10</span></div>
-      <svg class="model-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-    </div>
-
-    <div class="model-menu">
-<div class="model-menu-item active" onclick="selectPhotoModel('nano-banana-2-lite', 'Nano Banana 2 Lite', 'Text-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Nano Banana 2 Lite</span></div><div class="item-description">Text-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('nano-banana-2-1', 'Nano Banana 2.1', 'Image generation', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Nano Banana 2.1</span></div><div class="item-description">Image generation</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('nano-banana-pro', 'Nano Banana Pro', 'Advanced image generation', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Nano Banana Pro</span></div><div class="item-description">Advanced image generation</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('nano-banana-2', 'Nano Banana 2', 'Image generation', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Nano Banana 2</span></div><div class="item-description">Image generation</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('grok-imagine-image-to-image', 'Grok Imagine', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Grok Imagine</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('wan-2-7-image-pro-image-to-image', 'Wan 2.7 Image Pro', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Wan 2.7 Image Pro</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('wan-2-7-image-image-to-image', 'Wan 2.7 Image', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Wan 2.7 Image</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('seedream-4-5-edit', 'Seedream 4.5 Edit', 'Image editing', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Seedream 4.5 Edit</span></div><div class="item-description">Image editing</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('seedream-5-lite-image-to-image', 'Seedream 5 Lite', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Seedream 5 Lite</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('seedream-5-pro-image-to-image', 'Seedream 5 Pro', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">Seedream 5 Pro</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('gpt-image-1-5-image-to-image', 'GPT Image 1.5', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">GPT Image 1.5</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('gpt-image-2-image-to-image', 'GPT Image 2', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">GPT Image 2</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('gpt-image-2-5-flare-image-to-image', 'GPT Image 2.5 Flare', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">GPT Image 2.5 Flare</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-<div class="model-menu-item" onclick="selectPhotoModel('gpt-image-2-5-sunburst-image-to-image', 'GPT Image 2.5 Sunburst', 'Image-to-image', 10, this, event)"><div class="item-left-block"><div class="item-title-row"><span class="item-title">GPT Image 2.5 Sunburst</span></div><div class="item-description">Image-to-image</div></div><div class="item-cost-badge"><span class="item-cost-val">10 ⚡</span><span class="item-cost-sub">per image</span></div></div>
-</div>
+      <span class="photo-model-notice">Подключение позже</span>
+      <span id="selectedPhotoModelCost" style="display:none">30</span>
     </div>
   </div>
+  <div class="photo-picker-options" id="photoPickerOptions" aria-hidden="true" onclick="if(event.target===this) closePhotoModelPicker()">
+    <div class="photo-picker-sheet" role="dialog" aria-modal="true" aria-label="Выбор модели">
+      <div class="photo-sheet-grabber"></div>
+      <div class="photo-sheet-header"><span>Выбор модели</span><button type="button" class="photo-sheet-close" aria-label="Закрыть" onclick="closePhotoModelPicker()">×</button></div>
+    <div class="photo-featured-grid" id="photoFeaturedModels">
+        <button type="button" class="photo-featured-card active" onclick="choosePhotoModel('NanoBanana PRO','Детализированные изображения',this)">
+          <span class="photo-featured-tag">PRO</span><strong>NanoBanana PRO</strong><small>Детализация</small>
+        </button>
+        <button type="button" class="photo-featured-card" onclick="choosePhotoModel('NanoBanana 2.1','Точное следование промпту и референсу',this)">
+          <span class="photo-featured-tag">2.1</span><strong>NanoBanana 2.1</strong><small>Универсальная</small>
+        </button>
+        <button type="button" class="photo-featured-card" onclick="choosePhotoModel('GPT Image 2','Генерация изображений по описанию',this)">
+          <span class="photo-featured-tag">GPT</span><strong>GPT Image 2</strong><small>Генерация</small>
+        </button>
+        <button type="button" class="photo-featured-card" onclick="choosePhotoModel('Seedream Pro','Качественная генерация по описанию',this)">
+          <span class="photo-featured-tag">PRO</span><strong>Seedream Pro</strong><small>Seedream</small>
+        </button>
+      </div>
+    <button type="button" class="photo-show-all-btn" id="photoShowAllBtn" onclick="togglePhotoCatalog()">Все модели <span>＋</span></button>
+    <div class="photo-all-models expanded" id="photoAllModelsPanel">
+        <div class="photo-catalog-heading">Все модели <span>17 моделей</span></div>
+
+        <div class="photo-provider-group">
+          <div class="photo-provider-title">Google</div>
+          <div class="photo-provider-list">
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('NanoBanana PRO','Детализированные изображения',this)"><strong>NanoBanana PRO</strong><small>🔥 Хит · Художественная детализация</small></button>
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('NanoBanana 2.1','Точное следование промпту и референсу',this)"><strong>NanoBanana 2.1</strong><small>Новинка · Точное следование запросу</small></button>
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('NanoBanana 2','Универсальная генерация изображений',this)"><strong>NanoBanana 2</strong><small>Для повседневных задач</small></button>
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('NanoBanana 2 Lite','Быстрая генерация простых изображений',this)"><strong>NanoBanana 2 Lite</strong><small>Для простых задач</small></button>
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('NanoBanana','Генерация по базовым промптам',this)"><strong>NanoBanana</strong><small>Базовая генерация</small></button>
+          </div>
+        </div>
+
+        <div class="photo-provider-group">
+          <div class="photo-provider-title">OpenAI</div>
+          <div class="photo-provider-list">
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('ChatGPT Image 1.5','Генерация и редактирование изображений',this)"><strong>ChatGPT Image 1.5</strong><small>Генерация и редактирование</small></button>
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('GPT Image 2.5','Создание изображений с текстом',this)"><strong>GPT Image 2.5</strong><small>Новинка · Работа с текстом</small></button>
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('GPT Image 2','Генерация изображений по описанию',this)"><strong>GPT Image 2</strong><small>Генерация по описанию</small></button>
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('GPT-4o','Генерация и редактирование изображений',this)"><strong>GPT-4o</strong><small>Улучшенная обработка изображений</small></button>
+          </div>
+        </div>
+
+        <div class="photo-provider-group">
+          <div class="photo-provider-title">xAI</div>
+          <div class="photo-provider-list">
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('Grok Imagine Image 2.0','Быстрая генерация изображений',this)"><strong>Grok Imagine Image 2.0</strong><small>Быстрая генерация</small></button>
+          </div>
+        </div>
+
+        <div class="photo-provider-group">
+          <div class="photo-provider-title">Black Forest Labs</div>
+          <div class="photo-provider-list">
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('Flux 2','Генерация и редактирование в двух режимах',this)"><strong>Flux 2</strong><small>Два режима генерации</small></button>
+          </div>
+        </div>
+
+        <div class="photo-provider-group">
+          <div class="photo-provider-title">Qwen</div>
+          <div class="photo-provider-list">
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('Qwen Camera Angles','Изменение угла камеры на изображении',this)"><strong>Qwen Camera Angles</strong><small>Изменение ракурса</small></button>
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('Qwen Image 2.0','Генерация и редактирование изображений',this)"><strong>Qwen Image 2.0</strong><small>Генерация и редактирование</small></button>
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('Qwen Image 3.0','Генерация и редактирование изображений',this)"><strong>Qwen Image 3.0</strong><small>Создание и редактирование</small></button>
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('Qwen Image 2.1','Генерация и редактирование изображений',this)"><strong>Qwen Image 2.1</strong><small>Создание и редактирование</small></button>
+          </div>
+        </div>
+
+        <div class="photo-provider-group">
+          <div class="photo-provider-title">Kling</div>
+          <div class="photo-provider-list">
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('Kling O3 Photo','Высокая детализация и понимание запроса',this)"><strong>Kling O3 Photo</strong><small>Детализация и точность запроса</small></button>
+          </div>
+        </div>
+
+        <div class="photo-provider-group">
+          <div class="photo-provider-title">Alibaba</div>
+          <div class="photo-provider-list">
+            <button type="button" class="photo-model-option" onclick="choosePhotoModel('WAN 2.7 Image','Генерация и редактирование изображений',this)"><strong>WAN 2.7 Image</strong><small>Генерация и редактирование</small></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
   <div class="upload-container">
     <div class="upload-header-row">
@@ -717,28 +1445,74 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
     <textarea id="photoPrompt" class="prompt-area" placeholder="Опишите, что должно быть на изображении."></textarea>
   </div>
 
-  <div class="aspect-section">
-    <div class="aspect-header">
-      <label class="section-label" style="margin-bottom:0">Соотношение сторон</label>
-      <span class="aspect-current-hint" id="photoAspectHint">1:1 (Квадрат)</span>
+  <div class="photo-options-compact">
+    <div class="photo-option-field">
+      <span class="photo-option-label">Соотношение сторон</span>
+      <button type="button" class="photo-option-trigger" onclick="togglePhotoOptionPicker('photoAspectPicker')">
+        <span class="photo-option-copy">
+          <span class="photo-option-value" id="photoAspectHint">Автоматически</span>
+        </span>
+        <span class="photo-option-chevron">⌄</span>
+      </button>
     </div>
-    <div class="aspect-grid-compact">
-      <button class="aspect-card active" onclick="setPhotoRatio('1:1', 'Квадрат', this)"><div class="aspect-wire-box"><div class="wire" style="width:14px;height:14px;"></div></div><div class="aspect-texts"><span class="aspect-num">1:1</span><span class="aspect-desc">Квадрат</span></div></button>
-      <button class="aspect-card" onclick="setPhotoRatio('Авто', 'AI выбор', this)"><div class="aspect-wire-box"><span style="font-size:13px;color:var(--accent-purple)">✦</span></div><div class="aspect-texts"><span class="aspect-num">Авто</span><span class="aspect-desc">AI выбор</span></div></button>
-      <button class="aspect-card" onclick="setPhotoRatio('9:16', 'Reels', this)"><div class="aspect-wire-box"><div class="wire" style="width:10px;height:16px;"></div></div><div class="aspect-texts"><span class="aspect-num">9:16</span><span class="aspect-desc">Reels</span></div></button>
-      <button class="aspect-card" onclick="setPhotoRatio('2:3', 'Кадр', this)"><div class="aspect-wire-box"><div class="wire" style="width:11px;height:15px;"></div></div><div class="aspect-texts"><span class="aspect-num">2:3</span><span class="aspect-desc">Кадр</span></div></button>
-      <button class="aspect-card" onclick="setPhotoRatio('3:4', 'Портрет', this)"><div class="aspect-wire-box"><div class="wire" style="width:12px;height:15px;"></div></div><div class="aspect-texts"><span class="aspect-num">3:4</span><span class="aspect-desc">Портрет</span></div></button>
-      <button class="aspect-card" onclick="setPhotoRatio('4:3', 'Классика', this)"><div class="aspect-wire-box"><div class="wire" style="width:15px;height:12px;"></div></div><div class="aspect-texts"><span class="aspect-num">4:3</span><span class="aspect-desc">Классика</span></div></button>
-      <button class="aspect-card" onclick="setPhotoRatio('3:2', 'Пейзаж', this)"><div class="aspect-wire-box"><div class="wire" style="width:15px;height:11px;"></div></div><div class="aspect-texts"><span class="aspect-num">3:2</span><span class="aspect-desc">Пейзаж</span></div></button>
-      <button class="aspect-card" onclick="setPhotoRatio('16:9', 'Широкий', this)"><div class="aspect-wire-box"><div class="wire" style="width:16px;height:10px;"></div></div><div class="aspect-texts"><span class="aspect-num">16:9</span><span class="aspect-desc">Широкий</span></div></button>
-      <button class="aspect-card" onclick="setPhotoRatio('21:9', 'Синема', this)"><div class="aspect-wire-box"><div class="wire" style="width:17px;height:8px;"></div></div><div class="aspect-texts"><span class="aspect-num">21:9</span><span class="aspect-desc">Синема</span></div></button>
+    <div class="photo-option-field">
+      <span class="photo-option-label">Разрешение</span>
+      <button type="button" class="photo-option-trigger" onclick="togglePhotoOptionPicker('photoQualityPicker')">
+        <span class="photo-option-copy">
+          <span class="photo-option-value" id="photoQualityHint">1K · Быстро</span>
+        </span>
+        <span class="photo-option-chevron">⌄</span>
+      </button>
     </div>
   </div>
 
   <button class="btn-generate-main" onclick="handleGeneratePhoto()">
     <span>✦ Сгенерировать фото</span>
-    <span>( <span id="photoBtnCostLabel">30</span> ⚡ )</span>
+    <span>( <span id="photoBtnCostLabel">10</span> ⚡ )</span>
   </button>
+
+  <div class="photo-option-picker" id="photoAspectPicker">
+    <div class="photo-picker-options" aria-hidden="true" onclick="if(event.target===this) closePhotoOptionPicker('photoAspectPicker')">
+      <div class="photo-picker-sheet" role="dialog" aria-modal="true" aria-label="Выбор формата изображения">
+        <div class="photo-sheet-grabber"></div>
+        <div class="photo-sheet-header"><span>Соотношение сторон</span><button type="button" class="photo-sheet-close" aria-label="Закрыть" onclick="closePhotoOptionPicker('photoAspectPicker')">×</button></div>
+        <p class="photo-option-modal-subtitle">Выбери пропорции будущего изображения</p>
+        <div class="aspect-grid-compact photo-aspect-modal-grid">
+          <button type="button" class="aspect-card active" data-ratio="Авто" onclick="setPhotoRatio('Авто','Автоматически',this)"><div class="aspect-wire-box"><span style="font-size:13px;color:var(--accent-purple)">✦</span></div><div class="aspect-texts"><span class="aspect-num">Автоматически</span></div></button>
+          <button type="button" class="aspect-card" data-ratio="1:1" onclick="setPhotoRatio('1:1','Квадрат',this)"><div class="aspect-wire-box"><div class="wire" style="width:14px;height:14px"></div></div><div class="aspect-texts"><span class="aspect-num">1:1 · Квадрат</span><span class="aspect-desc">Аватарки, посты и карточки</span></div></button>
+          <button type="button" class="aspect-card" data-ratio="9:16" onclick="setPhotoRatio('9:16','Reels',this)"><div class="aspect-wire-box"><div class="wire" style="width:10px;height:16px"></div></div><div class="aspect-texts"><span class="aspect-num">9:16 · Вертикальный</span><span class="aspect-desc">Reels, Shorts и TikTok</span></div></button>
+          <button type="button" class="aspect-card" data-ratio="2:3" onclick="setPhotoRatio('2:3','Кадр',this)"><div class="aspect-wire-box"><div class="wire" style="width:11px;height:15px"></div></div><div class="aspect-texts"><span class="aspect-num">2:3 · Портрет</span><span class="aspect-desc">Портреты и персонажи</span></div></button>
+          <button type="button" class="aspect-card" data-ratio="3:4" onclick="setPhotoRatio('3:4','Портрет',this)"><div class="aspect-wire-box"><div class="wire" style="width:12px;height:15px"></div></div><div class="aspect-texts"><span class="aspect-num">3:4 · Фото</span><span class="aspect-desc">Классические вертикальные фото</span></div></button>
+          <button type="button" class="aspect-card" data-ratio="4:3" onclick="setPhotoRatio('4:3','Классика',this)"><div class="aspect-wire-box"><div class="wire" style="width:15px;height:12px"></div></div><div class="aspect-texts"><span class="aspect-num">4:3 · Классика</span><span class="aspect-desc">Универсальный формат</span></div></button>
+          <button type="button" class="aspect-card" data-ratio="3:2" onclick="setPhotoRatio('3:2','Пейзаж',this)"><div class="aspect-wire-box"><div class="wire" style="width:15px;height:11px"></div></div><div class="aspect-texts"><span class="aspect-num">3:2 · Пейзаж</span><span class="aspect-desc">Фото и сцены с широким планом</span></div></button>
+          <button type="button" class="aspect-card" data-ratio="16:9" onclick="setPhotoRatio('16:9','Широкий',this)"><div class="aspect-wire-box"><div class="wire" style="width:16px;height:10px"></div></div><div class="aspect-texts"><span class="aspect-num">16:9 · Широкий</span><span class="aspect-desc">Обложки и широкие кадры</span></div></button>
+          <button type="button" class="aspect-card" data-ratio="21:9" onclick="setPhotoRatio('21:9','Синема',this)"><div class="aspect-wire-box"><div class="wire" style="width:17px;height:8px"></div></div><div class="aspect-texts"><span class="aspect-num">21:9 · Синема</span><span class="aspect-desc">Кинематографичные сцены</span></div></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="photo-option-picker" id="photoQualityPicker">
+    <div class="photo-picker-options" aria-hidden="true" onclick="if(event.target===this) closePhotoOptionPicker('photoQualityPicker')">
+      <div class="photo-picker-sheet" role="dialog" aria-modal="true" aria-label="Выбор качества изображения">
+        <div class="photo-sheet-grabber"></div>
+        <div class="photo-sheet-header"><span>Разрешение</span><button type="button" class="photo-sheet-close" aria-label="Закрыть" onclick="closePhotoOptionPicker('photoQualityPicker')">×</button></div>
+        <p class="photo-option-modal-subtitle">Чем выше качество, тем больше деталей</p>
+        <div class="photo-quality-options">
+          <button type="button" class="photo-quality-option active" data-quality="1K" onclick="setPhotoQuality('1K',10,'Быстро',this)">
+            <span class="photo-quality-main"><strong>1K · Быстро</strong><small>Для черновиков и быстрых идей</small></span><span class="photo-quality-price">10 ⚡</span>
+          </button>
+          <button type="button" class="photo-quality-option" data-quality="2K" onclick="setPhotoQuality('2K',20,'Баланс',this)">
+            <span class="photo-quality-main"><strong>2K · Баланс</strong><small>Детализированные изображения на каждый день</small></span><span class="photo-quality-price">20 ⚡</span>
+          </button>
+          <button type="button" class="photo-quality-option" data-quality="4K" onclick="setPhotoQuality('4K',30,'Максимальная детализация',this)">
+            <span class="photo-quality-main"><strong>4K · Максимум</strong><small>Максимальная детализация для финального результата</small></span><span class="photo-quality-price">30 ⚡</span>
+          </button>
+        </div>
+        <p class="photo-quality-note">Цены предварительные — фактическое списание подключим вместе с генерацией.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- 4. МОДУЛЬ: СОЗДАТЬ ВИДЕО -->
@@ -1000,11 +1774,11 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <div class="pkg-price-wrap"><div class="pkg-price">99 ₽</div></div>
       </div>
       <div class="pkg-features">
-        <span>🖼 ~3 фото</span> <div class="dot-sep"></div> <span>🎥 ~1 видео</span>
+        <span class="pkg-feature-item"><svg class="pkg-feature-icon photo-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 20"/></svg> ~3 фото</span> <div class="dot-sep"></div> <span class="pkg-feature-item"><svg class="pkg-feature-icon video-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg> ~1 видео</span>
       </div>
       <div class="pkg-buttons">
         <button class="btn-primary" onclick="handleBuy(this, 'pack_100', 'fiat')">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 'pack_100', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 119</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_100', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 1</button>
       </div>
     </div>
 
@@ -1014,11 +1788,11 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <div class="pkg-price-wrap"><div class="pkg-price">199 ₽</div></div>
       </div>
       <div class="pkg-features">
-        <span>🖼 ~8 фото</span> <div class="dot-sep"></div> <span>🎥 ~2 видео</span> <div class="dot-sep"></div> <span>🎵 ~1 трек</span>
+        <span class="pkg-feature-item"><svg class="pkg-feature-icon photo-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 20"/></svg> ~8 фото</span> <div class="dot-sep"></div> <span class="pkg-feature-item"><svg class="pkg-feature-icon video-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg> ~2 видео</span> <div class="dot-sep"></div> <span>🎵 ~1 трек</span>
       </div>
       <div class="pkg-buttons">
         <button class="btn-primary" onclick="handleBuy(this, 'pack_220', 'fiat')">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 'pack_220', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 239</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_220', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 1</button>
       </div>
     </div>
 
@@ -1029,11 +1803,11 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <div class="pkg-price-wrap"><div class="pkg-price">499 ₽</div><div class="pkg-old-price">543 ₽</div></div>
       </div>
       <div class="pkg-features">
-        <span>🖼 ~24 фото</span> <div class="dot-sep"></div> <span>🎥 ~6 видео</span> <div class="dot-sep"></div> <span>🎵 ~3 трека</span>
+        <span class="pkg-feature-item"><svg class="pkg-feature-icon photo-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 20"/></svg> ~24 фото</span> <div class="dot-sep"></div> <span class="pkg-feature-item"><svg class="pkg-feature-icon video-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg> ~6 видео</span> <div class="dot-sep"></div> <span>🎵 ~3 трека</span>
       </div>
       <div class="pkg-buttons">
         <button class="btn-primary" onclick="handleBuy(this, 'pack_600', 'fiat')">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 'pack_600', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 599</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_600', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 1</button>
       </div>
     </div>
 
@@ -1043,11 +1817,11 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <div class="pkg-price-wrap"><div class="pkg-price">999 ₽</div><div class="pkg-old-price">1176 ₽</div></div>
       </div>
       <div class="pkg-features">
-        <span>🖼 ~60 фото</span> <div class="dot-sep"></div> <span>🎥 ~15 видео</span> <div class="dot-sep"></div> <span>🎵 ~7 треков</span>
+        <span class="pkg-feature-item"><svg class="pkg-feature-icon photo-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 20"/></svg> ~60 фото</span> <div class="dot-sep"></div> <span class="pkg-feature-item"><svg class="pkg-feature-icon video-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg> ~15 видео</span> <div class="dot-sep"></div> <span>🎵 ~7 треков</span>
       </div>
       <div class="pkg-buttons">
         <button class="btn-primary" onclick="handleBuy(this, 'pack_1500', 'fiat')">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 'pack_1500', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 1199</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_1500', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 1</button>
       </div>
     </div>
     
@@ -1057,11 +1831,11 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <div class="pkg-price-wrap"><div class="pkg-price">1999 ₽</div><div class="pkg-old-price">2500 ₽</div></div>
       </div>
       <div class="pkg-features">
-        <span>🖼 ~140 фото</span> <div class="dot-sep"></div> <span>🎥 ~35 видео</span>
+        <span class="pkg-feature-item"><svg class="pkg-feature-icon photo-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 20"/></svg> ~140 фото</span> <div class="dot-sep"></div> <span class="pkg-feature-item"><svg class="pkg-feature-icon video-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg> ~35 видео</span>
       </div>
       <div class="pkg-buttons">
         <button class="btn-primary" onclick="handleBuy(this, 'pack_3500', 'fiat')">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 'pack_3500', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 2399</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_3500', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 1</button>
       </div>
     </div>
 
@@ -1071,11 +1845,11 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
         <div class="pkg-price-wrap"><div class="pkg-price">3999 ₽</div><div class="pkg-old-price">5500 ₽</div></div>
       </div>
       <div class="pkg-features">
-        <span>🖼 ~320 фото</span> <div class="dot-sep"></div> <span>🎥 ~80 видео</span>
+        <span class="pkg-feature-item"><svg class="pkg-feature-icon photo-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 20"/></svg> ~320 фото</span> <div class="dot-sep"></div> <span class="pkg-feature-item"><svg class="pkg-feature-icon video-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg> ~80 видео</span>
       </div>
       <div class="pkg-buttons">
         <button class="btn-primary" onclick="handleBuy(this, 'pack_8000', 'fiat')">Купить</button>
-        <button class="btn-stars" onclick="handleBuy(this, 'pack_8000', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 4799</button>
+        <button class="btn-stars" onclick="handleBuy(this, 'pack_8000', 'stars')"><svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg> 1</button>
       </div>
     </div>
   </div>
@@ -1153,6 +1927,7 @@ main { flex: 1; padding: 10px 16px calc(95px + env(safe-area-inset-bottom, 0px))
     <h3 class="modal-title">Ввод промокода</h3>
     <p class="modal-desc">У вас есть промокод? Введите его ниже, чтобы получить бонусные кредиты или скидку.</p>
     <input type="text" class="promo-input" id="promoInputVal" placeholder="Например: BOOM2026">
+    <p id="promoPreview" class="modal-desc" style="display:none; margin-top:12px;"></p>
     <button class="modal-action-btn" onclick="submitPromo()">Активировать</button>
   </div>
 </div>
@@ -1264,9 +2039,9 @@ async function initUserProfile() {
     }
   } catch (e) {
     console.error("Ошибка связи с FastAPI бэкендом:", e);
-    currentBalance = 10;
+    currentBalance = 0;
   }
-  updateBalance(0);
+  updateBalance(currentBalance);
 }
 let userHistory = JSON.parse(localStorage.getItem('boomai_history')) || [
   { type: 'video', title: 'Кинематографичный ролик (5 с)', time: 'Сегодня, 19:42 · Kling 1.5 Pro' },
@@ -1411,6 +2186,8 @@ function exitChatModule() {
 }
 
 function nav(screenName, btn) {
+  closePhotoModelPicker();
+
   dismissKeyboard();
   tg?.HapticFeedback?.selectionChanged();
   if (tg?.BackButton) { tg.BackButton.offClick(exitChatModule); tg.BackButton.hide(); }
@@ -1483,7 +2260,9 @@ function openCreateModule(type) {
     }, 50);
   }
   
-  if (type === 'photo' || type === 'video') {
+  if (type === 'photo') {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  } else if (type === 'video') {
     setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 50);
   } else {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1493,6 +2272,25 @@ function openCreateModule(type) {
 /* МОДАЛКИ */
 function openModal(id) {
   dismissKeyboard();
+
+  if (id === 'promoModal') {
+    const input = document.getElementById('promoInputVal');
+    const preview = document.getElementById('promoPreview');
+    const button = document.querySelector('#promoModal .modal-action-btn');
+
+    input.value = '';
+    preview.textContent = '';
+    preview.className = 'modal-desc';
+    preview.style.display = 'none';
+
+    button.disabled = false;
+    button.textContent = 'Активировать';
+    button.onclick = submitPromo;
+    activePromoCode = '';
+    activePromoBonus = null;
+    updatePromoPackageBadges();
+  }
+
   document.getElementById(id).classList.add('active');
   document.body.classList.add('modal-locked');
   tg?.HapticFeedback?.impactOccurred('light');
@@ -1505,13 +2303,110 @@ function closeModal(id, event) {
     tg?.HapticFeedback?.selectionChanged();
   }
 }
-function submitPromo() {
-  const val = document.getElementById('promoInputVal').value.trim();
-  if(!val) return alert("Введите код");
-  tg?.HapticFeedback?.impactOccurred('medium');
-  alert(`Промокод "${val}" проверяется...`);
-  closeModal('promoModal');
-  document.getElementById('promoInputVal').value = '';
+let activePromoCode = '';
+let activePromoBonus = null;
+
+function updatePromoPackageBadges() {
+  const creditsByPack = {
+    pack_100: 100,
+    pack_220: 220,
+    pack_600: 600,
+    pack_1500: 1500,
+    pack_3500: 3500,
+    pack_8000: 8000
+  };
+
+  document.querySelectorAll('.pkg-card').forEach(card => {
+    const buyButton = card.querySelector('[onclick*="handleBuy(this"]');
+    const match = buyButton?.getAttribute('onclick')?.match(/'(pack_\d+)'/);
+    const packKey = match?.[1];
+    const creditsWrap = card.querySelector('.pkg-credits-wrap');
+    if (!creditsWrap || !packKey) return;
+
+    let badge = creditsWrap.querySelector('.pkg-promo-bonus');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'pkg-promo-bonus';
+      creditsWrap.appendChild(badge);
+    }
+
+    if (!activePromoCode || !activePromoBonus) {
+      badge.style.display = 'none';
+      badge.textContent = '';
+      return;
+    }
+
+    if (activePromoBonus.reward_percent > 0) {
+      badge.textContent = '+' + activePromoBonus.reward_percent + '%';
+    } else if (activePromoBonus.reward_credits > 0) {
+      badge.textContent = '+' + activePromoBonus.reward_credits + ' кредитов';
+    } else {
+      badge.style.display = 'none';
+      return;
+    }
+
+    badge.style.display = 'inline';
+  });
+}
+async function submitPromo() {
+  const input = document.getElementById('promoInputVal');
+  const preview = document.getElementById('promoPreview');
+  const button = document.querySelector('#promoModal .modal-action-btn');
+  const val = input.value.trim().toUpperCase();
+
+  const showError = (message) => {
+    preview.style.display = 'block';
+    preview.className = 'modal-desc promo-feedback promo-feedback-error';
+    preview.textContent = message;
+  };
+
+  if (!val) return showError('Введите промокод');
+  if (!tg?.initData) {
+    return showError('Откройте BoomAI через Telegram и попробуйте снова');
+  }
+
+  button.disabled = true;
+  button.textContent = 'Проверяем…';
+  preview.style.display = 'none';
+  activePromoCode = '';
+  activePromoBonus = null;
+  updatePromoPackageBadges();
+
+  try {
+    const response = await fetch(`${API_URL}/api/v1/promos/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ init_data: tg.initData, promo_code: val })
+    });
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok || !result.valid) {
+      throw new Error(result.detail || 'Не удалось активировать промокод');
+    }
+
+    activePromoCode = val;
+    activePromoBonus = {
+      reward_percent: Number(result.reward_percent || 0),
+      reward_credits: Number(result.reward_credits || 0)
+    };
+    updatePromoPackageBadges();
+
+    preview.className = 'modal-desc promo-feedback promo-feedback-success';
+    preview.innerHTML = '<span class="promo-success-check">✓</span><span class="promo-feedback-copy"><strong>Промокод активирован!</strong><span class="promo-bonus-text"></span></span>';
+    preview.querySelector('.promo-bonus-text').textContent =
+      result.message || 'Бонус будет применён после успешной оплаты';
+    preview.style.display = 'flex';
+
+    tg?.HapticFeedback?.notificationOccurred('success');
+    button.textContent = 'Готово';
+    button.onclick = () => closeModal('promoModal');
+  } catch (error) {
+    showError(error.message || 'Ошибка проверки промокода');
+    tg?.HapticFeedback?.notificationOccurred('error');
+    button.textContent = 'Попробовать снова';
+  } finally {
+    button.disabled = false;
+  }
 }
 function openSupportChat() {
   tg?.HapticFeedback?.impactOccurred('medium');
@@ -1527,7 +2422,6 @@ async function handleBuy(btn, packKey, method) {
   tg?.HapticFeedback?.impactOccurred('medium');
   btn.classList.add('btn-loading');
 
-  // Превращаем строковый ключ типа 'pack_100' в ID пакета из базы данных (от 1 до 6)
   const packageIdMap = {
     'pack_100': 1,
     'pack_220': 2,
@@ -1539,24 +2433,58 @@ async function handleBuy(btn, packKey, method) {
   const packageId = packageIdMap[packKey] || 1;
 
   try {
-    const res = await fetch(`${API_URL}/api/v1/orders`, {
+    if (method === 'stars') {
+      if (!tg?.initData || !tg?.openInvoice) {
+        throw new Error('Открой BoomAI внутри Telegram.');
+      }
+
+      const res = await fetch(`${API_URL}/api/v1/payments/stars/invoice`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          init_data: tg.initData,
+          package_id: packageId,
+          promo_code: activePromoCode || null
+        })
+      });
+
+      const data = await res.json();
+      btn.classList.remove('btn-loading');
+
+      if (!res.ok) {
+        alert('Stars: ' + (data.detail || 'Не удалось создать счёт'));
+        return;
+      }
+
+      tg.openInvoice(data.invoice_link, async (status) => {
+        if (status === 'paid') {
+          tg.HapticFeedback?.notificationOccurred('success');
+          alert('Оплата подтверждена Telegram. Обновляем баланс…');
+          await initUserProfile();
+        } else if (status === 'failed') {
+          alert('Оплата не прошла. Попробуй ещё раз.');
+        }
+      });
+      return;
+    }
+
+    const res = await fetch(`${API_URL}/api/v1/payments/yookassa/invoice`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tg_id: currentUserTgId, package_id: packageId })
+      body: JSON.stringify({ init_data: tg?.initData || '', package_id: packageId, promo_code: activePromoCode || null })
     });
     const data = await res.json();
     btn.classList.remove('btn-loading');
 
     if (res.ok) {
       tg?.HapticFeedback?.notificationOccurred('success');
-      // Перенаправляем пользователя на официальную ссылку оплаты ЮKassa
       window.open(data.confirmation_url, '_blank');
     } else {
-      alert("Ошибка создания платежа: " + data.detail);
+      alert('Ошибка создания платежа: ' + (data.detail || 'Неизвестная ошибка'));
     }
   } catch (e) {
     btn.classList.remove('btn-loading');
-    alert("Ошибка соединения с платежным шлюзом");
+    alert(e.message || 'Ошибка соединения с платёжным сервером');
   }
 }
 
@@ -1584,15 +2512,103 @@ document.addEventListener('click', function(e) {
 });
 
 /* ЛОГИКА ФОТО */
-let currentPhotoRatio = '1:1';
+let currentPhotoRatio = 'Авто';
+let currentPhotoQuality = '1K';
 let currentPhotoCost = 10;
-let currentPhotoModelCode = 'nano-banana-2-lite';
 const MAX_PHOTO_IMAGES = 5;
 let uploadedPhotoImages = [];
 
-function selectPhotoModel(code, name, desc, cost, item, e) {
+
+let currentPhotoMode = 'image';
+
+function setPhotoMode(mode) {
+  currentPhotoMode = mode === 'text' ? 'text' : 'image';
+  const imageBtn = document.getElementById('photoModeImageBtn');
+  const textBtn = document.getElementById('photoModeTextBtn');
+  const upload = document.querySelector('#createPhotoScreen .upload-container');
+  const prompt = document.getElementById('photoPrompt');
+  const label = document.querySelector('#createPhotoScreen .prompt-container .section-label');
+
+  imageBtn?.classList.toggle('active', currentPhotoMode === 'image');
+  textBtn?.classList.toggle('active', currentPhotoMode === 'text');
+  if (upload) upload.style.display = currentPhotoMode === 'text' ? 'none' : '';
+  if (label) label.innerHTML = currentPhotoMode === 'text'
+    ? 'Описание изображения <span class="req">*</span>'
+    : 'Запрос <span class="req">*</span>';
+  if (prompt) prompt.placeholder = currentPhotoMode === 'text'
+    ? 'Опишите изображение, которое нужно создать.'
+    : 'Опишите, как изменить загруженное изображение.';
+}
+
+
+function togglePhotoModelPicker() {
+  const picker = document.getElementById('photoModelPicker');
+  const card = document.getElementById('photoModelCard');
+  const panel = document.getElementById('photoPickerOptions');
+  const catalog = document.getElementById('photoAllModelsPanel');
+  const showAll = document.getElementById('photoShowAllBtn');
+  if (!picker || !card || !panel) return;
+
+  const opening = !picker.classList.contains('open');
+
+  // Полный каталог всегда свёрнут при новом открытии
+  catalog?.classList.add('expanded');
+  if (showAll) showAll.innerHTML = 'Все модели <span>＋</span>';
+
+  picker.classList.toggle('open', opening);
+  card.setAttribute('aria-expanded', String(opening));
+  panel.setAttribute('aria-hidden', String(!opening));
+  document.body.classList.toggle('photo-model-modal-open', opening);
+
+  if (opening) {
+    syncPhotoModelSelection();
+    document.addEventListener('keydown', handlePhotoModelPickerKeydown);
+  } else {
+    document.removeEventListener('keydown', handlePhotoModelPickerKeydown);
+  }
+}
+function handlePhotoModelPickerKeydown(event) {
+  if (event.key === 'Escape') closePhotoModelPicker();
+}
+function closePhotoModelPicker() {
+  document.getElementById('photoModelPicker')?.classList.remove('open');
+  document.getElementById('photoModelCard')?.setAttribute('aria-expanded', 'false');
+  document.getElementById('photoPickerOptions')?.setAttribute('aria-hidden', 'true');
+  document.getElementById('photoAllModelsPanel')?.classList.add('expanded');
+  const showAll = document.getElementById('photoShowAllBtn');
+  if (showAll) showAll.innerHTML = 'Все модели <span>＋</span>';
+  document.body.classList.remove('photo-model-modal-open');
+  document.removeEventListener('keydown', handlePhotoModelPickerKeydown);
+}
+function togglePhotoCatalog() {
+  const panel = document.getElementById('photoAllModelsPanel');
+  const button = document.getElementById('photoShowAllBtn');
+  if (!panel || !button) return;
+  const opening = !panel.classList.contains('expanded');
+  panel.classList.toggle('expanded', opening);
+  button.innerHTML = opening ? 'Свернуть список <span>−</span>' : 'Все модели <span>＋</span>';
+}
+function syncPhotoModelSelection() {
+  const currentName = document.getElementById('selectedPhotoModelName')?.textContent.trim();
+  document.querySelectorAll('#photoFeaturedModels .photo-featured-card, #photoAllModelsPanel .photo-model-option').forEach(el => {
+    const modelName = (el.querySelector('strong')?.textContent || '').trim();
+    const active = modelName === currentName;
+    el.classList.toggle('active', active);
+    el.setAttribute('aria-pressed', String(active));
+  });
+}
+function choosePhotoModel(name, desc, item) {
+  const nameEl = document.getElementById('selectedPhotoModelName');
+  const descEl = document.getElementById('selectedPhotoModelDesc');
+  if (nameEl) nameEl.textContent = name;
+  if (descEl) descEl.textContent = desc;
+  syncPhotoModelSelection();
+  closePhotoModelPicker();
+  if (window.tg?.HapticFeedback?.selectionChanged) tg.HapticFeedback.selectionChanged();
+}
+
+function selectPhotoModel(name, desc, cost, item, e) {
   e.stopPropagation();
-  currentPhotoModelCode = code;
   currentPhotoCost = cost;
   document.getElementById('selectedPhotoModelName').textContent = name;
   document.getElementById('selectedPhotoModelDesc').textContent = desc;
@@ -1646,137 +2662,96 @@ function renderPhotoUploads() {
   document.getElementById('photoUploadCountText').textContent = `${uploadedPhotoImages.length} / ${MAX_PHOTO_IMAGES}`;
   addBtn.style.display = uploadedPhotoImages.length >= MAX_PHOTO_IMAGES ? 'none' : 'flex';
 }
+function togglePhotoOptionPicker(id) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  const opening = !target.classList.contains('open');
+  document.querySelectorAll('.photo-option-picker.open').forEach(el => el.classList.remove('open'));
+  if (opening) {
+    target.classList.add('open');
+    document.body.classList.add('photo-model-modal-open');
+    document.addEventListener('keydown', handlePhotoOptionPickerKeydown);
+  } else {
+    document.body.classList.remove('photo-model-modal-open');
+    document.removeEventListener('keydown', handlePhotoOptionPickerKeydown);
+  }
+  target.querySelector('.photo-picker-options')?.setAttribute('aria-hidden', String(!opening));
+  tg?.HapticFeedback?.impactOccurred('light');
+}
+function closePhotoOptionPicker(id) {
+  const picker = document.getElementById(id);
+  if (!picker) return;
+  picker.classList.remove('open');
+  picker.querySelector('.photo-picker-options')?.setAttribute('aria-hidden', 'true');
+  if (!document.querySelector('.photo-option-picker.open')) {
+    document.body.classList.remove('photo-model-modal-open');
+    document.removeEventListener('keydown', handlePhotoOptionPickerKeydown);
+  }
+}
+function handlePhotoOptionPickerKeydown(event) {
+  if (event.key === 'Escape') {
+    document.querySelectorAll('.photo-option-picker.open').forEach(el => closePhotoOptionPicker(el.id));
+  }
+}
 function setPhotoRatio(ratio, desc, btn) {
   currentPhotoRatio = ratio;
-  btn.closest('.aspect-grid-compact').querySelectorAll('.aspect-card').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('photoAspectHint').textContent = `${ratio} (${desc})`;
+  document.querySelectorAll('#photoAspectPicker .aspect-card').forEach(b => b.classList.toggle('active', b === btn));
+  const hint = document.getElementById('photoAspectHint');
+  if (hint) hint.textContent = ratio === 'Авто' ? 'Автоматически' : `${ratio} · ${desc}`;
+  closePhotoOptionPicker('photoAspectPicker');
+  tg?.HapticFeedback?.selectionChanged();
+}
+function setPhotoQuality(quality, cost, desc, btn) {
+  currentPhotoQuality = quality;
+  currentPhotoCost = cost;
+  document.querySelectorAll('#photoQualityPicker .photo-quality-option').forEach(b => b.classList.toggle('active', b === btn));
+  const hint = document.getElementById('photoQualityHint');
+  if (hint) hint.textContent = `${quality} · ${desc}`;
+  const costLabel = document.getElementById('photoBtnCostLabel');
+  if (costLabel) costLabel.textContent = String(cost);
+  closePhotoOptionPicker('photoQualityPicker');
   tg?.HapticFeedback?.selectionChanged();
 }
 
 let isGeneratingPhoto = false;
-
 async function handleGeneratePhoto() {
-  if (isGeneratingPhoto) return;
-
+  if (isGeneratingPhoto) return; // Блокировка спама
   const prompt = document.getElementById('photoPrompt').value.trim();
-
-  if (uploadedPhotoImages.length > 0) {
-    alert('едактирование загруженных фото пока не подключено. дали фото и попробуй генерацию по тексту.');
-    return;
-  }
-
-  if (!prompt) {
-    alert('Сначала введи описание изображения.');
-    return;
-  }
-
-  const modelName = document.getElementById('selectedPhotoModelName').textContent.trim();
-  const modelCode = currentPhotoModelCode;
-
-  if (!modelCode) {
-    alert('та модель ещё не подключена к реальной генерации. ыбери Nano Banana 2 Lite.');
-    return;
-  }
-
-  if (currentBalance < currentPhotoCost) {
-    alert('едостаточно кредитов.');
-    return;
-  }
-
+  const modelCode = "flux-pro"; // Код модели для бэкенда
+  if (!prompt && uploadedPhotoImages.length === 0) return alert('Введите запрос или прикрепите фото!');
+  if (currentBalance < currentPhotoCost) return alert('Недостаточно кредитов!');
+  
   isGeneratingPhoto = true;
-  const button = document.querySelector('[onclick="handleGeneratePhoto()"]');
-  if (button) button.disabled = true;
-
-  const headers = {
-    'Content-Type': 'application/json',
-    'Authorization': `tma ${tg?.initData || ''}`
-  };
-
-  const syncBalance = value => {
-    if (typeof value === 'number') updateBalance(value - currentBalance);
-  };
-
+  tg?.HapticFeedback?.impactOccurred('medium');
+  
   try {
-    const res = await fetch(`${API_URL}/api/v1/photo/generate`, {
+    const res = await fetch(`${API_URL}/api/v1/generate`, {
       method: 'POST',
-      headers,
-      body: JSON.stringify({
-        tg_id: Number(currentUserTgId),
-        model_code: modelCode,
-        prompt,
-        aspect_ratio: currentPhotoRatio,
-        output_format: 'png'
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tg_id: currentUserTgId, model_code: modelCode, prompt: prompt })
     });
-
     const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.detail || 'е удалось запустить генерацию.');
-      return;
-    }
-
-    syncBalance(data.remaining_balance);
-    pulseBalanceAnimation();
-
-    if (!data.generation_id) {
-      alert('Сервер не вернул номер задания.');
-      return;
-    }
-
-    for (let attempt = 0; attempt < 45; attempt++) {
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      const statusRes = await fetch(
-        `${API_URL}/api/v1/photo/generate/${encodeURIComponent(data.generation_id)}/status`,
-        {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({ tg_id: Number(currentUserTgId) })
-        }
-      );
-
-      const result = await statusRes.json();
-
-      if (!statusRes.ok) {
-        alert(result.detail || 'е удалось проверить статус генерации.');
-        return;
-      }
-
-      syncBalance(result.remaining_balance);
-
-      const status = String(result.status || '').toLowerCase();
-
-      if (['success', 'succeeded', 'completed', 'done'].includes(status)) {
-        if (!result.result_url) {
-          alert('адание завершено, но ссылка на изображение не получена.');
-          return;
-        }
-
-        const title = prompt.slice(0, 22);
-        addHistoryItem('photo', `ото: "${title}"`, modelCode);
-        addWorkItem('📷 ото', title, modelCode, result.result_url);
-        tg?.HapticFeedback?.notificationOccurred('success');
-        alert('ото успешно создано.');
-        return;
-      }
-
-      if (['failed', 'error', 'cancelled', 'canceled'].includes(status)) {
-        alert(result.detail || 'е удалось создать изображение.');
-        return;
-      }
-    }
-
-    alert('енерация ещё выполняется. отовый результат пока не получен.');
-  } catch (e) {
-    console.error('Photo generation error:', e);
-    alert('шибка соединения с сервером генерации.');
-  } finally {
     isGeneratingPhoto = false;
-    if (button) button.disabled = false;
+
+    if (res.ok) {
+      updateBalance(-data.cost);
+      pulseBalanceAnimation();
+      tg?.HapticFeedback?.notificationOccurred('success');
+      
+      const title = prompt ? prompt.slice(0, 22) + '...' : 'AI Генерация фото';
+      addHistoryItem('photo', `Фото: "${title}"`, modelCode);
+      addWorkItem('📷 Фото', title, modelCode, uploadedPhotoImages[0]);
+      
+      alert(data.message + `\nСписано: ${data.cost} ⚡. Остаток: ${data.remaining_balance} кр.`);
+    } else {
+      alert(data.detail);
+    }
+  } catch (e) {
+    isGeneratingPhoto = false;
+    alert("Ошибка связи с сервером генерации");
   }
 }
+
 /* ЛОГИКА ВИДЕО */
 let currentVideoRatio = '16:9';
 let baseVideoCost = 90;
